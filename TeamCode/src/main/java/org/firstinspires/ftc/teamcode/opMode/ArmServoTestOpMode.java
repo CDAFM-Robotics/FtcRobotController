@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.opMode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Blinker;
@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp (group = "2023")
+@TeleOp (group = "2023 Oct 28 Screammage")
 
 // This line will prevent code from building and showing up on Control Hub
 // @Disabled
@@ -20,6 +20,7 @@ public class ArmServoTestOpMode extends LinearOpMode {
     private Servo bottomArmServo;
     private Gyroscope imu;
     private Servo topArmServo;
+    private Servo wristPanServo;
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motor1 = null; //front left
     private DcMotor motor2 = null; //front right
@@ -29,23 +30,18 @@ public class ArmServoTestOpMode extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
+        //read hardware configurations
         control_Hub = hardwareMap.get(Blinker.class, "Control Hub");
         bottomArmServo = hardwareMap.get(Servo.class, "bottomArmServo");
         topArmServo = hardwareMap.get(Servo.class, "topArmServo");
+        wristPanServo = hardwareMap.get(Servo.class, "wristPanServo");
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         motor4 = hardwareMap.get(DcMotor.class, "motor4");
         armmotor = hardwareMap.get(DcMotor.class, "armcontrol");
-        
-    
-        motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor4.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        armmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        
+
+        //define initial values for variables
         double lTrigger;
         double rTrigger;
         double lStickX;
@@ -57,11 +53,40 @@ public class ArmServoTestOpMode extends LinearOpMode {
         boolean topArmServoStatus = false;
         boolean lBumperDown = false;
         boolean rBumperDown = false;
-        
+        double wristPanPos = 0.5;
+        double wristPanSpeed = 0.05;
+
         double slow_mode = 0.25;
-        telemetry.addData("From:", "Android Studio");
+
+        telemetry.addData("Status", "Initializing...");
+        telemetry.update();
+
+        //Initialized the motors
+        motor1.setPower(0);
+        motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor2.setPower(0);
+        motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor3.setPower(0);
+        motor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor4.setPower(0);
+        motor4.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor4.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        //Initialize arm motor
+        armmotor.setPower(0);
+        armmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //initialize wristPanServo
+
+        //initialize both hand servos
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
     
@@ -72,15 +97,11 @@ public class ArmServoTestOpMode extends LinearOpMode {
             lTrigger = gamepad1.left_trigger;
             lBumper = gamepad1.left_bumper;
             rBumper = gamepad1.right_bumper;
-            
+
+            //hand control
             if (lBumper) {
                 if (!lBumperDown) {
-                    if (bottomArmServoStatus) {
-                        bottomArmServoStatus = false;
-                    }
-                    else {
-                        bottomArmServoStatus = true;
-                    }
+                    bottomArmServoStatus = !bottomArmServoStatus;
                     lBumperDown = true;
                 }
             }
@@ -89,12 +110,7 @@ public class ArmServoTestOpMode extends LinearOpMode {
             }
             if (rBumper) {
                 if (!rBumperDown) {
-                    if (topArmServoStatus) {
-                        topArmServoStatus = false;
-                    }
-                    else {
-                        topArmServoStatus = true;
-                    }
+                    topArmServoStatus = !topArmServoStatus;
                     rBumperDown = true;
                 }
             }
@@ -114,7 +130,8 @@ public class ArmServoTestOpMode extends LinearOpMode {
             else {
                 topArmServo.setPosition(0.45);
             }
-            
+
+            //arm control
             armmotor.setPower(lTrigger*lTrigger);
             armmotor.setPower(-rTrigger*rTrigger);
             
@@ -128,21 +145,33 @@ public class ArmServoTestOpMode extends LinearOpMode {
             //open:
             //bottomArmServo.setPosition(0.15);
             //topArmServo.setPosition(0.45);
-    
+
+            //mecanum drive train
             lStickX = slow_mode*(gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x));
             lStickY = slow_mode*(-gamepad1.left_stick_y * Math.abs(gamepad1.left_stick_y));
             rStickX = slow_mode*(gamepad1.right_stick_x * Math.abs(gamepad1.right_stick_x));
     
             double distanceFrom0 = Math.sqrt(Math.pow(lStickX, 2) + Math.pow(lStickY, 2));
     
-            double direction = findDir(lStickX * 1.0/distanceFrom0, lStickY * 1.0/distanceFrom0);
+            double direction = findDir(lStickX * (1.0/distanceFrom0), lStickY * (1.0/distanceFrom0));
             
             telemetry.addData("Stick Powers", ":lStickX: %.2f, lStickY: %.2f, RStickX:%.2f", lStickX, lStickY, rStickX);
     
             setMotorPowers(direction, distanceFrom0, rStickX);
-            
-            telemetry.addData("Status", "Running");
+
+            //wrist control
+            if (gamepad1.a) {
+                wristPanPos += wristPanSpeed;
+            }
+            if (gamepad1.b) {
+                wristPanPos -= wristPanSpeed;
+            }
+
+            wristPanServo.setPosition(0);
+
             //telemetry.addData("Servos", "Bottom: %.3f, Top: %.3f", lTrigger, rTrigger);
+
+            telemetry.addData("Status", "Running");
             telemetry.update();
 
         }
