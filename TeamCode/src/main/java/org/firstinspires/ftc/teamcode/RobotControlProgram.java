@@ -12,11 +12,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-
-@TeleOp (group="zOldCode")
-
 // This line will prevent the OpMode from being built or displayed in the Driver Station
 @Disabled
+@TeleOp (group="zOldCode")
 
 
 public class RobotControlProgram extends LinearOpMode {
