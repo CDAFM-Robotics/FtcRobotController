@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp (group = "2023 Screamage", name = "abc")
+@TeleOp (group = "2023 Screamage", name = "ArmServoTest")
 
 // Next line will prevent code from building and showing up on Control Hub
 // @Disabled
