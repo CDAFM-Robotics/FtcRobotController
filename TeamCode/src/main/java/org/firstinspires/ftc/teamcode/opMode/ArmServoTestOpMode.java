@@ -10,9 +10,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp (group = "2023 Oct 28 Screammage")
+@TeleOp (group = "2023 Screamage", name = "abc")
 
-// This line will prevent code from building and showing up on Control Hub
+// Next line will prevent code from building and showing up on Control Hub
 // @Disabled
 
 public class ArmServoTestOpMode extends LinearOpMode {
@@ -54,9 +54,9 @@ public class ArmServoTestOpMode extends LinearOpMode {
         boolean lBumperDown = false;
         boolean rBumperDown = false;
         double wristPanPos = 0.5;
-        double wristPanSpeed = 0.05;
+        double wristPanSpeed = 0.001;
 
-        double slow_mode = 0.25;
+        double slow_mode = 0.75;
 
         telemetry.addData("Status", "Initializing...");
         telemetry.update();
@@ -79,12 +79,30 @@ public class ArmServoTestOpMode extends LinearOpMode {
         armmotor.setPower(0);
         armmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        // JW - ==> Good Mode for Zero:   DcMotor.RunMode.STOP_AND_RESET_ENCODER
+        /*
+        Doc:
+        The motor is to set the current encoder position to zero.
+        In contrast to RUN_TO_POSITION, the motor is not rotated in
+        order to achieve this; rather, the current rotational position
+        of the motor is simply reinterpreted as the new zero value. However,
+        as a side effect of placing a motor in this mode, power is removed from
+        the motor, causing it to stop, though it is unspecified whether the motor
+        enters brake or float mode. Further, it should be noted that setting a
+        motor toSTOP_AND_RESET_ENCODER may or may not be a transient state:
+        motors connected to some motor controllers will remain in this mode
+        until explicitly transitioned to a different one, while motors connected
+        to other motor controllers will automatically transition to a different
+        mode after the reset of the encoder is complete.
+        * */
 
         //initialize wristPanServo
+        wristPanServo.setPosition(0.5);
+
 
         //initialize both hand servos
 
-        telemetry.addData("Status", "Initialized");
+        telemetry.addData("Status", "Initialized psh");
         telemetry.update();
 
         // Wait for the game to start (driver presses PLAY)
@@ -132,8 +150,7 @@ public class ArmServoTestOpMode extends LinearOpMode {
             }
 
             //arm control
-            armmotor.setPower(lTrigger*lTrigger);
-            armmotor.setPower(-rTrigger*rTrigger);
+            armmotor.setPower(lTrigger*lTrigger-rTrigger*rTrigger);
             
             //bottomArmServo.setPosition((1-lTrigger)*0.15);
             //topArmServo.setPosition(rTrigger*0.15+0.45);
@@ -162,12 +179,21 @@ public class ArmServoTestOpMode extends LinearOpMode {
             //wrist control
             if (gamepad1.a) {
                 wristPanPos += wristPanSpeed;
+                if (wristPanPos > 1) {
+                    wristPanPos = 1;
+                }
             }
             if (gamepad1.b) {
                 wristPanPos -= wristPanSpeed;
+                if (wristPanPos < 0) {
+                    wristPanPos = 0;
+                }
             }
 
-            wristPanServo.setPosition(0);
+            telemetry.addData("Wrist Servos", "wristPanPos %.3f", wristPanPos);
+            telemetry.update();
+
+            wristPanServo.setPosition(wristPanPos);
 
             //telemetry.addData("Servos", "Bottom: %.3f, Top: %.3f", lTrigger, rTrigger);
 
