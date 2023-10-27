@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(group = "indev")
+@Autonomous(group = "indev", name = "autonomus")
 
 public class AutonomusSoftwareOpMode extends LinearOpMode {
     private Blinker control_Hub;
