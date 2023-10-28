@@ -16,7 +16,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 
-@Autonomous(name="Robot: OpenCV example", group="AutoTest")
+@Autonomous(name="Robot: OpenCV example", group="Test")
 @Disabled
 
 public class ExampleOpenCV extends LinearOpMode {
