@@ -1,15 +1,8 @@
 package org.firstinspires.ftc.teamcode.autonomus;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
-import android.provider.ContactsContract;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -23,7 +16,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 
-@TeleOp(name="Robot: OpenCV example", group="AutoTest")
+@Autonomous(name="Robot: OpenCV example", group="AutoTest")
+@Disabled
 
 public class ExampleOpenCV extends LinearOpMode {
     OpenCvWebcam webcam1;
@@ -56,11 +50,11 @@ public class ExampleOpenCV extends LinearOpMode {
             }
         });
         waitForStart();
-        while (true) {
-            telemetry.addData("Test", "%2d", pipeline.getAreaCode());
-        }
-        //waitForStart();
+        while (opModeIsActive()) {
 
+            telemetry.addData("Test", "%2d", pipeline.getAreaCode());
+
+        }
 
     }
 
@@ -70,12 +64,10 @@ class SamplePipeline extends OpenCvPipeline {
     Mat YCbCr = new Mat();
     Mat leftCrop;
     Mat rightCrop;
-    Mat topRect;
-    Mat bottomLeftRect;
-    Mat bottomRightRect;
+    Mat topCrop;
     double avgTopFin;
-    double avgBottomLeftFin;
-    double avgBottomRightFin;
+    double avgLeftFin;
+    double avgRightFin;
     Mat output = new Mat();
     Scalar rectColor = new Scalar(255,0,0);
     int areaCode;
@@ -85,37 +77,48 @@ class SamplePipeline extends OpenCvPipeline {
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input,YCbCr,Imgproc.COLOR_RGB2YCrCb);
 
-        Rect leftRect = new Rect(1, 1, 319, 359);
-        Rect rightRect = new Rect(320, 1, 319, 359);
+        Rect topRect = new Rect(1, 1, 639, 89);
+        Rect leftRect = new Rect(1, 90, 319, 239);
+        Rect rightRect = new Rect(320, 90, 319, 239);
 
-        input.copyTo(output);
+        //input.copyTo(output);
+        Imgproc.rectangle(output, topRect, rectColor, 2);
         Imgproc.rectangle(output, leftRect, rectColor, 2);
         Imgproc.rectangle(output, rightRect, rectColor, 2);
 
+        topCrop = YCbCr.submat(topRect);
         leftCrop = YCbCr.submat(leftRect);
         rightCrop = YCbCr.submat(rightRect);
 
+        Core.extractChannel(topCrop, topCrop, 2);
         Core.extractChannel(leftCrop, leftCrop, 2);
         Core.extractChannel(rightCrop, rightCrop, 2);
 
+        Scalar topAvg = Core.mean(topCrop);
         Scalar leftAvg = Core.mean(leftCrop);
         Scalar rightAvg = Core.mean(rightCrop);
 
-        avgBottomLeftFin = leftAvg.val[0];
-        avgBottomRightFin = rightAvg.val[0];
+        avgTopFin = topAvg.val[0];
+        avgLeftFin = leftAvg.val[0];
+        avgRightFin = rightAvg.val[0];
 
 
-        if (avgBottomLeftFin > avgBottomRightFin) {
+        if ( avgLeftFin > avgRightFin && avgLeftFin > avgTopFin ) {
             ExampleOpenCV.JW_GLOBAL = 1;
             areaCode = 1;
             //telemetry.addData("rectangle", "1");
         }
-        else {
+        else if ( avgTopFin > avgLeftFin && avgTopFin > avgRightFin){
             ExampleOpenCV.JW_GLOBAL = 2;
             areaCode = 2;
             //telemetry.addData("rectangle", "2");
         }
-
+        else if ( avgRightFin > avgLeftFin && avgRightFin > avgTopFin ){
+            areaCode = 3;
+        }
+        else {
+            areaCode = -1;
+        }
 
 
         //input.copyTo();
