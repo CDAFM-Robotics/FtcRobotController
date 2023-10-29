@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -17,12 +18,11 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 
 @Autonomous(name="Robot: OpenCV example", group="Test")
-@Disabled
+
 
 public class ExampleOpenCV extends LinearOpMode {
     OpenCvWebcam webcam1;
     WebcamName webcamName = null;
-    public static int JW_GLOBAL=-1;
     SamplePipeline pipeline;
 
 
@@ -53,6 +53,7 @@ public class ExampleOpenCV extends LinearOpMode {
         while (opModeIsActive()) {
 
             telemetry.addData("Test", "%2d", pipeline.getAreaCode());
+            telemetry.update();
 
         }
 
@@ -70,12 +71,17 @@ class SamplePipeline extends OpenCvPipeline {
     double avgRightFin;
     Mat output = new Mat();
     Scalar rectColor = new Scalar(255,0,0);
+    Scalar textColor = new Scalar(0,255,255);
     int areaCode;
+    Scalar leftAvg;
+    Scalar topAvg;
+    Scalar rightAvg;
 
 
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input,YCbCr,Imgproc.COLOR_RGB2YCrCb);
+        input.copyTo(output);
 
         Rect topRect = new Rect(1, 1, 639, 89);
         Rect leftRect = new Rect(1, 90, 319, 239);
@@ -94,9 +100,9 @@ class SamplePipeline extends OpenCvPipeline {
         Core.extractChannel(leftCrop, leftCrop, 2);
         Core.extractChannel(rightCrop, rightCrop, 2);
 
-        Scalar topAvg = Core.mean(topCrop);
-        Scalar leftAvg = Core.mean(leftCrop);
-        Scalar rightAvg = Core.mean(rightCrop);
+        topAvg = Core.mean(topCrop);
+        leftAvg = Core.mean(leftCrop);
+        rightAvg = Core.mean(rightCrop);
 
         avgTopFin = topAvg.val[0];
         avgLeftFin = leftAvg.val[0];
@@ -104,12 +110,10 @@ class SamplePipeline extends OpenCvPipeline {
 
 
         if ( avgLeftFin > avgRightFin && avgLeftFin > avgTopFin ) {
-            ExampleOpenCV.JW_GLOBAL = 1;
             areaCode = 1;
             //telemetry.addData("rectangle", "1");
         }
         else if ( avgTopFin > avgLeftFin && avgTopFin > avgRightFin){
-            ExampleOpenCV.JW_GLOBAL = 2;
             areaCode = 2;
             //telemetry.addData("rectangle", "2");
         }
@@ -120,6 +124,8 @@ class SamplePipeline extends OpenCvPipeline {
             areaCode = -1;
         }
 
+        Imgproc.putText(output, "" + areaCode + " " + Math.round(avgTopFin) + " " + Math.round(avgLeftFin) + " " + Math.round(avgRightFin), new Point(50, 50), Imgproc.FONT_HERSHEY_COMPLEX, 1, textColor, 1);
+
 
         //input.copyTo();
         return output;
@@ -128,6 +134,9 @@ class SamplePipeline extends OpenCvPipeline {
     public int getAreaCode()
     {
        return areaCode;
+    }
+    public double[] getAvgs() {
+        return new double[] {avgLeftFin, avgRightFin, avgTopFin};
     }
 
 }
