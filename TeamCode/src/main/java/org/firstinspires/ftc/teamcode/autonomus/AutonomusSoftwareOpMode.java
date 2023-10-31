@@ -44,10 +44,10 @@ public class AutonomusSoftwareOpMode extends LinearOpMode {
   double forwardTime;
   double lTurnTime;
   double rTurnTime;
-  double bottomArmServoClose = 0;
-  double bottomArmServoOpen = 0.15;
-  double topArmServoClose = 0.6;
-  double topArmServoOpen = 0.45;
+  double bottomArmServoClose = 0.10;
+  double bottomArmServoOpen = 0.30;
+  double topArmServoClose = 0.10;
+  double topArmServoOpen = 0.30;
   double wristPanServoFolded = 0.6;
   double wristPanServoFloor = 0;
   OpenCvWebcam webcam;
@@ -182,7 +182,8 @@ public class AutonomusSoftwareOpMode extends LinearOpMode {
     // Fold Wrist
     wristPanServo.setPosition(wristPanServoFolded); // 0.5
 
-    // Close fingers
+    // Set Reverse and Close both fingers
+    topArmServo.setDirection(Servo.Direction.REVERSE);
     bottomArmServo.setPosition(bottomArmServoClose);
     topArmServo.setPosition(topArmServoClose);
 

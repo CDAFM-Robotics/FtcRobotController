@@ -66,14 +66,11 @@ public class ServoCalibration extends LinearOpMode {
     double wristOpen = 1.0;
     double wristPanSpeed = 0.001;
 
-    double bottomServoClose =0;
-    double bottomServoOpen =0.15;
-    double topServoClose = 0;
-    double topServoOpen = 0.15;
-
-    double bottomServoCurrentPos =0;
-    double topServoCurrentPos =0;
-    double servoIncrementalMove = 0.01;
+    double servoSetPosition = 0.15; // Initial SETUP position 0.15 (on 0-1 scale) use first pos where Jaws don't touch at 0.15
+    double bottomServoClose =0.10; // 0.01 was good set position
+    double bottomServoOpen =0.30;
+    double topServoClose = 0.10;
+    double topServoOpen = 0.30;
 
 
 
@@ -103,7 +100,7 @@ public class ServoCalibration extends LinearOpMode {
 
 
     //initialize wristPanServo
-    wristPanServo.setPosition(wristFolded);
+    // wristPanServo.setPosition(wristFolded);
 
 
     //initialize both hand servos
@@ -127,15 +124,16 @@ public class ServoCalibration extends LinearOpMode {
 
       dUp = gamepad2.dpad_up;
       dDn = gamepad2.dpad_down;
-      dLt= gamepad2.dpad_left;
-      dRt = gamepad2.dpad_right;
-
 
       //LR bumper
       if (lBumper) {
         if (!lBumperDown) {
           bottomArmServoStatus = !bottomArmServoStatus;
           lBumperDown = true;
+          if (bottomArmServoStatus)
+            bottomArmServo.setPosition(bottomServoOpen);
+          else
+            bottomArmServo.setPosition(bottomServoClose);
         }
       }
       else { lBumperDown = false;}
@@ -143,6 +141,10 @@ public class ServoCalibration extends LinearOpMode {
         if (!rBumperDown) {
           topArmServoStatus = !topArmServoStatus;
           rBumperDown = true;
+          if (topArmServoStatus)
+            topArmServo.setPosition(topServoOpen);
+          else
+            topArmServo.setPosition(topServoClose);
         }
       }
       else {rBumperDown = false;}
@@ -151,8 +153,7 @@ public class ServoCalibration extends LinearOpMode {
       //dpad  Servo Incremental move
       if (dUp) {
         if (!dUpDown) {
-          bottomServoCurrentPos =  bottomServoCurrentPos - servoIncrementalMove;
-          bottomArmServo.setPosition(bottomServoCurrentPos);
+          topArmServo.setPosition(servoSetPosition);
           dUpDown = true;
         }
         else { dUpDown = false; };
@@ -161,34 +162,16 @@ public class ServoCalibration extends LinearOpMode {
       }
       if (dDn) {
         if (!dDnDown) {
-          bottomServoCurrentPos = bottomServoCurrentPos + servoIncrementalMove;
-          bottomArmServo.setPosition(bottomServoCurrentPos);
+          bottomArmServo.setPosition(servoSetPosition);
           dDnDown = true;
         }
         else { dDnDown = false; };
 
       }
-      if (dLt) {
-        if (!dLtDown) {
-          topServoCurrentPos = topServoCurrentPos - servoIncrementalMove;
-          topArmServo.setPosition(topServoCurrentPos);
-          dLtDown = true;
-        }
-        else { dLtDown = false; };
 
 
-      }
-      if (dRt) {
-        if (!dRtDown) {
-          topServoCurrentPos = topServoCurrentPos + servoIncrementalMove;
-          topArmServo.setPosition(topServoCurrentPos);
-          dRtDown = true;
-        }
-        else { dRtDown = false; };
-      }
 
-
-      if (bottomArmServoStatus) {
+/*      if (bottomArmServoStatus) {
         bottomArmServo.setPosition(bottomServoClose);
       }
       else {
@@ -200,6 +183,7 @@ public class ServoCalibration extends LinearOpMode {
       else {
         topArmServo.setPosition(topServoOpen);
       }
+*/
 
       //arm control
       armmotor.setPower(lTrigger*lTrigger-rTrigger*rTrigger);
@@ -246,7 +230,7 @@ public class ServoCalibration extends LinearOpMode {
 
       wristPanServo.setPosition(wristPanPos);
 
-      telemetry.addData("Servos", "Bottom: %.2f, Top: %.2f", bottomArmServo.getPosition(), bottomArmServo.getPosition());
+      telemetry.addData("Servos", "Bottom: %.2f, Top: %.2f", bottomArmServo.getPosition(), topArmServo.getPosition());
       telemetry.update();
 
     }

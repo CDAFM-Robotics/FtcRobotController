@@ -57,6 +57,13 @@ public class ArmServoTestOpMode extends LinearOpMode {
     double wristPanPos = 0.5;
     double wristPanSpeed = 0.001;
 
+
+    double servoSetPosition = 0.15; // Initial SETUP position 0.15 (on 0-1 scale) install first notch where jaws don't touch
+    double bottomServoClose =0.10; // (close to touch)
+    double bottomServoOpen =0.30;  // (old open distance)
+    double topServoClose = 0.10;
+    double topServoOpen = 0.30;
+
     double slow_mode = 0.75;
 
     telemetry.addData("Status", "Initializing...");
@@ -87,6 +94,9 @@ public class ArmServoTestOpMode extends LinearOpMode {
 
 
     //initialize both hand servos
+    // Reverse Top Servo
+    topArmServo.setDirection(Servo.Direction.REVERSE);
+
 
     telemetry.addData("Status", "Initialized psh");
     telemetry.update();
@@ -102,38 +112,29 @@ public class ArmServoTestOpMode extends LinearOpMode {
       lBumper = gamepad2.left_bumper;
       rBumper = gamepad2.right_bumper;
 
-      //hand control
+      //LR bumper
       if (lBumper) {
         if (!lBumperDown) {
           bottomArmServoStatus = !bottomArmServoStatus;
           lBumperDown = true;
+          if (bottomArmServoStatus)
+            bottomArmServo.setPosition(bottomServoOpen);
+          else
+            bottomArmServo.setPosition(bottomServoClose);
         }
       }
-      else {
-        lBumperDown = false;
-      }
+      else { lBumperDown = false;}
       if (rBumper) {
         if (!rBumperDown) {
           topArmServoStatus = !topArmServoStatus;
           rBumperDown = true;
+          if (topArmServoStatus)
+            topArmServo.setPosition(topServoOpen);
+          else
+            topArmServo.setPosition(topServoClose);
         }
       }
-      else {
-        rBumperDown = false;
-      }
-
-      if (bottomArmServoStatus) {
-        bottomArmServo.setPosition(0);
-      }
-      else {
-        bottomArmServo.setPosition(0.15);
-      }
-      if (topArmServoStatus) {
-        topArmServo.setPosition(0.6);
-      }
-      else {
-        topArmServo.setPosition(0.45);
-      }
+      else {rBumperDown = false;}
 
       //arm control
       armmotor.setPower(lTrigger*lTrigger-rTrigger*rTrigger);
