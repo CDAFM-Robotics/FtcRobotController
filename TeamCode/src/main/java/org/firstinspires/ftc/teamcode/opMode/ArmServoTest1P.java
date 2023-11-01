@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opMode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
@@ -9,18 +8,13 @@ import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-
-/*
-* This OpMode is for Installing and Aligning Fingers.  press 'DPAD - UP' and 'DPAD - DOWN' to
-* set each finger servo to 0.15, then align fingers to first notch before fully closed
-*/
-
-// @Disabled
-@TeleOp (group = "Testing", name = "ServoCalibrate")
+@TeleOp (group = "2023 Screamage", name = "ArmServoTest 1P")
 
 // Next line will prevent code from building and showing up on Control Hub
+// @Disabled
+// comment
 
-public class ServoCalibration extends LinearOpMode {
+public class ArmServoTest1P extends LinearOpMode {
   private Blinker control_Hub;
   private Servo bottomArmServo;
   private Gyroscope imu;
@@ -46,7 +40,6 @@ public class ServoCalibration extends LinearOpMode {
     motor4 = hardwareMap.get(DcMotor.class, "motor4");
     armmotor = hardwareMap.get(DcMotor.class, "armcontrol");
 
-
     //define initial values for variables
     double lTrigger;
     double rTrigger;
@@ -55,34 +48,24 @@ public class ServoCalibration extends LinearOpMode {
     double rStickX;
     boolean lBumper;
     boolean rBumper;
-
-    boolean dUp, dDn, dLt, dRt;
-    boolean dUpDown = false;
-    boolean dDnDown = false;
-    boolean dLtDown = false;
-    boolean dRtDown = false;
-
     boolean bottomArmServoStatus = false;
     boolean topArmServoStatus = false;
     boolean lBumperDown = false;
     boolean rBumperDown = false;
     double wristPanPos = 0.5;
-    double wristFolded = 0.6;
-    double wristOpen = 1.0;
     double wristPanSpeed = 0.001;
 
-    double servoSetPosition = 0.15; // Initial SETUP position 0.15 (on 0-1 scale) use first pos where Jaws don't touch at 0.15
-    double bottomServoClose =0.10; // 0.01 was good set position
-    double bottomServoOpen =0.30;
+
+    double servoSetPosition = 0.15; // Initial SETUP position 0.15 (on 0-1 scale) install first notch where jaws don't touch
+    double bottomServoClose =0.10; // (close to touch)
+    double bottomServoOpen =0.30;  // (old open distance)
     double topServoClose = 0.10;
     double topServoOpen = 0.30;
 
-
-
     double slow_mode = 0.75;
 
-    // telemetry.addData("Status", "Initializing...");
-    // telemetry.update();
+    telemetry.addData("Status", "Initializing...");
+    telemetry.update();
 
     //Initialized the motors
     motor1.setPower(0);
@@ -105,16 +88,16 @@ public class ServoCalibration extends LinearOpMode {
 
 
     //initialize wristPanServo
-    // wristPanServo.setPosition(wristFolded);
+    wristPanServo.setPosition(0.5);
 
 
     //initialize both hand servos
-
+    // Reverse Top Servo
     topArmServo.setDirection(Servo.Direction.REVERSE);
 
 
-    // telemetry.addData("Status", "Initialized psh");
-    // telemetry.update();
+    telemetry.addData("Status", "Initialized psh");
+    telemetry.update();
 
     // Wait for the game to start (driver presses PLAY)
     waitForStart();
@@ -122,13 +105,10 @@ public class ServoCalibration extends LinearOpMode {
     // run until the end of the match (driver presses STOP)
     while (opModeIsActive()) {
 
-      rTrigger = gamepad2.right_trigger;
-      lTrigger = gamepad2.left_trigger;
-      lBumper = gamepad2.left_bumper;
-      rBumper = gamepad2.right_bumper;
-
-      dUp = gamepad2.dpad_up;
-      dDn = gamepad2.dpad_down;
+      rTrigger = gamepad1.right_trigger;
+      lTrigger = gamepad1.left_trigger;
+      lBumper = gamepad1.left_bumper;
+      rBumper = gamepad1.right_bumper;
 
       //LR bumper
       if (lBumper) {
@@ -153,42 +133,6 @@ public class ServoCalibration extends LinearOpMode {
         }
       }
       else {rBumperDown = false;}
-
-
-      //dpad  Servo Incremental move
-      if (dUp) {
-        if (!dUpDown) {
-          topArmServo.setPosition(servoSetPosition);
-          dUpDown = true;
-        }
-        else { dUpDown = false; };
-
-
-      }
-      if (dDn) {
-        if (!dDnDown) {
-          bottomArmServo.setPosition(servoSetPosition);
-          dDnDown = true;
-        }
-        else { dDnDown = false; };
-
-      }
-
-
-
-/*      if (bottomArmServoStatus) {
-        bottomArmServo.setPosition(bottomServoClose);
-      }
-      else {
-        bottomArmServo.setPosition(bottomServoOpen);
-      }
-      if (topArmServoStatus) {
-        topArmServo.setPosition(topServoClose);
-      }
-      else {
-        topArmServo.setPosition(topServoOpen);
-      }
-*/
 
       //arm control
       armmotor.setPower(lTrigger*lTrigger-rTrigger*rTrigger);
@@ -218,13 +162,13 @@ public class ServoCalibration extends LinearOpMode {
       setMotorPowers(direction, distanceFrom0, rStickX);
 
       //wrist control
-      if (gamepad2.a) {
+      if (gamepad1.a) {
         wristPanPos += wristPanSpeed;
         if (wristPanPos > 1) {
           wristPanPos = 1;
         }
       }
-      if (gamepad2.b) {
+      if (gamepad1.b) {
         wristPanPos -= wristPanSpeed;
         if (wristPanPos < 0) {
           wristPanPos = 0;
@@ -232,10 +176,13 @@ public class ServoCalibration extends LinearOpMode {
       }
 
       telemetry.addData("Wrist Servos", "wristPanPos %.3f", wristPanPos);
+      telemetry.update();
 
       wristPanServo.setPosition(wristPanPos);
 
-      telemetry.addData("Servos", "Bottom: %.2f, Top: %.2f", bottomArmServo.getPosition(), topArmServo.getPosition());
+      //telemetry.addData("Servos", "Bottom: %.3f, Top: %.3f", lTrigger, rTrigger);
+
+      telemetry.addData("Status", "Running");
       telemetry.update();
 
     }
@@ -305,6 +252,6 @@ public class ServoCalibration extends LinearOpMode {
     motor2.setPower(-motor2Power);
     motor3.setPower(motor3Power);
     motor4.setPower(-motor4Power);
-    // telemetry.addData("Wheel Powers", "Wheel1: %.2f, Wheel2: %.2f, Wheel3:%.2f, Wheel 4: %.2f", motor1Power, motor2Power, motor3Power, motor4Power);
+    telemetry.addData("Wheel Powers", "Wheel1: %.2f, Wheel2: %.2f, Wheel3:%.2f, Wheel 4: %.2f", motor1Power, motor2Power, motor3Power, motor4Power);
   }
 }

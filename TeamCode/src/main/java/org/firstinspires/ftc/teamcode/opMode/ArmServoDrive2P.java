@@ -5,18 +5,16 @@ import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp (group = "2023 Screamage", name = "ArmServoDrive")
+@TeleOp (group = "2023 Screamage", name = "ArmServoDrive 2P")
 
 // Next line will prevent code from building and showing up on Control Hub
 // @Disabled
 // comment
 
-public class ArmServoTestOpMode extends LinearOpMode {
+public class ArmServoDrive2P extends LinearOpMode {
   private Blinker control_Hub;
   private Servo bottomArmServo;
   private Gyroscope imu;
