@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.autonomus;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -26,9 +25,9 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
 
-@Autonomous(group = "Testing", name = "autonomus")
+@Autonomous(group = "Testing", name = "autonomous")
 
-public class AutonomusSoftwareOpMode extends LinearOpMode {
+public class AutonomousSoftwareOpMode extends LinearOpMode {
   private Blinker control_Hub;
   private Servo bottomArmServo;
   private Gyroscope imu;
