@@ -60,9 +60,13 @@ public class FieldCentric1P extends LinearOpMode {
     boolean topArmServoStatus = false;
     boolean lBumperDown = false;
     boolean rBumperDown = false;
+    double wristPanServoFolded = 0.6;
+    double wristPanServoFloor = 0;
     double wristPanPos = 0.5;
     double wristPanSpeed = 0.001;
     double botHeading = 0;
+    double dronePositionArmed=0;
+    double dronePositionLaunch=0.25; //Early Guess
 
 
     double servoSetPosition = 0.15; // Initial SETUP position 0.15 (on 0-1 scale) install first notch where jaws don't touch
@@ -102,9 +106,9 @@ public class FieldCentric1P extends LinearOpMode {
 
 
     //initialize wristPanServo and drone servo
-    wristPanServo.setPosition(0.5);
+    wristPanServo.setPosition(wristPanServoFolded);
 
-    droneServo.setPosition(0);
+    droneServo.setPosition(dronePositionArmed);
 
     //initialize both hand servos
     // Reverse Top Servo
