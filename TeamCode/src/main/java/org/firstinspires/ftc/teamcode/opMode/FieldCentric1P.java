@@ -32,6 +32,7 @@ public class FieldCentric1P extends LinearOpMode {
   private DcMotor backLeftMotor = null; //back left
   private DcMotor backRightMotor = null; //back right
   private DcMotor armmotor = null;
+  private Servo droneServo = null;
 
   @Override
   public void runOpMode() {
@@ -45,6 +46,7 @@ public class FieldCentric1P extends LinearOpMode {
     backLeftMotor = hardwareMap.get(DcMotor.class, "motor3");
     backRightMotor = hardwareMap.get(DcMotor.class, "motor4");
     armmotor = hardwareMap.get(DcMotor.class, "armcontrol");
+    droneServo = hardwareMap.get(Servo.class, "droneServo");
 
     //define initial values for variables
     double lTrigger;
@@ -99,8 +101,10 @@ public class FieldCentric1P extends LinearOpMode {
     armmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-    //initialize wristPanServo
+    //initialize wristPanServo and drone servo
     wristPanServo.setPosition(0.5);
+
+    droneServo.setPosition(0);
 
     //initialize both hand servos
     // Reverse Top Servo
