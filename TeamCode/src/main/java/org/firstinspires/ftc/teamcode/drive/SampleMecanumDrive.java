@@ -55,8 +55,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(4, 0, 1);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(10, 0, 0);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -101,9 +101,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         imu.initialize(parameters);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "motor1");
+        rightFront = hardwareMap.get(DcMotorEx.class, "motor2");
         leftRear = hardwareMap.get(DcMotorEx.class, "motor3");
-        rightRear = hardwareMap.get(DcMotorEx.class, "motor2");
-        rightFront = hardwareMap.get(DcMotorEx.class, "motor4");
+        rightRear = hardwareMap.get(DcMotorEx.class, "motor4");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -266,7 +266,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         for (DcMotorEx motor : motors) {
             int position = motor.getCurrentPosition();
             lastEncPositions.add(position);
-            wheelPositions.add(encoderTicksToInches(position));
+            wheelPositions.add(encoderTicksToInches(-position));
         }
         return wheelPositions;
     }
@@ -279,7 +279,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         for (DcMotorEx motor : motors) {
             int vel = (int) motor.getVelocity();
             lastEncVels.add(vel);
-            wheelVelocities.add(encoderTicksToInches(vel));
+            wheelVelocities.add(encoderTicksToInches(-vel));
         }
         return wheelVelocities;
     }
