@@ -1,5 +1,5 @@
 
-package org.firstinspires.ftc.teamcode.autonomus;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 import android.graphics.Canvas;
 
