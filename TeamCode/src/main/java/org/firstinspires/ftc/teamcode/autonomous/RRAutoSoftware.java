@@ -4,8 +4,7 @@ import android.graphics.Canvas;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,7 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;;
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
@@ -31,9 +30,10 @@ import org.opencv.imgproc.Moments;
 
 import java.util.ArrayList;
 
-@Autonomous(group = "auto", name = "autonomous")
 
-public class AutonomousSoftwareOpMode extends LinearOpMode {
+@Autonomous(group = "Testing", name = "RR auto")
+
+public class RRAutoSoftware extends LinearOpMode {
   private Blinker control_Hub;
   private Servo bottomArmServo;
   private IMU imu;
@@ -55,11 +55,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   double TOP_ARM_SERVO_OPEN = 0.30;
   double WRIST_PAN_SERVO_FOLDED = 0.6;
   double WRIST_PAN_SERVO_FLOOR = 0;
-  double WRIST_PANSERVO_AUTO_DEPLOY = 0; // TODO: Find by experiment
+  double WRIST_PANSERVO_AUTO_DEPLOY = 0.32;
   // Arm Constants
-  int ARM_POS_FLOOR = 200;
-  int ARM_POS_90 = 0; // TODO: Find by experiment
-  int ARM_POS_AUTO_DEPLOY = 0; // Todo: Find by experiment
+  int ARM_POS_FLOOR = 150;
+  int ARM_POS_90 = 400;
+  int ARM_POS_AUTO_DEPLOY = 7718;
 
   // Vision portal Replaces EasyOpenCV method
   private VisionPortal visionPortal;
@@ -87,7 +87,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     wristPanServo.setPosition(WRIST_PAN_SERVO_FLOOR);
 
 
-    runAutomation();
+    RRRunAutomation();
 
 
   }
@@ -129,6 +129,55 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(20000);
 
   }
+
+  public void RRRunAutomation() {
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+    Trajectory toPurplePixel = null;
+    if (zone == 1) {
+      toPurplePixel = drive.trajectoryBuilder(new Pose2d())
+        .lineToSplineHeading(new Pose2d(32.6, 0, Math.toRadians(90)))
+        .build();
+
+    }
+    else if (zone == 2) {
+      toPurplePixel = drive.trajectoryBuilder(new Pose2d())
+        .lineToSplineHeading(new Pose2d(32.6, 0, Math.toRadians(0)))
+        .build();
+
+    }
+    else {
+      toPurplePixel = drive.trajectoryBuilder(new Pose2d())
+        .lineToSplineHeading(new Pose2d(32.6, 0, Math.toRadians(-90)))
+        .build();
+    }
+
+    drive.followTrajectory(toPurplePixel);
+
+    bottomArmServo.setPosition(BOTTOM_ARM_SERVO_OPEN);
+
+    armmotor.setTargetPosition(ARM_POS_90);
+
+    Trajectory toYellowPixel = drive.trajectoryBuilder(toPurplePixel.end()) // continue from old pose
+      //.back(3)
+      .splineToSplineHeading(new Pose2d(3, 0, Math.toRadians(90)), Math.toRadians(0)) // back to start turn left 90
+      //.lineToSplineHeading(new Pose2d(3, 0, Math.toRadians(90)))
+      .splineToSplineHeading(new Pose2d(3, 48, Math.toRadians(90)), Math.toRadians(0))  // move forward (Y) 48 old -48 0 90
+      .splineToSplineHeading(new Pose2d(32.6, 82, Math.toRadians(-90)), Math.toRadians(0)) // old -32 -28
+      .build();
+
+    drive.followTrajectory(toYellowPixel);
+
+    armmotor.setTargetPosition(ARM_POS_AUTO_DEPLOY);
+
+    wristPanServo.setPosition(WRIST_PANSERVO_AUTO_DEPLOY);
+
+
+
+    topArmServo.setPosition(TOP_ARM_SERVO_OPEN);
+
+  }
+
   public void forwardSecs(double power, double seconds) {
     motor1.setPower(power);
     motor2.setPower(-power);
