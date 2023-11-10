@@ -33,10 +33,12 @@ public class testDeployYellowPixel extends LinearOpMode {
   private Servo droneServo = null;
 
   private int ARM_DRIVE_POSITION = 400;
-  private int ARM_60_POSITION = 5720;
   private int ARM_DEPLOY_POSITION = 7718;
   private double WRIST_DEPLOY_POSITION = 0.323;
   private double wristPanServoFolded = 0.6;
+  private int SLEEP_DEPLOY_ARM = 6000;
+  private int SLEEP_DEPLOY_WRIST = 1500;
+  private double DEPLOY_ARM_SPEED = 0.5;
 
   @Override
   public void runOpMode() {
@@ -232,9 +234,9 @@ public class testDeployYellowPixel extends LinearOpMode {
 
       if(gamepad1.x){
         setArmDeployPosition();
-        sleep(6000);
-        wristPanServo.setPosition(WRIST_DEPLOY_POSITION);
-        sleep(2000);
+        sleep(SLEEP_DEPLOY_ARM);
+        setWristDeployPosition();
+        sleep(SLEEP_DEPLOY_WRIST);
         bottomArmServo.setPosition(bottomServoOpen);
         topArmServo.setPosition(topServoOpen);
       }
@@ -277,7 +279,7 @@ public class testDeployYellowPixel extends LinearOpMode {
     armmotor.setTargetPosition(ARM_DRIVE_POSITION);
 
     if (armmotor.isBusy()){
-      armmotor.setPower(0.5);
+      armmotor.setPower(DEPLOY_ARM_SPEED);
     }
     else {
       armmotor.setPower(0);
@@ -288,7 +290,7 @@ public class testDeployYellowPixel extends LinearOpMode {
     armmotor.setTargetPosition(ARM_DEPLOY_POSITION);
 
     if (armmotor.isBusy()){
-      armmotor.setPower(0.5);
+      armmotor.setPower(DEPLOY_ARM_SPEED);
     }
     else {
       armmotor.setPower(0);
