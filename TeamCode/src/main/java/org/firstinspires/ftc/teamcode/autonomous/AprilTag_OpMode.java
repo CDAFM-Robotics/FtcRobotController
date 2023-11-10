@@ -357,6 +357,7 @@ public class AprilTag_OpMode extends LinearOpMode {
     Scalar bLower = new Scalar(98, 38, 10);
     Scalar bUpper = new Scalar(140, 255, 255);
     MatOfPoint big_contour = null;
+    int big_contourIdx = 0;
     int cX, cY = 0;
     int[] xyArray = new int[2];
 
@@ -390,7 +391,7 @@ public class AprilTag_OpMode extends LinearOpMode {
 
       // apply close and open morphology (removes noise) (erode/dilate) and save to 'morph'
       Imgproc.morphologyEx(thresh, morph, Imgproc.MORPH_CLOSE, kernel);
-      Imgproc.morphologyEx(thresh, morph, Imgproc.MORPH_OPEN, kernel);
+      Imgproc.morphologyEx(morph, morph, Imgproc.MORPH_OPEN, kernel);
 
       // Get the contours in the morph image buffer
       ArrayList<MatOfPoint> contoursList = findContours(morph);
@@ -398,17 +399,19 @@ public class AprilTag_OpMode extends LinearOpMode {
       // Find the largest contour and it's index (by area) and store it in big_contour
       double maxVal = 0;
       int maxValIdx = 0;
+      big_contourIdx =0;
       for (int contourIdx = 0; contourIdx < contoursList.size(); contourIdx++) {
         double contourArea = Imgproc.contourArea(contoursList.get(contourIdx));
         if (maxVal < contourArea) {
           maxVal = contourArea;
           maxValIdx = contourIdx;
           big_contour = contoursList.get(contourIdx);
+          big_contourIdx = contourIdx;
         }
       }
 
       // Draw that contour (Filled) A clean buffer
-      Imgproc.drawContours(input, contoursList, maxValIdx, new Scalar(255, 255, 0), Imgproc.FILLED);
+      Imgproc.drawContours(input, contoursList, big_contourIdx, new Scalar(255, 255, 0), Imgproc.FILLED);
 
       //Imgproc.rectangle(morph, new Rect(0, 0, 320, 80), new Scalar(255,0,0));
       //Imgproc.rectangle(morph, new Rect(0, 80, 160, 240), new Scalar(255,0,0));
