@@ -42,7 +42,7 @@ public class FieldCentric2P extends LinearOpMode {
   private double ARM_POWER = 0.6;
   double WRIST_SERVO_FOLDED = 0.6;
   double wristPanServoFloor = 0;
-  double wristPanSpeed = 0.005;
+  double wristPanSpeed = 0.003;
   double botHeading = 0;
   double DRONE_POSITION_ARMED = 0;
   double DRONE_POSITION_LAUNCH = 0.25; //Early Guess
@@ -54,7 +54,7 @@ public class FieldCentric2P extends LinearOpMode {
   double bottomServoOpen = 0.30;  // (old open distance)
   double topServoClose = 0.10;
   double topServoOpen = 0.30;
-  double slow_mode = 1;
+  double slow_mode = 0.75;
 
 
 
@@ -151,6 +151,8 @@ public class FieldCentric2P extends LinearOpMode {
       RevHubOrientationOnRobot.UsbFacingDirection.UP
     ));
     imu.initialize(parameters);
+
+    imu.resetYaw();
 
     telemetry.addData("Status", "Initialized");
     telemetry.update();
@@ -279,8 +281,8 @@ public class FieldCentric2P extends LinearOpMode {
         rStickY2 = -gamepad2.right_stick_y * Math.abs(gamepad2.right_stick_y);
         if (rStickY2 > 0) {
           wristPanPos += wristPanSpeed;
-          if (wristPanPos > 1) {
-            wristPanPos = 1;
+          if (wristPanPos > 0.7) {
+            wristPanPos = 0.7;
           }
         }
         else if (rStickY2 < 0 ) {

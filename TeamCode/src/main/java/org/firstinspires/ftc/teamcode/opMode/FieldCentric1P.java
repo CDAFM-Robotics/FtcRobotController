@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -63,7 +64,7 @@ public class FieldCentric1P extends LinearOpMode {
     double wristPanServoFolded = 0.6;
     double wristPanServoFloor = 0;
     double wristPanPos = 0.5;
-    double wristPanSpeed = 0.001;
+    double wristPanSpeed = 0.008;
     double botHeading = 0;
     double dronePositionArmed=0;
     double dronePositionLaunch=0.25; //Early Guess
@@ -122,6 +123,8 @@ public class FieldCentric1P extends LinearOpMode {
       RevHubOrientationOnRobot.UsbFacingDirection.UP
     ));
     imu.initialize(parameters);
+
+    imu.resetYaw();
 
 
 
@@ -194,14 +197,33 @@ public class FieldCentric1P extends LinearOpMode {
       botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
       telemetry.addData("Stick Powers", ":lStickX: %.2f, lStickY: %.2f, RStickX:%.2f", lStickX, lStickY, rStickX);
+      Gamepad currentGamepad1 = new Gamepad();
+      Gamepad currentGamepad2 = new Gamepad();
 
+      Gamepad previousGamepad1 = new Gamepad();
+      Gamepad previousGamepad2 = new Gamepad();
+
+      previousGamepad1.copy(currentGamepad1);
+      previousGamepad2.copy(currentGamepad2);
+
+      currentGamepad1.copy(gamepad1);
+      currentGamepad2.copy(gamepad2);
+      double DRONE_POSITION_ARMED = 0;
+      double DRONE_POSITION_LAUNCH = 0.25;
       setMotorPowers(lStickX, lStickY, rStickX, botHeading);
+      if (currentGamepad1.y && !previousGamepad1.y) {
+        if (droneServo.getPosition() == DRONE_POSITION_ARMED)
+          droneServo.setPosition(DRONE_POSITION_LAUNCH);
+        else
+          droneServo.setPosition(DRONE_POSITION_ARMED);
+      }
+      telemetry.addData("Drone Servos", "%.3f", droneServo.getPosition());
 
       //wrist control
       if (gamepad1.a) {
         wristPanPos += wristPanSpeed;
-        if (wristPanPos > 1) {
-          wristPanPos = 1;
+        if (wristPanPos > 0.7) {
+          wristPanPos = 0.7;
         }
       }
       if (gamepad1.b) {
