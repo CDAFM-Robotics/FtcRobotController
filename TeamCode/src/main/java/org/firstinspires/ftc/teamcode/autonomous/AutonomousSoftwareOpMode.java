@@ -42,6 +42,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   private IMU imu;
   private Servo topArmServo;
   private Servo wristPanServo;
+  private Servo camServo;
   private ElapsedTime runtime = new ElapsedTime();
   private DcMotor motor1 = null; //front left
   private DcMotor motor2 = null; //front right
@@ -49,9 +50,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   private DcMotor motor4 = null; //back right
   private DcMotor armmotor = null;
   int zone;
-  double forwardTime;
-  double lTurnTime;
-  double rTurnTime;
+
+  // TODO: Remove
+  double forwardTime = 1; // not used anymore
+  double lTurnTime = 0.9; // not used anymore
+  double rTurnTime = 1;   // not used anymore
+
   double BOTTOM_ARM_SERVO_CLOSE = 0.10;
   double BOTTOM_ARM_SERVO_OPEN = 0.30;
   double TOP_ARM_SERVO_CLOSE = 0.10;
@@ -63,6 +67,13 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   int ARM_POS_FLOOR = 150;
   int ARM_POS_90 = 400;
   int ARM_POS_AUTO_DEPLOY = 7718;
+
+  // Camera Servo Constants
+  double CAM_SERVO_FRONT = 0; // TODO: FIND
+  double CAM_SERVO_REAR =0.2; // TODO: FIND
+  double CAM_SERVO_RIGHT=0.1; // TODO: FIND
+
+
 
   // Vision portal Replaces EasyOpenCV method
   private VisionPortal visionPortal;
@@ -79,8 +90,6 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     telemetry.update();
 
     initHardware();
-
-    setupVariables();
 
     telemetry.addData("Status", "Initialized");
     telemetry.update();
@@ -224,13 +233,6 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     motor4.setPower(0);
   }
 
-  public void setupVariables() {
-    //setup variables
-    zone = (int) Math.floor((Math.random() * 3 + 1)); // replace with recognition code
-    forwardTime = 1;
-    lTurnTime = 0.9;
-    rTurnTime = 1;
-  }
 
   public void initHardware() {
     //map hardware
@@ -279,6 +281,13 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     armmotor.setTargetPosition(ARM_POS_FLOOR);
     armmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     armmotor.setPower(1);
+
+    // Set Camera Servo FRONT
+    //camServo.setDirection(Servo.Direction.REVERSE);
+    double temp = camServo.getPosition();
+    telemetry.addData("Cam Servo", "Value: %.3f", temp);
+    telemetry.update();
+
 
     // initialize camera
     VisionPortal.Builder builder = new VisionPortal.Builder();
