@@ -4,8 +4,7 @@ import android.graphics.Canvas;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -17,19 +16,23 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;;
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Autonomous(group = "auto", name = "autonomous")
 
@@ -55,15 +58,19 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   double TOP_ARM_SERVO_OPEN = 0.30;
   double WRIST_PAN_SERVO_FOLDED = 0.6;
   double WRIST_PAN_SERVO_FLOOR = 0;
-  double WRIST_PANSERVO_AUTO_DEPLOY = 0; // TODO: Find by experiment
+  double WRIST_PAN_SERVO_AUTO_DEPLOY = 0.32;
   // Arm Constants
-  int ARM_POS_FLOOR = 200;
-  int ARM_POS_90 = 0; // TODO: Find by experiment
-  int ARM_POS_AUTO_DEPLOY = 0; // Todo: Find by experiment
+  int ARM_POS_FLOOR = 150;
+  int ARM_POS_90 = 400;
+  int ARM_POS_AUTO_DEPLOY = 7718;
 
   // Vision portal Replaces EasyOpenCV method
   private VisionPortal visionPortal;
   Contours_Extraction pipeline = new Contours_Extraction();
+
+  // JW AprilTag
+  private AprilTagProcessor aprilTag;
+
   private static final boolean USE_WEBCAM = true;
 
   @Override
@@ -78,16 +85,20 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     telemetry.addData("Status", "Initialized");
     telemetry.update();
 
-    waitForStart();
-
-    zone = detectZone();
-
+    while (!isStarted()){
+      detectZone();
+    }
+    //waitForStart();
 
     // Set the Wrist to 'floor' mode for first pixel drop
     wristPanServo.setPosition(WRIST_PAN_SERVO_FLOOR);
 
+    while (opModeIsActive())
+    {
+      zone = detectZone();
+    }
 
-    runAutomation();
+    RRRunAutomation();
 
 
   }
@@ -129,6 +140,54 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(20000);
 
   }
+
+  public void RRRunAutomation() {
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+    Trajectory toPurplePixel = null;
+    if (zone == 1) {
+      toPurplePixel = drive.trajectoryBuilder(new Pose2d())
+        .lineToSplineHeading(new Pose2d(32.6, 0, Math.toRadians(90)))
+        .build();
+
+    }
+    else if (zone == 2) {
+      toPurplePixel = drive.trajectoryBuilder(new Pose2d())
+        .lineToSplineHeading(new Pose2d(32.6, 0, Math.toRadians(0)))
+        .build();
+
+    }
+    else {
+      toPurplePixel = drive.trajectoryBuilder(new Pose2d())
+        .lineToSplineHeading(new Pose2d(32.6, 0, Math.toRadians(-90)))
+        .build();
+    }
+
+    drive.followTrajectory(toPurplePixel);
+
+    bottomArmServo.setPosition(BOTTOM_ARM_SERVO_OPEN);
+
+    armmotor.setTargetPosition(ARM_POS_90);
+
+    Trajectory toYellowPixel = drive.trajectoryBuilder(toPurplePixel.end()) // continue from old pose
+      //.back(3)
+      .splineToSplineHeading(new Pose2d(3, 0, Math.toRadians(90)), Math.toRadians(0)) // back to start turn left 90
+      //.lineToSplineHeading(new Pose2d(3, 0, Math.toRadians(90)))
+      .splineToSplineHeading(new Pose2d(3, 48, Math.toRadians(90)), Math.toRadians(0))  // move forward (Y) 48 old -48 0 90
+      .splineToSplineHeading(new Pose2d(32.6, 82, Math.toRadians(-90)), Math.toRadians(0)) // old -32 -28
+      .build();
+
+    drive.followTrajectory(toYellowPixel);
+
+    armmotor.setTargetPosition(ARM_POS_AUTO_DEPLOY);
+
+    wristPanServo.setPosition(WRIST_PAN_SERVO_AUTO_DEPLOY);
+
+
+    topArmServo.setPosition(TOP_ARM_SERVO_OPEN);
+
+  }
+
   public void forwardSecs(double power, double seconds) {
     motor1.setPower(power);
     motor2.setPower(-power);
@@ -234,19 +293,16 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     // Choose a camera resolution. Not all cameras support all resolutions.
     //builder.setCameraResolution(new Size(640, 480));
 
-    // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-    //builder.enableLiveView(true);
+    // JW April Tag
+    aprilTag = new AprilTagProcessor.Builder()
+            .build();
+    aprilTag.setDecimation(1);
 
     // Set the stream format; MJPEG uses less bandwidth than default YUY2.
     //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
 
-    // Choose whether or not LiveView stops if no processors are enabled.
-    // If set "true", monitor shows solid orange screen if no processors enabled.
-    // If set "false", monitor shows camera view without annotations.
-    //builder.setAutoStopLiveView(false);
-
-    // Set and enable the processor.
-    builder.addProcessor(pipeline);
+    // Add both Processors to the Portal
+    builder.addProcessors(pipeline, aprilTag);
 
     // Build the Vision Portal, using the above settings.
     visionPortal = builder.build();
@@ -258,23 +314,53 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     int[] result = pipeline.getResult();
 
-    if (result[1] < 80 && result[0] > 120 && result[0] < 200) {
-      telemetry.addData("zone", "2");
-      zone = 2;
-    } else if (result[0] < 120) {
+    // Zone1 = yDetectLoc < 1.5 xDetectLoc
+    // Zone2 = yDetectLoc < -1.5 xDetectLoc + 960
+    // Zone3
+
+    if (result[1] > 1.5*result[0]) {
       telemetry.addData("zone", "1");
       zone = 1;
-    } else if (result[0] > 200) {
+    }
+    else if (result[1] < -1.5 * result[0] + 960) {
+      telemetry.addData("zone", "2");
+      zone = 2;
+    }
+    else {
       telemetry.addData("zone", "3");
       zone = 3;
-    } else {
-      zone = 2;
     }
 
     telemetry.addLine(String.format("%d,%d", result[0], result[1]));
+    telemetryAprilTag();
     telemetry.update();
     return zone;
   }
+
+  private void telemetryAprilTag() {
+
+    List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+    telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+    // Step through the list of detections and display info for each one.
+    for (AprilTagDetection detection : currentDetections) {
+      if (detection.metadata != null) {
+        telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+        telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+        telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+        telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+      } else {
+        telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
+        telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
+      }
+    }   // end for() loop
+
+    // Add "key" information to telemetry
+    telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
+    telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+    telemetry.addLine("RBE = Range, Bearing & Elevation");
+
+  }   // end method telemetryAprilTag()
 
 
   public class Contours_Extraction implements VisionProcessor {
@@ -298,6 +384,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     Scalar bLower = new Scalar(98, 38, 10);
     Scalar bUpper = new Scalar(140, 255, 255);
     MatOfPoint big_contour = null;
+    int big_contourIdx = 0;
     int cX, cY = 0;
     int[] xyArray = new int[2];
 
@@ -321,35 +408,35 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       Core.bitwise_or(thresh1, thresh2, red_thresh);
 
       // Blue thresholds  hue: ~98-140
-      Core.inRange(input, bLower, bUpper, blue_thresh);
+      Core.inRange(hsv, bLower, bUpper, blue_thresh); // blue_thresh
 
       // thresh = red_thresh | blue_thresh
-      Core.bitwise_or(red_thresh, blue_thresh, thresh);
+      Core.bitwise_or(red_thresh, blue_thresh, thresh); //blue thresh
 
       // Make a 3x3 'elliptical' shape kernel for matrix convolution
       kernel = Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE, new Size(3, 3));
 
       // apply close and open morphology (removes noise) (erode/dilate) and save to 'morph'
       Imgproc.morphologyEx(thresh, morph, Imgproc.MORPH_CLOSE, kernel);
-      Imgproc.morphologyEx(thresh, morph, Imgproc.MORPH_OPEN, kernel);
+      Imgproc.morphologyEx(morph, morph, Imgproc.MORPH_OPEN, kernel);
 
       // Get the contours in the morph image buffer
       ArrayList<MatOfPoint> contoursList = findContours(morph);
 
       // Find the largest contour and it's index (by area) and store it in big_contour
       double maxVal = 0;
-      int maxValIdx = 0;
+      big_contourIdx =0;
       for (int contourIdx = 0; contourIdx < contoursList.size(); contourIdx++) {
         double contourArea = Imgproc.contourArea(contoursList.get(contourIdx));
         if (maxVal < contourArea) {
           maxVal = contourArea;
-          maxValIdx = contourIdx;
           big_contour = contoursList.get(contourIdx);
+          big_contourIdx = contourIdx;
         }
       }
 
       // Draw that contour (Filled) A clean buffer
-      Imgproc.drawContours(input, contoursList, maxValIdx, new Scalar(255, 255, 0), Imgproc.FILLED);
+      Imgproc.drawContours(input, contoursList, big_contourIdx, new Scalar(255, 255, 0), Imgproc.FILLED);
 
       //Imgproc.rectangle(morph, new Rect(0, 0, 320, 80), new Scalar(255,0,0));
       //Imgproc.rectangle(morph, new Rect(0, 80, 160, 240), new Scalar(255,0,0));
@@ -361,6 +448,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
         cX = (int) (M.get_m10() / M.get_m00());
         cY = (int) (M.get_m01() / M.get_m00());
       }
+
+
+      Imgproc.putText(input, String.format("%d,%d", cX, cY), new Point(cX+10,cY+10), Imgproc.FONT_HERSHEY_PLAIN, 2.5, new Scalar (255,0,0));
+
+
 
       // return null (input has our image)
       return null;
@@ -389,10 +481,6 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     // Returns the Largest Contour Prop location (Zone 1, 2, 3)
     int[] getResult() {
 
-      // TODO: Triangle it is inside of
-      // TODO: zone1: (x: 320, y: 480), (0,0), (0,480)  "left"
-      // TODO: zone2: (x: 320, y: 480), (640,0), (0,0)  "center"
-      // TODO: zone3: (x: 320, y: 480), (640,480), (640,0)  "right"
       xyArray[0] = cX;
       xyArray[1] = cY;
       return xyArray;
