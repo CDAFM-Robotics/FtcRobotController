@@ -69,9 +69,9 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   int ARM_POS_AUTO_DEPLOY = 7718;
 
   // Camera Servo Constants
-  double CAM_SERVO_FRONT = 0; // TODO: FIND
-  double CAM_SERVO_REAR =0.2; // TODO: FIND
-  double CAM_SERVO_RIGHT=0.1; // TODO: FIND
+  double CAM_SERVO_FRONT = 0;
+  double CAM_SERVO_REAR =0.67;
+  double CAM_SERVO_RIGHT=0.335;
 
 
 
@@ -107,7 +107,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       zone = detectZone();
     }
 
-    RRRunAutomation();
+    // JW Temporary OFF
+    // RRRunAutomation();
 
 
   }
@@ -241,6 +242,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     bottomArmServo = hardwareMap.get(Servo.class, "bottomArmServo");
     topArmServo = hardwareMap.get(Servo.class, "topArmServo");
     wristPanServo = hardwareMap.get(Servo.class, "wristPanServo");
+    camServo = hardwareMap.get(Servo.class, "camServo");
     motor1 = hardwareMap.get(DcMotor.class, "motor1");
     motor2 = hardwareMap.get(DcMotor.class, "motor2");
     motor3 = hardwareMap.get(DcMotor.class, "motor3");
@@ -282,11 +284,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     armmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     armmotor.setPower(1);
 
-    // Set Camera Servo FRONT
-    //camServo.setDirection(Servo.Direction.REVERSE);
-    double temp = camServo.getPosition();
-    telemetry.addData("Cam Servo", "Value: %.3f", temp);
-    telemetry.update();
+    // Set Camera Servo facing FRONT
+    camServo.setPosition(CAM_SERVO_FRONT);
 
 
     // initialize camera
