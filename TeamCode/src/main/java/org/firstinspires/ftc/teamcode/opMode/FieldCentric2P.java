@@ -34,15 +34,16 @@ public class FieldCentric2P extends LinearOpMode {
   private Servo droneServo = null;
   private Servo hookServo = null;
 
-  //defien all constances
+  //define all constants
   private int ARM_DRIVE_POSITION = 500;
   private int ARM_DEPLOY_POSITION = 5720;
-  private int ARM_PICKUP_POSITION = 150;
+  private int ARM_MAX_POSITION = 7718;
+  private int ARM_PICKUP_POSITION = 175;
   private int ARM_HOOK_POSITION = 3716;
   private double ARM_POWER = 0.6;
-  double WRIST_SERVO_FOLDED = 0.6;
-  double wristPanServoFloor = 0;
-  double wristPanSpeed = 0.003;
+  double WRIST_PAN_SERVO_FOLDED = 0.6;
+  double WRIST_PAN_SERVO_FLOOR = 0.024;
+  double WRIST_PAN_SERVO_SPEED = 0.008;
   double botHeading = 0;
   double DRONE_POSITION_ARMED = 0;
   double DRONE_POSITION_LAUNCH = 0.25; //Early Guess
@@ -87,7 +88,7 @@ public class FieldCentric2P extends LinearOpMode {
     boolean topFingerServoOpen = false;
     boolean robotHanging = false;
     //Wrist initial position is folded
-    double wristPanPos = WRIST_SERVO_FOLDED;
+    double wristPanPos = WRIST_PAN_SERVO_FOLDED;
     // By setting these values to new Gamepad(), they will default to all
     // boolean values as false and all float values as 0
     Gamepad currentGamepad1 = new Gamepad();
@@ -119,18 +120,23 @@ public class FieldCentric2P extends LinearOpMode {
     backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-    //Initialize arm motor
-    armmotor.setPower(0);
-    armmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    armmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     armmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    armmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // jw test
+
+    //Initialize arm motor
+    armmotor.setTargetPosition(ARM_PICKUP_POSITION);
+    armmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    armmotor.setPower(1);
+
+    // armmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    //armmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     //armmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     telemetry.addData("Arm Motor init", "Arm Motor decoder: %d", armmotor.getCurrentPosition());
     telemetry.addData("Arm Motor init", "run mode: %s", armmotor.getMode().toString());
 
 
     //initialize wristPanServo and drone servo
-    wristPanServo.setPosition(WRIST_SERVO_FOLDED);
+    wristPanServo.setPosition(WRIST_PAN_SERVO_FOLDED);
     droneServo.setPosition(DRONE_POSITION_ARMED);
     hookServo.setPosition(HOOK_HIDE_POSITION);
     telemetry.addData("Wrist servo Position:", "%f", wristPanServo.getPosition());
@@ -197,10 +203,22 @@ public class FieldCentric2P extends LinearOpMode {
         // Gamepad 2 controls everything but driving
 
         // Robot arm is controlled by the left stick y on Gamepad 2
-        lStickY2 = -gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y);
-        armmotor.setPower(lStickY2);
 
-        telemetry.addData("Arm Motor Position", "Arm Motor decoder: %d", armmotor.getCurrentPosition());
+        lStickY2 = -gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y);
+        telemetry.addData("StickY2", "%.5f",lStickY2);
+        if (lStickY2 < 0) {
+          armmotor.setTargetPosition(ARM_PICKUP_POSITION);
+          armmotor.setPower(Math.abs(lStickY2));
+        } else if (lStickY2 > 0) {
+          armmotor.setTargetPosition(ARM_MAX_POSITION);
+          armmotor.setPower(Math.abs(lStickY2));
+        }
+        else {
+          armmotor.setTargetPosition(armmotor.getCurrentPosition());
+        }
+
+
+        telemetry.addData("Arm Motor Position", "Arm Motor encoder: %d", armmotor.getCurrentPosition());
         telemetry.addData("Arm Motor Position", "run mode: %s", armmotor.getMode().toString());
 
         // dpad up set the arm back at 60 degree to the ground
@@ -280,15 +298,15 @@ public class FieldCentric2P extends LinearOpMode {
         //wrist servo is in slot 2
         rStickY2 = -gamepad2.right_stick_y * Math.abs(gamepad2.right_stick_y);
         if (rStickY2 > 0) {
-          wristPanPos += wristPanSpeed;
-          if (wristPanPos > 0.7) {
-            wristPanPos = 0.7;
+          wristPanPos += WRIST_PAN_SERVO_SPEED;
+          if (wristPanPos > WRIST_PAN_SERVO_FOLDED) {
+            wristPanPos = WRIST_PAN_SERVO_FOLDED;
           }
         }
         else if (rStickY2 < 0 ) {
-          wristPanPos -= wristPanSpeed;
-          if (wristPanPos < 0) {
-            wristPanPos = 0;
+          wristPanPos -= WRIST_PAN_SERVO_SPEED;
+          if (wristPanPos < WRIST_PAN_SERVO_FLOOR) {
+            wristPanPos = WRIST_PAN_SERVO_FLOOR;
           }
         }
         else {
