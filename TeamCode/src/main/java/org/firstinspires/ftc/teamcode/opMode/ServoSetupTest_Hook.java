@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opMode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
@@ -15,7 +16,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 * set each finger servo to 0.15, then align fingers to first notch before fully closed
 */
 
-// @Disabled
+@Disabled
 @TeleOp (group = "Testing", name = "ServoSetupTest_Hook")
 
 // Next line will prevent code from building and showing up on Control Hub

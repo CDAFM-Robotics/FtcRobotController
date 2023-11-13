@@ -116,6 +116,31 @@ public class ServoCalibration extends LinearOpMode {
     // telemetry.addData("Status", "Initialized psh");
     // telemetry.update();
 
+    // Cam Servo Positions.
+    /*    telemetry.addLine(String.format("%.3f", camServo.getPosition()));
+    telemetry.update();
+    sleep(3000);
+    int val = 1;
+    while (val == 1)
+    {
+      camServo.setPosition(BotConstants.CAM_SERVO_STRIKE);
+      telemetry.addLine(String.format("strike: %.3f", camServo.getPosition()));
+      telemetry.update();
+      sleep(3000);
+      camServo.setPosition(BotConstants.CAM_SERVO_RIGHT);
+      telemetry.addLine(String.format("right: %.3f", camServo.getPosition()));
+      telemetry.update();
+      sleep(3000);
+      camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+      telemetry.addLine(String.format("rear: %.3f", camServo.getPosition()));
+      telemetry.update();
+      sleep(3000);
+
+
+      val = 1;
+    }
+*/
+
     // Wait for the game to start (driver presses PLAY)
     waitForStart();
 

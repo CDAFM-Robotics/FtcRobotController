@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import android.graphics.Canvas;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -14,9 +16,13 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.teamcode.common.BotConstants;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
@@ -34,7 +40,7 @@ import org.opencv.imgproc.Moments;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(group = "auto", name = "autonomous")
+@Autonomous(group = "Competition", name = "Autonomous")
 
 public class AutonomousSoftwareOpMode extends LinearOpMode {
   private Blinker control_Hub;
@@ -51,27 +57,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   private DcMotor armmotor = null;
   int zone;
 
-  // TODO: Remove
-  double forwardTime = 1; // not used anymore
-  double lTurnTime = 0.9; // not used anymore
-  double rTurnTime = 1;   // not used anymore
-
-  double BOTTOM_ARM_SERVO_CLOSE = 0.10;
-  double BOTTOM_ARM_SERVO_OPEN = 0.30;
-  double TOP_ARM_SERVO_CLOSE = 0.10;
-  double TOP_ARM_SERVO_OPEN = 0.30;
-  double WRIST_PAN_SERVO_FOLDED = 0.6;
-  double WRIST_PAN_SERVO_FLOOR = 0;
-  double WRIST_PAN_SERVO_AUTO_DEPLOY = 0.32;
-  // Arm Constants
-  int ARM_POS_FLOOR = 150;
-  int ARM_POS_90 = 400;
-  int ARM_POS_AUTO_DEPLOY = 7718;
-
-  // Camera Servo Constants
-  double CAM_SERVO_FRONT = 0;
-  double CAM_SERVO_REAR =0.67;
-  double CAM_SERVO_RIGHT=0.335;
+  // ALL CONSTANTS MOVED TO Common.BotConstants class
 
 
 
@@ -86,6 +72,9 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
   @Override
   public void runOpMode() {
+    // Export telemetry to FTC Dashboard
+    Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+
     telemetry.addData("Status", "Initializing");
     telemetry.update();
 
@@ -100,56 +89,20 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     //waitForStart();
 
     // Set the Wrist to 'floor' mode for first pixel drop
-    wristPanServo.setPosition(WRIST_PAN_SERVO_FLOOR);
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+
+    zone = detectZone();
+
+    RRRunAutomation();
+
 
     while (opModeIsActive())
     {
-      zone = detectZone();
+      // do nothing after Automation until end
     }
-
-    // JW Temporary OFF
-    // RRRunAutomation();
-
 
   }
 
-  public void runAutomation() {
-    // automatic movement
-    // Todo: replace with RR trajectory
-
-    forwardSecs(0.5, forwardTime);
-    if (zone == 1) {
-      leftTurnSecs(0.5, lTurnTime);
-    } else if (zone == 3) {
-      rightTurnSecs(0.5, rTurnTime);
-    }
-
-    // open Purple pixel Servo
-    bottomArmServo.setPosition(BOTTOM_ARM_SERVO_OPEN);
-
-    double temp = bottomArmServo.getPosition();
-    telemetry.addData("Bottom Servo", "Command: %.3f, Value: %.3f", BOTTOM_ARM_SERVO_OPEN, temp);
-    telemetry.update();
-
-    // Todo: move arm up to 90 and out of way
-
-    // Todo: back up to start position and orient to Backdrop "North"
-
-    // Todo: Navigate to Backdrop
-
-    // Todo: Acquire April Tag by zone (Red: 1,2,3  blue: 4,5,6)
-
-    // Todo: Navigate to TagID
-
-    // Todo: Position Arm and Wrist for deploy
-
-    // Todo: Deploy Yellow Pixel
-
-    // Todo: Park and wait
-
-    sleep(20000);
-
-  }
 
   public void RRRunAutomation() {
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -157,47 +110,107 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     Trajectory toPurplePixel = null;
     if (zone == 1) {
       toPurplePixel = drive.trajectoryBuilder(new Pose2d())
-        .lineToSplineHeading(new Pose2d(32.6, 0, Math.toRadians(90)))
+        .lineToSplineHeading(new Pose2d(34, 0, Math.toRadians(90)))
         .build();
 
     }
     else if (zone == 2) {
       toPurplePixel = drive.trajectoryBuilder(new Pose2d())
-        .lineToSplineHeading(new Pose2d(32.6, 0, Math.toRadians(0)))
+        .lineToSplineHeading(new Pose2d(34, 0, Math.toRadians(0)))
         .build();
 
     }
     else {
       toPurplePixel = drive.trajectoryBuilder(new Pose2d())
-        .lineToSplineHeading(new Pose2d(32.6, 0, Math.toRadians(-90)))
+        .lineToSplineHeading(new Pose2d(34, 0, Math.toRadians(-90)))
         .build();
     }
 
     drive.followTrajectory(toPurplePixel);
 
-    bottomArmServo.setPosition(BOTTOM_ARM_SERVO_OPEN);
+    // Open Bottom Finger to deposit Purple Pixel on Strike mark
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+    armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+    armmotor.setPower(1);
+    sleep(1000);
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+    setWristFoldPosition();
 
-    armmotor.setTargetPosition(ARM_POS_90);
 
-    Trajectory toYellowPixel = drive.trajectoryBuilder(toPurplePixel.end()) // continue from old pose
-      //.back(3)
-      .splineToSplineHeading(new Pose2d(3, 0, Math.toRadians(90)), Math.toRadians(0)) // back to start turn left 90
-      //.lineToSplineHeading(new Pose2d(3, 0, Math.toRadians(90)))
-      .splineToSplineHeading(new Pose2d(3, 48, Math.toRadians(90)), Math.toRadians(0))  // move forward (Y) 48 old -48 0 90
-      .splineToSplineHeading(new Pose2d(32.6, 82, Math.toRadians(-90)), Math.toRadians(0)) // old -32 -28
+    // Navigate to Backdrop (Yellow Pixel)
+    // TODO: CHECK / The Pose and Trajectory may be centered on Control Hub or Robot
+    // TODO: Change Poses to FIELD CENTRIC COORDINATES
+    Trajectory backToStart = drive.trajectoryBuilder(toPurplePixel.end())
+            .lineToSplineHeading(new Pose2d(12,0, drive.getRawExternalHeading()))
+            .lineToSplineHeading(new Pose2d(5, 0, Math.toRadians(-90)))
+            .build();
+
+    // Execute Drive trajectory
+    drive.followTrajectory(backToStart);
+
+    Trajectory ThroughTruss = drive.trajectoryBuilder(backToStart.end())
+            .lineToSplineHeading(new Pose2d(5, 55, drive.getRawExternalHeading())) // was 72
+            .splineToConstantHeading(new Vector2d(44, 48), Math.toRadians(0)) // was 75 was 35
+            .build();
+
+    drive.followTrajectory(ThroughTruss);
+
+
+    // Todo: Acquire April Tag by zone (Red: 4,5,6  blue: 1,2,3)
+    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+
+    // Todo: Navigate to TagID (red: 3+[id] or  blue: [id]])
+    while (!gamepad1.a)
+    {
+      telemetryAprilTag();
+      telemetry.update();
+    }
+    double[] xyArray = acquireTagLocation();
+
+    while (!gamepad1.b)
+    {
+      double x = drive.getPoseEstimate().getX();
+      double y = drive.getPoseEstimate().getY();
+      double head = drive.getExternalHeading();
+      telemetry.addLine(String.format("offset: (%f,%f), pose: (%f,%f), heading=%f", xyArray[0],xyArray[1],x,y,head));
+      telemetry.update();
+    }
+
+    if (xyArray[0] != 999.0) {
+
+      Trajectory toAprilTag = drive.trajectoryBuilder(ThroughTruss.end())
+      .splineTo(new Vector2d(drive.getPoseEstimate().getX() + (xyArray[0]-4), // was 6
+      drive.getPoseEstimate().getY() + (xyArray[1] - 9.5)), drive.getExternalHeading(),
+      SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+      SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+      )
       .build();
 
-    drive.followTrajectory(toYellowPixel);
+      drive.followTrajectory(toAprilTag);
+    }
+    // Deploy Yellow Pixel
+    // TODO: TEST YELLOW DEPLOY
+    setArmDeployPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
+    while (armmotor.isBusy()) {
+      // PrintSome_telemetry();
+    }
+//    sleep(BotConstants.ARM_DEPLOY_SLEEP);
+    setWristDeployPosition();
+    sleep(BotConstants.WRIST_DEPLOY_SLEEP);
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
 
-    armmotor.setTargetPosition(ARM_POS_AUTO_DEPLOY);
 
-    wristPanServo.setPosition(WRIST_PAN_SERVO_AUTO_DEPLOY);
-
-
-    topArmServo.setPosition(TOP_ARM_SERVO_OPEN);
+    // Todo: Park
 
   }
 
+  public void PrintSome_telemetry()
+  {
+    double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    telemetry.addData("imu", "yaw: %.2f", botHeading);
+    telemetry.update();
+  }
   public void forwardSecs(double power, double seconds) {
     motor1.setPower(power);
     motor2.setPower(-power);
@@ -236,8 +249,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
 
   public void initHardware() {
-    //map hardware
 
+    //map hardware
     control_Hub = hardwareMap.get(Blinker.class, "Control Hub");
     bottomArmServo = hardwareMap.get(Servo.class, "bottomArmServo");
     topArmServo = hardwareMap.get(Servo.class, "topArmServo");
@@ -261,15 +274,15 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     armmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
-    //set initial positions
+    //set initial positions for automation
 
     // Fold Wrist
-    wristPanServo.setPosition(WRIST_PAN_SERVO_FOLDED); // 0.5
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FOLDED); // 0.5
 
-    // Set Reverse and Close both fingers
+    // Set Reverse and Close both fingers to ARM around purble and yellow pixel.
     topArmServo.setDirection(Servo.Direction.REVERSE);
-    bottomArmServo.setPosition(BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(TOP_ARM_SERVO_CLOSE);
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
 
     // init imu
     imu = hardwareMap.get(IMU.class, "imu");
@@ -279,13 +292,18 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     ));
     imu.initialize(parameters);
 
-    // Raise arm off ground (flat hand level)
-    armmotor.setTargetPosition(ARM_POS_FLOOR);
+    // Set initial heading to ZERO
+    // TODO: (this will be carried over to TeleOp, so don't re-init)
+    imu.resetYaw();
+
+    // Raise arm off ground (flat-hand level)
+    armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR);
     armmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     armmotor.setPower(1);
 
     // Set Camera Servo facing FRONT
-    camServo.setPosition(CAM_SERVO_FRONT);
+    camServo.setPosition(BotConstants.CAM_SERVO_STRIKE);
+
 
 
     // initialize camera
@@ -326,6 +344,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     // Zone2 = yDetectLoc < -1.5 xDetectLoc + 960
     // Zone3
 
+    /*
     if (result[1] > 1.5*result[0]) {
       telemetry.addData("zone", "1");
       zone = 1;
@@ -339,12 +358,65 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       zone = 3;
     }
 
+     */
+
+    if (result[0] < BotConstants.Z1_RECT_BRX && result[0] > BotConstants.Z1_RECT_TLX) {
+      telemetry.addData("Detect Zone", "1");
+      zone = 1;
+    }
+    else if (result[0] < BotConstants.Z2_RECT_BRX && result[0] > BotConstants.Z2_RECT_TLX) {
+      telemetry.addData("Detect Zone", "2");
+      zone = 2;
+    }
+    else
+    {
+      zone = 3;
+      if (result[0] < BotConstants.Z3_RECT_BRX && result[0] > BotConstants.Z3_RECT_TLX) {
+        telemetry.addData("Detect Zone", "3");
+      }
+      else {
+        telemetry.addData("xDetect Zone", "3");
+      }
+
+    }
+
     telemetry.addLine(String.format("%d,%d", result[0], result[1]));
     telemetryAprilTag();
     telemetry.update();
     return zone;
   }
 
+  public double[] acquireTagLocation() {
+    boolean found=false;
+    double[] xyArray = new double[2];
+
+    while (!found) {
+      List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+      telemetry.addData("# AprilTags Detected", currentDetections.size());
+
+      // Step through the list of detections and display info for each one.
+      for (AprilTagDetection detection : currentDetections) {
+        if (detection.metadata != null) {
+          if (detection.id == zone + 3) {
+            // TODO: pretend we are red team for now JW Fix
+            xyArray[0] = detection.ftcPose.x;
+            xyArray[1] = detection.ftcPose.y;
+            found = true;
+            return xyArray;
+          } else {
+            xyArray[0] = 999.0;
+            xyArray[1] = 999.0;
+          }
+          telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
+          telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+          telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
+          telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
+        }
+      }   // end for() loop
+      telemetry.update();
+    } // end while loop until detect or TODO: Fail for park on timeout
+    return xyArray;
+  }
   private void telemetryAprilTag() {
 
     List<AprilTagDetection> currentDetections = aprilTag.getDetections();
@@ -370,6 +442,23 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
   }   // end method telemetryAprilTag()
 
+  public void setArmDrivePosition() {
+    armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+    armmotor.setPower(BotConstants.ARM_POWER);
+  }
+
+  public void setArmDeployPosition(int position, double speed) {
+    armmotor.setTargetPosition(position);
+    armmotor.setPower(speed);
+  }
+
+  public void setWristFoldPosition() {
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FOLDED);
+  }
+  public void setWristDeployPosition() {
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_AUTO_DEPLOY);
+  }
+
 
   public class Contours_Extraction implements VisionProcessor {
     /*
@@ -389,8 +478,10 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     Scalar rUpper1 = new Scalar(10, 255, 255);
     Scalar rLower2 = new Scalar(170, 70, 50);
     Scalar rUpper2 = new Scalar(180, 255, 255);
-    Scalar bLower = new Scalar(98, 38, 10);
-    Scalar bUpper = new Scalar(140, 255, 255);
+    // Scalar bLower = new Scalar(98, 38, 10);
+    // Scalar bUpper = new Scalar(140, 255, 255);
+    Scalar bLower = new Scalar(BotConstants.BLUE_HUE_LOW, BotConstants.BLUE_SAT_LOW, BotConstants.BLUE_VAL_LOW);
+    Scalar bUpper = new Scalar(BotConstants.BLUE_HUE_HIGH, BotConstants.BLUE_SAT_HIGH, BotConstants.BLUE_VAL_HIGH);
     MatOfPoint big_contour = null;
     int big_contourIdx = 0;
     int cX, cY = 0;
@@ -407,6 +498,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
       // EasyOpenCV uses "RGB" order instead of BGR (like OpenCV does).
       Imgproc.cvtColor(input, hsv, Imgproc.COLOR_RGB2HSV);
+
 
       // red Hue goes from ~170-10 (wraps around 0). need two ranges
       Core.inRange(hsv, rLower1, rUpper1, thresh1);
@@ -428,6 +520,19 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       Imgproc.morphologyEx(thresh, morph, Imgproc.MORPH_CLOSE, kernel);
       Imgproc.morphologyEx(morph, morph, Imgproc.MORPH_OPEN, kernel);
 
+      // Create black mask image
+      mask.create(morph.rows(), morph.cols(), morph.type());
+
+      // fill white rectangle in area where prop will be
+      Imgproc.rectangle(mask,
+              new Point(BotConstants.ROI_RECT_TOP_LEFT_X,BotConstants.ROI_RECT_TOP_LEFT_Y),
+              new Point(BotConstants.ROI_RECT_BOTTOM_RIGHT_X,BotConstants.ROI_RECT_BOTTOM_RIGHT_Y),
+              new Scalar(255,255,255),
+              Imgproc.FILLED);
+
+      // ignore all bits of MORPH outside
+      Core.bitwise_and(morph,mask,morph);
+
       // Get the contours in the morph image buffer
       ArrayList<MatOfPoint> contoursList = findContours(morph);
 
@@ -445,6 +550,20 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
       // Draw that contour (Filled) A clean buffer
       Imgproc.drawContours(input, contoursList, big_contourIdx, new Scalar(255, 255, 0), Imgproc.FILLED);
+
+      // Draw 3 Zone Rectangles
+      Imgproc.rectangle(input,
+              new Point(BotConstants.Z1_RECT_TLX,BotConstants.Z1_RECT_TLY),
+              new Point (BotConstants.Z1_RECT_BRX,BotConstants.Z1_RECT_BRY),
+              new Scalar(255,0,0) );
+      Imgproc.rectangle(input,
+              new Point(BotConstants.Z2_RECT_TLX,BotConstants.Z2_RECT_TLY),
+              new Point (BotConstants.Z2_RECT_BRX,BotConstants.Z2_RECT_BRY),
+              new Scalar(255,0,0) );
+      Imgproc.rectangle(input,
+              new Point(BotConstants.Z3_RECT_TLX,BotConstants.Z3_RECT_TLY),
+              new Point (BotConstants.Z3_RECT_BRX,BotConstants.Z3_RECT_BRY),
+              new Scalar(255,0,0) );
 
       //Imgproc.rectangle(morph, new Rect(0, 0, 320, 80), new Scalar(255,0,0));
       //Imgproc.rectangle(morph, new Rect(0, 80, 160, 240), new Scalar(255,0,0));
@@ -483,6 +602,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       // the displayed image, e.g outlining and indicating which objects
       // are being detected on the screen, using a GPU and high quality
       // graphics Canvas which allow for crisp quality shapes.
+
     }
 
 

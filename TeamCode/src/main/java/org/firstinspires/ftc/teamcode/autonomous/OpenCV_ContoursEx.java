@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -20,8 +21,8 @@ import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
 
-
-@TeleOp(name="Robot: OCV_ContoursEx", group="Test")
+@Disabled
+@TeleOp(group="Testing", name="Robot: OCV_ContoursEx")
 
 public class OpenCV_ContoursEx extends LinearOpMode {
   OpenCvWebcam webcam;

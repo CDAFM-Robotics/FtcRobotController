@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opMode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
@@ -8,11 +9,11 @@ import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp (group = "2023 Screamage", name = "ArmServoTest 1P")
 
 // Next line will prevent code from building and showing up on Control Hub
-// @Disabled
-// comment
+@Disabled
+@TeleOp (group = "2023 Screamage", name = "ArmServoTest 1P")
+
 
 public class ArmServoTest1P extends LinearOpMode {
   private Blinker control_Hub;

@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp (group = "Testing", name = "Field Centric 2Player")
+@TeleOp (group = "Competition", name = "Field Centric 2Player")
 
 // Next line will prevent code from building and showing up on Control Hub
 // @Disabled

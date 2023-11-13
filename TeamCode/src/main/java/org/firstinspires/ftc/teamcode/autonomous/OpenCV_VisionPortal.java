@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import android.graphics.Canvas;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -21,8 +22,8 @@ import org.opencv.imgproc.Moments;
 
 import java.util.ArrayList;
 
-
-@TeleOp(name="Robot: Vision Portal Test", group="Test")
+@Disabled
+@TeleOp(group="Testing", name="Robot: Vision Portal Test")
 
 public class OpenCV_VisionPortal extends LinearOpMode {
   // OpenCvWebcam webcam;

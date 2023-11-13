@@ -14,8 +14,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.common.BotConstants;
 
-@TeleOp (group = "Testing", name = "Field Centric 1P")
+@TeleOp (group = "Competition", name = "Field Centric 1P")
 
 // Next line will prevent code from building and showing up on Control Hub
 // @Disabled
@@ -61,27 +62,21 @@ public class FieldCentric1P extends LinearOpMode {
     boolean topArmServoStatus = false;
     boolean lBumperDown = false;
     boolean rBumperDown = false;
-    double wristPanServoFolded = 0.6;
-    double wristPanServoFloor = 0;
-    double wristPanPos = 0.5;
-    double wristPanSpeed = 0.008;
+    double wristPanPos = 0;
     double botHeading = 0;
-    double dronePositionArmed=0;
-    double dronePositionLaunch=0.25; //Early Guess
 
+    double slow_mode = BotConstants.SLOW_MODE;
+    Gamepad currentGamepad1 = new Gamepad();
+    Gamepad currentGamepad2 = new Gamepad();
 
-    double servoSetPosition = 0.15; // Initial SETUP position 0.15 (on 0-1 scale) install first notch where jaws don't touch
-    double bottomServoClose = 0.10; // (close to touch)
-    double bottomServoOpen = 0.30;  // (old open distance)
-    double topServoClose = 0.10;
-    double topServoOpen = 0.30;
+    Gamepad previousGamepad1 = new Gamepad();
+    Gamepad previousGamepad2 = new Gamepad();
 
-    double slow_mode = 1;
 
     telemetry.addData("Status", "Initializing...");
     telemetry.update();
 
-    //Initialized the motors
+    //Initialize the motors
     frontLeftMotor.setPower(0);
     frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -107,9 +102,9 @@ public class FieldCentric1P extends LinearOpMode {
 
 
     //initialize wristPanServo and drone servo
-    wristPanServo.setPosition(wristPanServoFolded);
-
-    droneServo.setPosition(dronePositionArmed);
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FOLDED);
+    wristPanPos = BotConstants.WRIST_PAN_SERVO_FOLDED;
+    droneServo.setPosition(BotConstants.DRONE_POSITION_ARMED);
 
     //initialize both hand servos
     // Reverse Top Servo
@@ -126,9 +121,6 @@ public class FieldCentric1P extends LinearOpMode {
 
     imu.resetYaw();
 
-
-
-
     telemetry.addData("Status", "Initialized");
     telemetry.update();
 
@@ -142,6 +134,13 @@ public class FieldCentric1P extends LinearOpMode {
     // run until the end of the match (driver presses STOP)
     while (opModeIsActive()) {
 
+      previousGamepad1.copy(currentGamepad1);
+      previousGamepad2.copy(currentGamepad2);
+
+      currentGamepad1.copy(gamepad1);
+      currentGamepad2.copy(gamepad2);
+
+
       rTrigger = gamepad1.right_trigger;
       lTrigger = gamepad1.left_trigger;
       lBumper = gamepad1.left_bumper;
@@ -153,9 +152,9 @@ public class FieldCentric1P extends LinearOpMode {
           bottomArmServoStatus = !bottomArmServoStatus;
           lBumperDown = true;
           if (bottomArmServoStatus)
-            bottomArmServo.setPosition(bottomServoOpen);
+            bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
           else
-            bottomArmServo.setPosition(bottomServoClose);
+            bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
         }
       }
       else { lBumperDown = false;}
@@ -164,9 +163,9 @@ public class FieldCentric1P extends LinearOpMode {
           topArmServoStatus = !topArmServoStatus;
           rBumperDown = true;
           if (topArmServoStatus)
-            topArmServo.setPosition(topServoOpen);
+            topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
           else
-            topArmServo.setPosition(topServoClose);
+            topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
         }
       }
       else {rBumperDown = false;}
@@ -174,74 +173,49 @@ public class FieldCentric1P extends LinearOpMode {
       //arm control
       armmotor.setPower(lTrigger*lTrigger-rTrigger*rTrigger);
 
-      //bottomArmServo.setPosition((1-lTrigger)*0.15);
-      //topArmServo.setPosition(rTrigger*0.15+0.45);
-
-      //close:
-      //bottomArmServo.setPosition(0);
-      //topArmServo.setPosition(0.6);
-
-      //open:
-      //bottomArmServo.setPosition(0.15);
-      //topArmServo.setPosition(0.45);
-
       //mecanum drive train
+      // TODO: Assign Slow_mode a toggle control (1) or (botconstants.slow_mode)
       lStickX = slow_mode*(gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x));
       lStickY = slow_mode*(-gamepad1.left_stick_y * Math.abs(gamepad1.left_stick_y));
       rStickX = slow_mode*(gamepad1.right_stick_x * Math.abs(gamepad1.right_stick_x));
 
-      if (gamepad1.back) {
+      telemetry.addData("Stick Powers", ":lStickX: %.2f, lStickY: %.2f, RStickX:%.2f", lStickX, lStickY, rStickX);
+
+
+      if (currentGamepad1.back && !previousGamepad1.back) {
         imu.resetYaw();
       }
-
       botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+      telemetry.addData("imu", "yaw: %.2f", botHeading);
 
-      telemetry.addData("Stick Powers", ":lStickX: %.2f, lStickY: %.2f, RStickX:%.2f", lStickX, lStickY, rStickX);
-      Gamepad currentGamepad1 = new Gamepad();
-      Gamepad currentGamepad2 = new Gamepad();
-
-      Gamepad previousGamepad1 = new Gamepad();
-      Gamepad previousGamepad2 = new Gamepad();
-
-      previousGamepad1.copy(currentGamepad1);
-      previousGamepad2.copy(currentGamepad2);
-
-      currentGamepad1.copy(gamepad1);
-      currentGamepad2.copy(gamepad2);
-      double DRONE_POSITION_ARMED = 0;
-      double DRONE_POSITION_LAUNCH = 0.25;
       setMotorPowers(lStickX, lStickY, rStickX, botHeading);
+
       if (currentGamepad1.y && !previousGamepad1.y) {
-        if (droneServo.getPosition() == DRONE_POSITION_ARMED)
-          droneServo.setPosition(DRONE_POSITION_LAUNCH);
+        if (droneServo.getPosition() == BotConstants.DRONE_POSITION_ARMED)
+          droneServo.setPosition(BotConstants.DRONE_POSITION_LAUNCH);
         else
-          droneServo.setPosition(DRONE_POSITION_ARMED);
+          droneServo.setPosition(BotConstants.DRONE_POSITION_ARMED);
       }
       telemetry.addData("Drone Servos", "%.3f", droneServo.getPosition());
 
       //wrist control
       if (gamepad1.a) {
-        wristPanPos += wristPanSpeed;
-        if (wristPanPos > 0.7) {
-          wristPanPos = 0.7;
+        wristPanPos += BotConstants.WRIST_PAN_SERVO_SPEED;
+        if (wristPanPos > BotConstants.WRIST_PAN_SERVO_FOLDED) {
+          wristPanPos = BotConstants.WRIST_PAN_SERVO_FOLDED;
         }
       }
       if (gamepad1.b) {
-        wristPanPos -= wristPanSpeed;
-        if (wristPanPos < 0) {
-          wristPanPos = 0;
+        wristPanPos -= BotConstants.WRIST_PAN_SERVO_SPEED;
+        if (wristPanPos < BotConstants.WRIST_PAN_SERVO_FLOOR) {
+          wristPanPos = BotConstants.WRIST_PAN_SERVO_FLOOR;
         }
       }
-
-      telemetry.addData("imu", "yaw: %.2f", botHeading);
 
       telemetry.addData("Wrist Servos", "wristPanPos %.3f", wristPanPos);
       telemetry.update();
 
       wristPanServo.setPosition(wristPanPos);
-
-      //telemetry.addData("Servos", "Bottom: %.3f, Top: %.3f", lTrigger, rTrigger);
-
 
     }
   }
