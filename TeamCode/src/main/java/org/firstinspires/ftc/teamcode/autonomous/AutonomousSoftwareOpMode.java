@@ -24,6 +24,7 @@ import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibra
 import org.firstinspires.ftc.teamcode.common.BotConstants;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -49,6 +50,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   private Servo topArmServo;
   private Servo wristPanServo;
   private Servo camServo;
+  private Servo droneServo = null;
+  private Servo hookServo = null;
   private ElapsedTime runtime = new ElapsedTime();
   private DcMotor motor1 = null; //front left
   private DcMotor motor2 = null; //front right
@@ -88,12 +91,10 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     }
     //waitForStart();
 
-    // Set the Wrist to 'floor' mode for first pixel drop
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-
     zone = detectZone();
 
     RRRunAutomation();
+    //RR_BZ3_BackdropAutomation_Test();
 
 
     while (opModeIsActive())
@@ -104,26 +105,46 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   }
 
 
+  public void RR_BZ3_BackdropAutomation_Test()
+  {
+    // Testing RRPathGen (no pixels, no stopping)
+
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+    TrajectorySequence BZ1_PixelSide = drive.trajectorySequenceBuilder(new Pose2d(-36.00, 60.67, Math.toRadians(-89.23)))
+    .splineTo(new Vector2d(-35.82, 34.72), Math.toRadians(-2.77))
+    .lineToSplineHeading(new Pose2d(-51.72, 60.67, Math.toRadians(180.00)))
+    .lineTo(new Vector2d(27.78, 61.04))
+    .splineTo(new Vector2d(33.81, 34.90), Math.toRadians(181.17))
+    .lineTo(new Vector2d(45.14, 35.27))
+    .splineToSplineHeading(new Pose2d(61.40, 13.34, Math.toRadians(268.26)), Math.toRadians(-2.56))
+    .build();
+    drive.setPoseEstimate(BZ1_PixelSide.start());
+    drive.followTrajectorySequence(BZ1_PixelSide);
+  }
+
   public void RRRunAutomation() {
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
+    // Lower Wrist
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+
+    // Build Trajectory
     Trajectory toPurplePixel = null;
     if (zone == 1) {
       toPurplePixel = drive.trajectoryBuilder(new Pose2d())
-        .lineToSplineHeading(new Pose2d(34, 0, Math.toRadians(90)))
-        .build();
+      .lineToSplineHeading(new Pose2d(34, 0, Math.toRadians(90)))
+      .build();
 
-    }
-    else if (zone == 2) {
+    } else if (zone == 2) {
       toPurplePixel = drive.trajectoryBuilder(new Pose2d())
-        .lineToSplineHeading(new Pose2d(34, 0, Math.toRadians(0)))
-        .build();
+      .lineToSplineHeading(new Pose2d(34, 0, Math.toRadians(0)))
+      .build();
 
-    }
-    else {
+    } else {
       toPurplePixel = drive.trajectoryBuilder(new Pose2d())
-        .lineToSplineHeading(new Pose2d(34, 0, Math.toRadians(-90)))
-        .build();
+      .lineToSplineHeading(new Pose2d(34, 0, Math.toRadians(-90)))
+      .build();
     }
 
     drive.followTrajectory(toPurplePixel);
@@ -139,19 +160,20 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // Navigate to Backdrop (Yellow Pixel)
     // TODO: CHECK / The Pose and Trajectory may be centered on Control Hub or Robot
-    // TODO: Change Poses to FIELD CENTRIC COORDINATES
+    // TODO: Change Poses to FIELD CENTRIC COORDINATES and call SetPose Estimate
+    // TODO: R1
     Trajectory backToStart = drive.trajectoryBuilder(toPurplePixel.end())
-            .lineToSplineHeading(new Pose2d(12,0, drive.getRawExternalHeading()))
-            .lineToSplineHeading(new Pose2d(5, 0, Math.toRadians(-90)))
-            .build();
+    .lineToSplineHeading(new Pose2d(12, 0, drive.getRawExternalHeading()))
+    .lineToSplineHeading(new Pose2d(5, 0, Math.toRadians(-90)))
+    .build();
 
     // Execute Drive trajectory
     drive.followTrajectory(backToStart);
 
     Trajectory ThroughTruss = drive.trajectoryBuilder(backToStart.end())
-            .lineToSplineHeading(new Pose2d(5, 55, drive.getRawExternalHeading())) // was 72
-            .splineToConstantHeading(new Vector2d(44, 48), Math.toRadians(0)) // was 75 was 35
-            .build();
+    .lineToSplineHeading(new Pose2d(5, 55, drive.getRawExternalHeading())) // was 72
+    .splineToConstantHeading(new Vector2d(44, 48), Math.toRadians(0)) // was 75 was 35
+    .build();
 
     drive.followTrajectory(ThroughTruss);
 
@@ -160,14 +182,16 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
 
     // Todo: Navigate to TagID (red: 3+[id] or  blue: [id]])
-    while (!gamepad1.a)
+/*    while (!gamepad1.a)
     {
       telemetryAprilTag();
       telemetry.update();
     }
+
+ */
     double[] xyArray = acquireTagLocation();
 
-    while (!gamepad1.b)
+ /*   while (!gamepad1.b)
     {
       double x = drive.getPoseEstimate().getX();
       double y = drive.getPoseEstimate().getY();
@@ -176,11 +200,13 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       telemetry.update();
     }
 
+  */
+
     if (xyArray[0] != 999.0) {
 
       Trajectory toAprilTag = drive.trajectoryBuilder(ThroughTruss.end())
-      .splineTo(new Vector2d(drive.getPoseEstimate().getX() + (xyArray[0]-4), // was 6
-      drive.getPoseEstimate().getY() + (xyArray[1] - 9.5)), drive.getExternalHeading(),
+      .splineTo(new Vector2d(drive.getPoseEstimate().getX() + (xyArray[0] - 4), // -4 is adjust for Camera offset to Hand (Was 6)
+      drive.getPoseEstimate().getY() + (xyArray[1] - 9.5)), drive.getExternalHeading(), // -9.5 distance from camera Y to AprilTag Y
       SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
       SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
       )
@@ -190,18 +216,28 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     }
     // Deploy Yellow Pixel
     // TODO: TEST YELLOW DEPLOY
-    setArmDeployPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
-    while (armmotor.isBusy()) {
-      // PrintSome_telemetry();
-    }
-//    sleep(BotConstants.ARM_DEPLOY_SLEEP);
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
-    sleep(BotConstants.WRIST_DEPLOY_SLEEP);
+
+    // put a blocking call after Arm and Wrist, will allow both to move at same time.
+    while (armmotor.isBusy()) {
+      // block
+    }
+    // sleep(BotConstants.WRIST_DEPLOY_SLEEP);
+
+    // Open the fingers and drop the pixel(s)
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    sleep(2000);
 
 
     // Todo: Park
+
+    // Raise Arm and close fingers, fold wrist
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+    setWristFoldPosition();
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
 
   }
 
@@ -256,6 +292,9 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     topArmServo = hardwareMap.get(Servo.class, "topArmServo");
     wristPanServo = hardwareMap.get(Servo.class, "wristPanServo");
     camServo = hardwareMap.get(Servo.class, "camServo");
+    droneServo = hardwareMap.get(Servo.class, "droneServo");
+    hookServo = hardwareMap.get(Servo.class, "hookServo");
+
     motor1 = hardwareMap.get(DcMotor.class, "motor1");
     motor2 = hardwareMap.get(DcMotor.class, "motor2");
     motor3 = hardwareMap.get(DcMotor.class, "motor3");
@@ -274,12 +313,19 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     armmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
-    //set initial positions for automation
+    //Set initial positions for automation
 
     // Fold Wrist
     wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FOLDED); // 0.5
 
-    // Set Reverse and Close both fingers to ARM around purble and yellow pixel.
+    // init Hook retract
+    hookServo.setPosition(BotConstants.HOOK_POS_RETRACT);
+
+    // init drone Servo (ARMED)
+    droneServo.setPosition(BotConstants.DRONE_POSITION_ARMED);
+
+
+    // Set Top to REVERSE & Close Both fingers around purple and yellow pixel
     topArmServo.setDirection(Servo.Direction.REVERSE);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -293,7 +339,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     imu.initialize(parameters);
 
     // Set initial heading to ZERO
-    // TODO: (this will be carried over to TeleOp, so don't re-init)
+    // TODO: Orientation Carried over to TeleOp, so don't re-init the IMU in tele 2P
     imu.resetYaw();
 
     // Raise arm off ground (flat-hand level)
@@ -305,11 +351,10 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     camServo.setPosition(BotConstants.CAM_SERVO_STRIKE);
 
 
-
     // initialize camera
     VisionPortal.Builder builder = new VisionPortal.Builder();
 
-    // Set the camera (webcam vs. built-in RC phone camera).
+    // Select the Camera
     if (USE_WEBCAM) {
       builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
     } else {
@@ -324,15 +369,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
             .build();
     aprilTag.setDecimation(1);
 
-    // Set the stream format; MJPEG uses less bandwidth than default YUY2.
-    //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
-
     // Add both Processors to the Portal
     builder.addProcessors(pipeline, aprilTag);
 
     // Build the Vision Portal, using the above settings.
     visionPortal = builder.build();
-
   }
 
 
@@ -340,25 +381,6 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     int[] result = pipeline.getResult();
 
-    // Zone1 = yDetectLoc < 1.5 xDetectLoc
-    // Zone2 = yDetectLoc < -1.5 xDetectLoc + 960
-    // Zone3
-
-    /*
-    if (result[1] > 1.5*result[0]) {
-      telemetry.addData("zone", "1");
-      zone = 1;
-    }
-    else if (result[1] < -1.5 * result[0] + 960) {
-      telemetry.addData("zone", "2");
-      zone = 2;
-    }
-    else {
-      telemetry.addData("zone", "3");
-      zone = 3;
-    }
-
-     */
 
     if (result[0] < BotConstants.Z1_RECT_BRX && result[0] > BotConstants.Z1_RECT_TLX) {
       telemetry.addData("Detect Zone", "1");
@@ -374,10 +396,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       if (result[0] < BotConstants.Z3_RECT_BRX && result[0] > BotConstants.Z3_RECT_TLX) {
         telemetry.addData("Detect Zone", "3");
       }
-      else {
-        telemetry.addData("xDetect Zone", "3");
-      }
-
+      else {telemetry.addData("xDetect Zone", "3");}
     }
 
     telemetry.addLine(String.format("%d,%d", result[0], result[1]));
@@ -399,11 +418,14 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
         if (detection.metadata != null) {
           if (detection.id == zone + 3) {
             // TODO: pretend we are red team for now JW Fix
+            // TODO: Add code that if we can't find our ID, but did find another ID we calculate our ID.
+            // TODO: Only look for our ID until a safety timer expires.
             xyArray[0] = detection.ftcPose.x;
             xyArray[1] = detection.ftcPose.y;
             found = true;
             return xyArray;
           } else {
+            // TODO: (Fallback) Calculate Coordinate for [id] based on where it should be
             xyArray[0] = 999.0;
             xyArray[1] = 999.0;
           }
@@ -447,7 +469,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     armmotor.setPower(BotConstants.ARM_POWER);
   }
 
-  public void setArmDeployPosition(int position, double speed) {
+  public void setArmPosition(int position, double speed) {
     armmotor.setTargetPosition(position);
     armmotor.setPower(speed);
   }
