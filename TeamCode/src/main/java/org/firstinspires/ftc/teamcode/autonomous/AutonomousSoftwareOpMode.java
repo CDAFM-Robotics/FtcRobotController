@@ -93,9 +93,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     zone = detectZone();
 
-    RRRunAutomation();
-    //RR_BZ3_BackdropAutomation_Test();
+    //RRRunAutomation();
 
+    // 13nov23 purple Pixel kicked, didn't line up for camera, hit truss.
+    //RR_BZ1_Pixel_Test();
+
+    RR_BZ1b_Pixel();
 
     while (opModeIsActive())
     {
@@ -104,23 +107,113 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
   }
 
+  public void RR_BZ1b_Pixel()
+  {
+    // Lower Wrist
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-  public void RR_BZ3_BackdropAutomation_Test()
+    TrajectorySequence BZ1_PixelSide = drive.trajectorySequenceBuilder(new Pose2d(-35.63, 62.50, Math.toRadians(-90.00)))
+    //.splineToSplineHeading(new Pose2d(-38.38, 31.80, Math.toRadians(360.00)), Math.toRadians(13.14))
+    .lineToLinearHeading(new Pose2d(-36.38, 31.80, Math.toRadians(360.00)))
+    .addDisplacementMarker(() -> {
+      // Deploy Purple
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      sleep(750);
+      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+      armmotor.setPower(1);
+      sleep(500);
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+      setWristFoldPosition();
+    })
+    .lineToConstantHeading(new Vector2d(-52.08, 32.16))
+    .lineToSplineHeading(new Pose2d(-60.67, 61.58, Math.toRadians(180.00)))
+    .lineTo(new Vector2d(35.63, 62.13))
+    .lineTo(new Vector2d(33.62, 41.85))
+    .addDisplacementMarker(()->{
+      // REVERSE CAMERA ACQUIRE APRIL TAGS
+      camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+
+      double[] xyArray = acquireTagLocation();
+      telemetry.addLine(String.format("(%.3f,%.3f",xyArray[0],xyArray[1]));
+      telemetry.update();
+
+    })
+    .waitSeconds(10)
+    .lineTo(new Vector2d(42.21, 41.48))
+    .lineTo(new Vector2d(51.72, 8.59))
+    .build();
+    drive.setPoseEstimate(BZ1_PixelSide.start());
+
+    drive.followTrajectorySequence(BZ1_PixelSide);
+
+
+  }
+
+  public void RR_BZ1_Pixel_Test()
   {
     // Testing RRPathGen (no pixels, no stopping)
 
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-    TrajectorySequence BZ1_PixelSide = drive.trajectorySequenceBuilder(new Pose2d(-36.00, 60.67, Math.toRadians(-89.23)))
-    .splineTo(new Vector2d(-35.82, 34.72), Math.toRadians(-2.77))
-    .lineToSplineHeading(new Pose2d(-51.72, 60.67, Math.toRadians(180.00)))
-    .lineTo(new Vector2d(27.78, 61.04))
-    .splineTo(new Vector2d(33.81, 34.90), Math.toRadians(181.17))
-    .lineTo(new Vector2d(45.14, 35.27))
-    .splineToSplineHeading(new Pose2d(61.40, 13.34, Math.toRadians(268.26)), Math.toRadians(-2.56))
+
+    //BZ1 *TEMPLATE*
+    TrajectorySequence BZ1_PixelSide = drive.trajectorySequenceBuilder(new Pose2d(-35.63, 62.50, Math.toRadians(-90.00)))
+    .splineToSplineHeading(new Pose2d(-35.45, 31.07, Math.toRadians(360.00)), Math.toRadians(360.00))
+    .addDisplacementMarker(() -> {
+      // Deploy Purple
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+      armmotor.setPower(1);
+      sleep(1000);
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+      setWristFoldPosition();
+    })
+    .lineToSplineHeading(new Pose2d(-61.04, 58.11, Math.toRadians(180.00)))
+    .lineTo(new Vector2d(36.91, 57.75))
+    .lineTo(new Vector2d(35.09, 36.91))
+    .addDisplacementMarker(()->{
+      // REVERSE CAMERA ACQUIRE APRIL TAGS
+      camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+
+      // Todo: Navigate to TagID (red: 3+[id] or  blue: [id]])
+      while (!gamepad1.a)
+      {
+        telemetryAprilTag();
+        telemetry.update();
+      }
+      double[] xyArray = acquireTagLocation();
+      while (!gamepad1.b)
+      {
+        telemetry.addLine(String.format("(%.3f,%.3f",xyArray[0],xyArray[1]));
+      }
+    })
+    .lineTo(new Vector2d(43.68, 36.55)) // BZ1 = 61.22, 41.66
+    .addDisplacementMarker(() -> {
+      // Deploy Yellow
+      setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
+      setWristDeployPosition();
+
+      // put a blocking call after Arm and Wrist, will allow both to move at same time.
+      while (armmotor.isBusy()) {
+        // block
+      }
+      // sleep(BotConstants.WRIST_DEPLOY_SLEEP);
+
+      // Open the fingers and drop the pixel(s)
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+      sleep(2000);
+    })
+    .lineTo(new Vector2d(57.38, 8.04))
     .build();
     drive.setPoseEstimate(BZ1_PixelSide.start());
+
+
+    // Lower Wrist
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
     drive.followTrajectorySequence(BZ1_PixelSide);
+
   }
 
   public void RRRunAutomation() {
@@ -138,7 +231,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     } else if (zone == 2) {
       toPurplePixel = drive.trajectoryBuilder(new Pose2d())
-      .lineToSplineHeading(new Pose2d(34, 0, Math.toRadians(0)))
+      .lineToSplineHeading(new Pose2d(31, 0, Math.toRadians(0)))
       .build();
 
     } else {
