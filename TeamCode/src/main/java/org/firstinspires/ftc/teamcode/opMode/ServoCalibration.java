@@ -111,6 +111,8 @@ public class ServoCalibration extends LinearOpMode {
     //initialize both hand servos
 
     topArmServo.setDirection(Servo.Direction.REVERSE);
+    topArmServo.setPosition(servoSetPosition);
+    bottomArmServo.setPosition(servoSetPosition);
 
 
     // telemetry.addData("Status", "Initialized psh");
