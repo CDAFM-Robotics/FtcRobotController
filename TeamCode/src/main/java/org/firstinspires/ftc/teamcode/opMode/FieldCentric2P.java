@@ -160,9 +160,7 @@ public class FieldCentric2P extends LinearOpMode {
       currentGamepad1.copy(gamepad1);
       currentGamepad2.copy(gamepad2);
 
-      //if (currentGamepad1.a && !previousGamepad1.a) {
-
-        if (!robotHanging) {
+      if (!robotHanging) {
         //Driving control from Gamepad 1
         //mecanum drive train
           // TODO: ADD SLOW_MODE Toggle between 1.0 and BotConstants.SLOW_MODE
@@ -171,7 +169,7 @@ public class FieldCentric2P extends LinearOpMode {
         rStickX = slow_mode * (gamepad1.right_stick_x * Math.abs(gamepad1.right_stick_x));
 
         //If the field centric drive lost direction, push Back button to reset heading to Bot Front
-        if (gamepad1.back) {
+        if (currentGamepad1.back && !previousGamepad1.back) {
           imu.resetYaw();
         }
 
