@@ -73,6 +73,9 @@ public class FieldCentric2P extends LinearOpMode {
     double wristPanPos = BotConstants.WRIST_PAN_SERVO_FOLDED;
     // By setting these values to new Gamepad(), they will default to all
     // boolean values as false and all float values as 0
+    int previousArmPos;
+    boolean dPadPressed = false;
+
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();
 
@@ -189,50 +192,107 @@ public class FieldCentric2P extends LinearOpMode {
         if (lStickY2 < 0) {
           armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR);
           armmotor.setPower(Math.abs(lStickY2));
+          dPadPressed = false;
         } else if (lStickY2 > 0) {
           armmotor.setTargetPosition(BotConstants.ARM_POS_MAX);
           armmotor.setPower(Math.abs(lStickY2));
+          dPadPressed = false;
         } else {
-          armmotor.setTargetPosition(armmotor.getCurrentPosition());
+
+          // dpad up set the wrist and arm to a default deploy position.
+          // the driver can use gamepad2 left stick to fine tune the position
+          // dpad left set the arm at driving height
+          // dpad down set the arm at pick up position
+          if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up) {
+            wristPanPos = BotConstants.WRIST_PAN_SERVO_L2_DEPLOY;
+            wristPanServo.setPosition(wristPanPos);
+            //setArmPosition(BotConstants.ARM_POS_L2_DROP, BotConstants.ARM_POWER);
+            armmotor.setTargetPosition(BotConstants.ARM_POS_L2_DROP);
+            armmotor.setPower(BotConstants.ARM_POWER);
+            dPadPressed = true;
+          }
+          // dpad down set the arm at pick up position dpad left set the arm at driving height
+          else if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down) {
+            wristPanPos = BotConstants.WRIST_PICK_UP;
+            if (armmotor.getCurrentPosition() >= 6000) {
+              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
+              armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR_TELEOP);
+              wristPanServo.setPosition(wristPanPos);
+            }
+            else {
+              wristPanServo.setPosition(wristPanPos);
+              armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR_TELEOP);
+              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
+            }
+            dPadPressed = true;
+          }
+          // dpad left set the arm at driving height
+          else if (currentGamepad2.dpad_left && !previousGamepad2.dpad_left) {
+            wristPanPos = BotConstants.WRIST_PAN_SERVO_FOLDED;
+            wristPanServo.setPosition(wristPanPos);
+            //setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+            armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+            dPadPressed = true;
+          }
+          else if (dPadPressed) {
+            if (Math.abs((armmotor.getCurrentPosition() - armmotor.getTargetPosition())) <= 2) {
+              //reached dpad destination
+              armmotor.setTargetPosition(armmotor.getCurrentPosition());
+              dPadPressed = false;
+            }
+          }
+          else {
+            armmotor.setTargetPosition(armmotor.getCurrentPosition());
+          }
         }
+
 
         telemetry.addData("Arm Motor Position", "Arm Motor encoder: %d", armmotor.getCurrentPosition());
         telemetry.addData("Arm Motor Position", "run mode: %s", armmotor.getMode().toString());
 
-        // dpad up set the wrist and arm to a default deploy position.
-        // the driver can use gamepad2 left stick to change the position
-        // dpad left set the arm at driving height
-        // dpad down set the arm at pick up position
-        if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up){
-          wristPanPos = BotConstants.WRIST_PAN_SERVO_L2_DEPLOY;
-          wristPanServo.setPosition(wristPanPos);
-          setArmPosition(BotConstants.ARM_POS_L2_DROP, BotConstants.ARM_POWER);
-        }
-        // dpad down set the arm at pick up position dpad left set the arm at driving height
-        if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down){
-          wristPanPos = BotConstants.WRIST_PICK_UP;
-          if ( armmotor.getCurrentPosition() >=6000) {
-            setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
+/*
+          // dpad up set the wrist and arm to a default deploy position.
+          // the driver can use gamepad2 left stick to change the position
+          // dpad left set the arm at driving height
+          // dpad down set the arm at pick up position
+          if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up) {
+            wristPanPos = BotConstants.WRIST_PAN_SERVO_L2_DEPLOY;
             wristPanServo.setPosition(wristPanPos);
+            //setArmPosition(BotConstants.ARM_POS_L2_DROP, BotConstants.ARM_POWER);
+            armmotor.setTargetPosition(BotConstants.ARM_POS_L2_DROP);
           }
-          else {
+          // dpad down set the arm at pick up position dpad left set the arm at driving height
+          if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down) {
+            wristPanPos = BotConstants.WRIST_PICK_UP;
+            if (armmotor.getCurrentPosition() >= 6000) {
+              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
+              armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR_TELEOP);
+              wristPanServo.setPosition(wristPanPos);
+            }
+            else {
+              wristPanServo.setPosition(wristPanPos);
+              armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR_TELEOP);
+              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
+            }
+          }
+          // dpad left set the arm at driving height
+          if (currentGamepad2.dpad_left && !previousGamepad2.dpad_left) {
+            wristPanPos = BotConstants.WRIST_PAN_SERVO_FOLDED;
             wristPanServo.setPosition(wristPanPos);
-            setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
+            //setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+            armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
           }
-        }
-        // dpad left set the arm at driving height
-        if (currentGamepad2.dpad_left && !previousGamepad2.dpad_left){
-          wristPanPos = BotConstants.WRIST_PAN_SERVO_FOLDED;
-          wristPanServo.setPosition(wristPanPos);
-          setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
-        }
+          armmotor.setPower(BotConstants.ARM_POWER);
 
-        // dpad right set the arm at hanging height
-        /*if (currentGamepad2.dpad_right && !previousGamepad2.dpad_right){
-          wristPanPos = BotConstants.WRIST_PAN_SERVO_FOLDED;
-          wristPanServo.setPosition(wristPanPos);
-          setArmPosition(BotConstants.ARM_POS_HANG, BotConstants.ARM_POWER);
-        }*/
+            // dpad right set the arm at hanging height
+          /*if (currentGamepad2.dpad_right && !previousGamepad2.dpad_right){
+            wristPanPos = BotConstants.WRIST_PAN_SERVO_FOLDED;
+            wristPanServo.setPosition(wristPanPos);
+            //setArmPosition(BotConstants.ARM_POS_HANG, BotConstants.ARM_POWER);
+            armmotor.setTargetPosition(BotConstants.ARM_POS_HANG;
+          }*/
+
+
 
         //servo slot 0 & 1 are for the finger controls
         if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
@@ -330,6 +390,9 @@ public class FieldCentric2P extends LinearOpMode {
         }
         telemetry.addData("Servo Power", ":%s", hookServo.getController().getPwmStatus().toString());
         telemetry.update();
+
+        previousArmPos = armmotor.getCurrentPosition();
+
       }
       else {
         //robot is hanging
