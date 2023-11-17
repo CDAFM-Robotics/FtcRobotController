@@ -137,13 +137,14 @@ public class FieldCentric2P extends LinearOpMode {
     telemetry.addData("bottom finger servo Position", "%f", bottomArmServo.getPosition());
 
     //init imu
-    IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+    // commented out to use the Yaw from Automation
+    /*IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
       RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
       RevHubOrientationOnRobot.UsbFacingDirection.UP
     ));
     imu.initialize(parameters);
 
-    imu.resetYaw();
+    imu.resetYaw();*/
 
     telemetry.addData("Status", "Initialized");
     telemetry.update();
@@ -174,6 +175,12 @@ public class FieldCentric2P extends LinearOpMode {
 
         //If the field centric drive lost direction, push Back button to reset heading to Bot Front
         if (currentGamepad1.back && !previousGamepad1.back) {
+          IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                  RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                  RevHubOrientationOnRobot.UsbFacingDirection.UP
+          ));
+          imu.initialize(parameters);
+
           imu.resetYaw();
         }
 
