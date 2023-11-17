@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.common;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import org.opencv.core.Rect;
-
 @Config
 public class BotConstants {
 
@@ -39,7 +37,7 @@ public class BotConstants {
 
     // Camera Servo Constants
     public static double CAM_SERVO_FRONT = 0.3; // old 0;
-    public static double CAM_SERVO_STRIKE = 0.27; // 0.25 (edge hit),
+    public static double CAM_SERVO_SPIKE = 0.27; // 0.25 (edge hit),
     public static double CAM_SERVO_REAR =0.97; // old 0.67
     public static double CAM_SERVO_RIGHT=0.635; // old 0.335
 
@@ -53,12 +51,13 @@ public class BotConstants {
     public static int    RED_TEAM = 1;
     public static int    START_SIDE_PIXEL = 0;
     public static int    START_SIDE_BACKDROP = 1;
-    public static double APRIL_POSE_XOFFSET = 6;
-    public static double APRIL_POSE_YOFFSET = -9.5;
+    public static double APRIL_POSE_XOFFSET = 6.5;  // Camera to Arm X dist
+    public static double APRIL_POSE_YOFFSET = -9.5; // Camera to Grip Y Dist
     public static double DRONE_POS_ARMED = 0;
-    public static double DRONE_POS_LAUNCH = 0.25; //Early Guess
+    public static double DRONE_POS_LAUNCH = 0.25;
     public static double HOOK_POS_RETRACT = 0.0;
-    public static double HOOK_POS_DEPLOY = 0.35; //Early Guess
+    public static double HOOK_POS_DEPLOY = 0.35;
+    public static double TAG_TO_TAG_DIST = 6.75;
 
 
 

@@ -125,7 +125,7 @@ public class ServoCalibration extends LinearOpMode {
     int val = 1;
     while (val == 1)
     {
-      camServo.setPosition(BotConstants.CAM_SERVO_STRIKE);
+      camServo.setPosition(BotConstants.CAM_SERVO_SPIKE);
       telemetry.addLine(String.format("strike: %.3f", camServo.getPosition()));
       telemetry.update();
       sleep(3000);
