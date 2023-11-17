@@ -17,7 +17,6 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.checkerframework.checker.units.qual.Current;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -47,8 +46,8 @@ import java.util.List;
 
 public class AutonomousSoftwareOpMode extends LinearOpMode {
 
-  public int team     = BotConstants.BLUE_TEAM;
-  public int startLoc = BotConstants.START_SIDE_PIXEL;
+  public int team     = BotConstants.RED_TEAM;
+  public int startLoc = BotConstants.START_SIDE_BACKDROP;
 
   private Blinker control_Hub;
   private Servo bottomArmServo;
@@ -75,7 +74,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
   // Vision portal Replaces EasyOpenCV method
   private VisionPortal visionPortal;
-  Contours_Extraction pipeline = new Contours_Extraction();
+  Contours_Extraction contoursExtraction = new Contours_Extraction();
 
   // JW AprilTag
   private AprilTagProcessor aprilTag;
@@ -143,26 +142,26 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       if (startLoc == BotConstants.START_SIDE_PIXEL) {
         switch (zone) {
           case 1:
-            //RR_RZ1_Pixel();
+            RR_RZ1_Pixel();
             break;
           case 2:
-            //RR_RZ2_Pixel();
+            RR_RZ2_Pixel();
             break;
           case 3:
-            // RR_RZ3_Pixel();
+            RR_RZ3_Pixel();
             break;
         } // end switch
       } // end Pixel
       else {  // Backdrop Side
         switch (zone) {
           case 1:
-            //RR_RZ1_Backdrop();
+            RR_RZ1_Backdrop();
             break;
           case 2:
-            //RR_RZ2_Backdrop();
+            RR_RZ2_Backdrop();
             break;
           case 3:
-            //RR_RZ3_Backdrop();
+            RR_RZ3_Backdrop();
             break;
         } // end switch
       } // End Backdrop
@@ -185,7 +184,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-    visionPortal.setProcessorEnabled(pipeline,false);
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ1_PIXEL
     TrajectorySequence BZ1_PixelSide =
@@ -271,7 +270,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-    visionPortal.setProcessorEnabled(pipeline,false);
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ2_PIXEL
     TrajectorySequence BZ2_PixelSide =
@@ -355,7 +354,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-    visionPortal.setProcessorEnabled(pipeline,false);
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ3_PIXEL
     TrajectorySequence BZ3_PixelSide =
@@ -445,7 +444,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-    visionPortal.setProcessorEnabled(pipeline,false);
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ1_BackdropSide (14Nov)
     TrajectorySequence BZ1_BackdropSide =
@@ -458,7 +457,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .addDisplacementMarker(() -> {
 
       // Deploy Purple on strike 1
-      // TODO: REPLACE SLEEP with something else
+      // contoursExtraction: REPLACE SLEEP with something else
       bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(250);
       armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
@@ -534,7 +533,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-    visionPortal.setProcessorEnabled(pipeline,false);
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ2_BACKDROP
     TrajectorySequence BZ2_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, 62.50, Math.toRadians(-90.00)))
@@ -622,7 +621,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-    visionPortal.setProcessorEnabled(pipeline,false);
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ3_BACKDROP
     TrajectorySequence BZ3_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, 62.50, Math.toRadians(-90.00)))
@@ -701,6 +700,535 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ3_BackdropSideC);
   }
 
+
+  // OK 17Nov23 3:48p
+  public void RR_RZ3_Pixel()
+  {
+    double[] xyArray = new double[2];
+
+    // Lower Wrist
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
+
+    // RZ3_PIXEL
+    TrajectorySequence RZ3_PixelSide =
+    drive.trajectorySequenceBuilder(new Pose2d(-35.63, -62.50, Math.toRadians(90.00)))
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+    .lineToLinearHeading(new Pose2d(-36.38, -31.80, Math.toRadians(0)))
+    .addDisplacementMarker(() -> {
+
+      // Deploy Purple on strike 1
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      sleep(750);
+      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+      armmotor.setPower(1);
+      sleep(500);
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+      setWristFoldPosition();
+    })
+    .lineToConstantHeading(new Vector2d(-52.08, -32.16))
+    .lineToSplineHeading(new Pose2d(-60.67, -59, Math.toRadians(-180))) // Tweak 17Nov 3pm (Truss)
+    .lineToConstantHeading(new Vector2d(35.63, -59)) // tweak 17Nov 3Pm (Truss)
+    .lineToConstantHeading(new Vector2d(30, -36)) // View Location New Point for April Tag Red "3"
+    .build();
+    drive.setPoseEstimate(RZ3_PixelSide.start());
+    drive.followTrajectorySequence(RZ3_PixelSide);
+
+    // TODO: Possibly move cam swivel earlier
+    // TODO: try different focus modes for better picture?
+    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+    sleep(2000);
+    xyArray[0] = drive.getPoseEstimate().getX();
+    xyArray[1] = drive.getPoseEstimate().getY();
+
+    driveToTag = acquireTagLocation(new Vector2d(xyArray[0],xyArray[1]), team);
+    telemetry.addLine(String.format("AprilTag: (%.3f,%.3f), tagFound: %b, id: %d",driveToTag.getX(),driveToTag.getY(), tagFound, tagIdFound));
+    telemetry.addLine(String.format("PoseEstimate: (%.3f,%.3f)", xyArray[0], xyArray[1]));
+    telemetry.update();
+
+    TrajectorySequence RZ3_PixelSideB =
+    drive.trajectorySequenceBuilder(RZ3_PixelSide.end())
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+    .lineTo(driveToTag) // Go to April Tag
+    .build();
+    drive.setPoseEstimate(RZ3_PixelSideB.start());
+    drive.followTrajectorySequence(RZ3_PixelSideB);
+
+    // Drop Yellow Pixel
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
+    setWristDeployPosition();
+    // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+    while (armmotor.isBusy()) {
+      sleep(10);
+    }
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    sleep(400);
+
+    // Close up for parking
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    sleep(100);
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+    setWristFoldPosition();
+
+    // PARK
+    TrajectorySequence RZ3_PixelSideC =
+    drive.trajectorySequenceBuilder(RZ3_PixelSideB.end())
+    .lineToConstantHeading(new Vector2d(50, 0)) // tweak 17Nov23 (little farther)
+    .build();
+
+    drive.followTrajectorySequence(RZ3_PixelSideC);
+  }
+
+  // OK (ish) 17Nov23 (Rightward bounce at tag possible) -> offset left a bit 7.5"
+  @SuppressLint("DefaultLocale")
+  public void RR_RZ2_Pixel()
+  {
+    double[] xyArray = new double[2];
+
+    // Lower Wrist
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
+
+    // RZ2_PIXEL
+    TrajectorySequence RZ2_PixelSide =
+    drive.trajectorySequenceBuilder(new Pose2d(-35.63, -62.50, Math.toRadians(90.00)))
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+    .lineToConstantHeading(new Vector2d(-36.00, -36.55))
+    .addDisplacementMarker(() -> {
+      // Deploy Purple on strike 1
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      sleep(250);
+      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+      armmotor.setPower(1);
+      sleep(250);
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+      setWristFoldPosition();
+    })
+    .lineToConstantHeading(new Vector2d(-56, -38)) // tweaked // -54 32
+    .lineToSplineHeading(new Pose2d(-60.67, -59, Math.toRadians(-180.00))) // pretweak  17Nov23 3:50p
+    .lineTo(new Vector2d(33.25, -59))
+    .lineTo(new Vector2d(30, -36)) // View Location New Point for April Tag.
+    .build();
+    drive.setPoseEstimate(RZ2_PixelSide.start());
+    drive.followTrajectorySequence(RZ2_PixelSide);
+
+    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+    sleep(2000);
+    xyArray[0] = drive.getPoseEstimate().getX();
+    xyArray[1] = drive.getPoseEstimate().getY();
+
+    driveToTag = acquireTagLocation(new Vector2d(xyArray[0],xyArray[1]), team);
+    telemetry.addLine(String.format("AprilTag: (%.3f,%.3f), tagFound: %b, id: %d",driveToTag.getX(),driveToTag.getY(), tagFound, tagIdFound));
+    telemetry.addLine(String.format("PoseEstimate: (%.3f,%.3f)", xyArray[0], xyArray[1]));
+    telemetry.update();
+
+    TrajectorySequence RZ2_PixelSideB =
+    drive.trajectorySequenceBuilder(RZ2_PixelSide.end())
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+    .lineTo(driveToTag) // Go to April Tag
+    .build();
+    drive.setPoseEstimate(RZ2_PixelSideB.start());
+    drive.followTrajectorySequence(RZ2_PixelSideB);
+
+    // Drop Yellow Pixel
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
+    setWristDeployPosition();
+    // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+    while (armmotor.isBusy()) {
+      sleep(10);
+    }
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    sleep(400);
+
+    // Close up for parking
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    sleep(100);
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+    setWristFoldPosition();
+
+    // PARK
+    TrajectorySequence RZ2_PixelSideC =
+    drive.trajectorySequenceBuilder(RZ2_PixelSideB.end())
+    .lineTo(new Vector2d(44, 0))
+    .build();
+
+    drive.followTrajectorySequence(RZ2_PixelSideC);
+  }
+
+  // OK 17Nov23 with 7.5" cam dist
+  @SuppressLint("DefaultLocale")
+  public void RR_RZ1_Pixel()
+  {
+    double[] xyArray = new double[2];
+
+    // Lower Wrist
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
+
+    // RZ1_PIXEL
+    TrajectorySequence RZ1_PixelSide =
+    drive.trajectorySequenceBuilder(new Pose2d(-35.63, -62.50, Math.toRadians(90.00)))
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+
+    // .lineToConstantHeading(new Pose2d(-36.38, 31.80, Math.toRadians(-180)))
+    .lineToConstantHeading(new Vector2d(-50, -42))
+    .addDisplacementMarker(() -> {
+
+      // Deploy Purple on strike 1
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      sleep(750);
+      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+      armmotor.setPower(1);
+      sleep(500);
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+      setWristFoldPosition();
+    })
+    //.lineToConstantHeading(new Vector2d(-52.08, 32.16))
+    .lineToConstantHeading(new Vector2d(-59, -40))
+    .lineToSplineHeading(new Pose2d(-60.67, -59, Math.toRadians(-180.00))) // tweak Truss 17Nov 4pm
+    .lineToConstantHeading(new Vector2d(35.63, -59)) // tweak truss
+    .lineToConstantHeading(new Vector2d(30, -28)) // View Location New Point for April Tag.
+    .build();
+    drive.setPoseEstimate(RZ1_PixelSide.start());
+    drive.followTrajectorySequence(RZ1_PixelSide);
+
+    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+    sleep(2000);
+    xyArray[0] = drive.getPoseEstimate().getX();
+    xyArray[1] = drive.getPoseEstimate().getY();
+
+    driveToTag = acquireTagLocation(new Vector2d(xyArray[0],xyArray[1]), team);
+    telemetry.addLine(String.format("AprilTag: (%.3f,%.3f), tagFound: %b, id: %d",driveToTag.getX(),driveToTag.getY(), tagFound, tagIdFound));
+    telemetry.addLine(String.format("PoseEstimate: (%.3f,%.3f)", xyArray[0], xyArray[1]));
+    telemetry.update();
+
+    TrajectorySequence RZ1_PixelSideB =
+    drive.trajectorySequenceBuilder(RZ1_PixelSide.end())
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+    .lineToConstantHeading(driveToTag) // Go to April Tag
+    .build();
+    drive.setPoseEstimate(RZ1_PixelSideB.start());
+    drive.followTrajectorySequence(RZ1_PixelSideB);
+
+    // Drop Yellow Pixel
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
+    setWristDeployPosition();
+    // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+    while (armmotor.isBusy()) {
+      sleep(10);
+    }
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    sleep(400);
+
+    // Close up for parking
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    sleep(100);
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+    setWristFoldPosition();
+
+    // PARK
+    TrajectorySequence RZ1_PixelSideC =
+    drive.trajectorySequenceBuilder(RZ1_PixelSideB.end())
+    .lineToConstantHeading(new Vector2d(48.0, 0)) // tweak
+    .build();
+
+    drive.followTrajectorySequence(RZ1_PixelSideC);
+  }
+
+// OK 17Nov23
+  public void RR_RZ3_Backdrop()
+  {
+    double[] xyArray = new double[2];
+
+    // Lower Wrist
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
+
+    // RZ3_BackdropSide (14Nov)
+    TrajectorySequence RZ3_BackdropSide =
+    drive.trajectorySequenceBuilder(new Pose2d(12, -62.50, Math.toRadians(90.00)))
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+
+    .splineToConstantHeading(new Vector2d(26, -40), Math.toRadians(90)) // Drop Pixel P
+    .addDisplacementMarker(() -> {
+
+      // Deploy Purple on strike 1
+      // contoursExtraction: REPLACE SLEEP with something else
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      sleep(250);
+      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+      armmotor.setPower(1);
+      sleep(250);
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+      setWristFoldPosition();
+    })
+
+    .lineToLinearHeading(new Pose2d(36, -60, Math.toRadians(-178.70)))
+    .lineToLinearHeading(new Pose2d(36, -35, Math.toRadians(-180.00))) // view location
+    .build();
+    drive.setPoseEstimate(RZ3_BackdropSide.start());
+    drive.followTrajectorySequence(RZ3_BackdropSide);
+
+    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+    sleep(2000);
+    xyArray[0] = drive.getPoseEstimate().getX();
+    xyArray[1] = drive.getPoseEstimate().getY();
+
+    driveToTag = acquireTagLocation(new Vector2d(xyArray[0],xyArray[1]), team);
+    telemetry.addLine(String.format("AprilTag: (%.3f,%.3f), tagFound: %b, id: %d",driveToTag.getX(),driveToTag.getY(), tagFound, tagIdFound));
+    telemetry.addLine(String.format("PoseEstimate: (%.3f,%.3f)", xyArray[0], xyArray[1]));
+    telemetry.update();
+
+    TrajectorySequence RZ3_BackdropSideB =
+    drive.trajectorySequenceBuilder(RZ3_BackdropSide.end())
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+
+    .lineTo(driveToTag) // Go to April Tag location
+    .build();
+    drive.followTrajectorySequence(RZ3_BackdropSideB);
+
+    // Drop Yellow Pixel
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
+    setWristDeployPosition();
+    // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+    while (armmotor.isBusy()) {
+      sleep(10);
+    }
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    sleep(400);
+
+    // Close up for parking
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    sleep(100);
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+    setWristFoldPosition();
+
+    // PARK
+    TrajectorySequence RZ3_BackdropSideC =
+    drive.trajectorySequenceBuilder(RZ3_BackdropSideB.start())
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+
+    .lineTo(new Vector2d(51.53, -61.58))
+    .lineToLinearHeading(new Pose2d(62.50, -62.50, Math.toRadians(-180.00)))
+    .build();
+    drive.followTrajectorySequence(RZ3_BackdropSideC);
+  }
+
+
+  // OK 17Nov23 (4:38p) 7.5" cam
+  public void RR_RZ2_Backdrop()
+  {
+
+    double[] xyArray = new double[2];
+
+    // Lower Wrist
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
+
+    // BZ2_BACKDROP
+    TrajectorySequence RZ2_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, -62.50, Math.toRadians(90.00)))
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+
+
+    .lineToConstantHeading(new Vector2d(12.61, -36.55))
+    .addDisplacementMarker(() -> {
+
+      // Deploy Purple on strike 1
+      // TODO: REPLACE SLEEP with something else
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      sleep(250);
+      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+      armmotor.setPower(1);
+      sleep(250);
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+      setWristFoldPosition();
+    })
+    .lineToLinearHeading(new Pose2d(40, -35, Math.toRadians(-180.00))) // view location  // Tweak was 36
+    .build();
+
+    drive.setPoseEstimate(RZ2_BackdropSide.start());
+    drive.followTrajectorySequence(RZ2_BackdropSide);
+
+    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+    sleep(2000);
+    xyArray[0] = drive.getPoseEstimate().getX();
+    xyArray[1] = drive.getPoseEstimate().getY();
+
+    driveToTag = acquireTagLocation(new Vector2d(xyArray[0],xyArray[1]), team);
+    telemetry.addLine(String.format("AprilTag: (%.3f,%.3f), tagFound: %b, id: %d",driveToTag.getX(),driveToTag.getY(), tagFound, tagIdFound));
+    telemetry.addLine(String.format("PoseEstimate: (%.3f,%.3f)", xyArray[0], xyArray[1]));
+    telemetry.update();
+
+    TrajectorySequence RZ2_BackdropSideB =
+    drive.trajectorySequenceBuilder(RZ2_BackdropSide.end())
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+
+    .lineToConstantHeading(driveToTag) // Go to April Tag location
+    .build();
+    drive.followTrajectorySequence(RZ2_BackdropSideB);
+
+    // Drop Yellow Pixel
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
+    setWristDeployPosition();
+    // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+    while (armmotor.isBusy()) {
+      sleep(10);
+    }
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    sleep(400);
+
+    // Close up for parking
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    sleep(100);
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+    setWristFoldPosition();
+
+    // PARK
+    TrajectorySequence RZ2_BackdropSideC =
+    drive.trajectorySequenceBuilder(RZ2_BackdropSideB.start())
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+
+    .lineToConstantHeading(new Vector2d(51, -63)) // tweak
+    .lineToLinearHeading(new Pose2d(64, -63, Math.toRadians(-180.00))) // tweak (16nov)
+    .build();
+    drive.followTrajectorySequence(RZ2_BackdropSideC);
+  }
+
+
+  public void RR_RZ1_Backdrop()
+  {
+
+    double[] xyArray = new double[2];
+
+    // Lower Wrist
+    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+
+    visionPortal.setProcessorEnabled(contoursExtraction,false);
+
+    // RZ1_BACKDROP
+    TrajectorySequence RZ1_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, -62.50, Math.toRadians(90.00)))
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+
+
+    //.lineToLinearHeading(new Pose2d(12.97, -32, Math.toRadians(-180.00))) // 34
+    .splineToLinearHeading(new Pose2d(12.97, -32, Math.toRadians(-180.00)), Math.toRadians(-180.00)) // TWEAK 17Nov23 (Avoid truss bump)
+    .addDisplacementMarker(() -> {
+      // Deploy Purple on strike 1
+      // TODO: REPLACE SLEEP with something else
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      sleep(250);
+      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+      armmotor.setPower(1);
+      sleep(250);
+      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+      setWristFoldPosition();
+    })
+    .lineToConstantHeading(new Vector2d(40, -35)) // view location  // Tweak was 36
+    .build();
+
+    drive.setPoseEstimate(RZ1_BackdropSide.start());
+    drive.followTrajectorySequence(RZ1_BackdropSide);
+
+    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+    sleep(2000);
+    xyArray[0] = drive.getPoseEstimate().getX();
+    xyArray[1] = drive.getPoseEstimate().getY();
+
+    driveToTag = acquireTagLocation(new Vector2d(xyArray[0],xyArray[1]), team);
+    telemetry.addLine(String.format("AprilTag: (%.3f,%.3f), tagFound: %b, id: %d",driveToTag.getX(),driveToTag.getY(), tagFound, tagIdFound));
+    telemetry.addLine(String.format("PoseEstimate: (%.3f,%.3f)", xyArray[0], xyArray[1]));
+    telemetry.update();
+
+    TrajectorySequence RZ1_BackdropSideB =
+    drive.trajectorySequenceBuilder(RZ1_BackdropSide.end())
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+
+    .lineToConstantHeading(driveToTag) // Go to April Tag location
+    .build();
+    drive.followTrajectorySequence(RZ1_BackdropSideB);
+
+    // Drop Yellow Pixel
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
+    setWristDeployPosition();
+    // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+    while (armmotor.isBusy()) {
+      sleep(10);
+    }
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    sleep(400);
+
+    // Close up for parking
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    sleep(100);
+    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+    setWristFoldPosition();
+
+    // PARK
+    TrajectorySequence RZ1_BackdropSideC =
+    drive.trajectorySequenceBuilder(RZ1_BackdropSideB.start())
+    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+
+    .lineToConstantHeading(new Vector2d(51, -65)) // tweak
+    .lineToLinearHeading(new Pose2d(64, -65, Math.toRadians(-180.00))) // tweak
+    .build();
+    drive.followTrajectorySequence(RZ1_BackdropSideC);
+  }
+
+
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
   public void RRRunAutomation() {
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -923,7 +1451,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     aprilTag.setDecimation(1);
 
     // Add both Processors to the Portal
-    builder.addProcessors(pipeline, aprilTag);
+    builder.addProcessors(contoursExtraction, aprilTag);
 
 
     // Build the Vision Portal, using the above settings.
@@ -942,7 +1470,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   @SuppressLint("DefaultLocale")
   public int detectZone() {
 
-    int[] result = pipeline.getResult();
+    int[] result = contoursExtraction.getResult();
 
 
     if (result[0] < BotConstants.Z1_RECT_BRX && result[0] > BotConstants.Z1_RECT_TLX) {
@@ -1015,21 +1543,6 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
               telemetry.update();
               return Future;
             }
-          /*else
-          {
-            // This isn't the id we wanted, but we can calculate the distance to ours
-            // (seenId - targetId) * inches_between_adjacentTags (6")
-            partialId = detection.id;
-            partialLoc[0] = detection.ftcPose.x + (targetId - partialId)*6;
-            partialLoc[1] = detection.ftcPose.y;
-            partial = true;
-            tagIdFound = partialId;
-            tagFound = partial;
-
-            // Convert Camera->Tag Vector to FieldCentric Vector
-            Future = new Vector2d (Current.getX() + partialLoc[1] + BotConstants.APRIL_POSE_YOFFSET,
-                                   Current.getY() - partialLoc[0] + BotConstants.APRIL_POSE_XOFFSET);
-          }*/
 
           telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
           telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));

@@ -76,8 +76,8 @@ public class OpenCV_VisionPortal extends LinearOpMode {
       public void onOpened() {
         webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
 
-        pipeline = new Contours_Extraction();
-        webcam.setPipeline(pipeline);
+        contoursExtraction = new Contours_Extraction();
+        webcam.setPipeline(contoursExtraction);
       }
 
       @Override

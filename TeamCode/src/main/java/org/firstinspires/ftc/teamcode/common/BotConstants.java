@@ -51,7 +51,7 @@ public class BotConstants {
     public static int    RED_TEAM = 1;
     public static int    START_SIDE_PIXEL = 0;
     public static int    START_SIDE_BACKDROP = 1;
-    public static double APRIL_POSE_XOFFSET = 6.5;  // Camera to Arm X dist
+    public static double APRIL_POSE_XOFFSET = 7.5;  // Camera to Arm X dist was 6.5 (most blue and rz1p) 7.5 works for RZP
     public static double APRIL_POSE_YOFFSET = -9.5; // Camera to Grip Y Dist
     public static double DRONE_POS_ARMED = 0;
     public static double DRONE_POS_LAUNCH = 0.25;
