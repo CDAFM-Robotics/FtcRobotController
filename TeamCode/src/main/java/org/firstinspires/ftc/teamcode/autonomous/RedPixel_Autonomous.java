@@ -42,9 +42,9 @@ import org.opencv.imgproc.Moments;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(group = "Competition", name = "zAutonomous")
+@Autonomous(group = "Competition", name = "RedPixel_Autonomous")
 
-public class AutonomousSoftwareOpMode extends LinearOpMode {
+public class RedPixel_Autonomous extends LinearOpMode {
 
   public int team     = BotConstants.RED_TEAM;
   public int startLoc = BotConstants.START_SIDE_PIXEL;
