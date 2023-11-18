@@ -46,13 +46,14 @@ public class BotConstants {
     public static double DRONE_POSITION_LAUNCH=0.25;
     public static double SLOW_MODE = 0.8;
     public static int    RED_TEAM_ID_OFFSET = 3;
-    public static int    BLUE_TEAM_ID_OFFSET= 3; // TODO: FIX Temp test
+    public static int    BLUE_TEAM_ID_OFFSET= 0; // TODO: FIX Temp test
     public static int    BLUE_TEAM = 0;
     public static int    RED_TEAM = 1;
     public static int    START_SIDE_PIXEL = 0;
     public static int    START_SIDE_BACKDROP = 1;
     public static double APRIL_POSE_XOFFSET = 7.5;  // Camera to Arm X dist was 6.5 (most blue and rz1p) 7.5 works for RZP
-    public static double APRIL_POSE_YOFFSET = -9.5; // Camera to Grip Y Dist
+    public static double APRIL_POSE_YOFFSET = -9; // Camera to Grip Y Dist nov17 6: was 9.5
+    public static double CAM_TILT_ANGLE_RAD = 0.4188; // was 0.279
     public static double DRONE_POS_ARMED = 0;
     public static double DRONE_POS_LAUNCH = 0.25;
     public static double HOOK_POS_RETRACT = 0.0;

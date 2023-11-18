@@ -47,7 +47,7 @@ import java.util.List;
 public class AutonomousSoftwareOpMode extends LinearOpMode {
 
   public int team     = BotConstants.RED_TEAM;
-  public int startLoc = BotConstants.START_SIDE_BACKDROP;
+  public int startLoc = BotConstants.START_SIDE_PIXEL;
 
   private Blinker control_Hub;
   private Servo bottomArmServo;
@@ -192,7 +192,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
-    .lineToLinearHeading(new Pose2d(-36.38, 31.80, Math.toRadians(360.00)))
+
+
+    //.lineToLinearHeading(new Pose2d(-36.38, 31.80, Math.toRadians(360.00)))
+    .splineToLinearHeading(new Pose2d(-34.5, 31.80, Math.toRadians(0.00)), Math.toRadians(0.00)) // tweak 17nov 5pm was x-32.5
+
     .addDisplacementMarker(() -> {
 
       // Deploy Purple on strike 1
@@ -205,9 +209,9 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       setWristFoldPosition();
     })
     .lineToConstantHeading(new Vector2d(-52.08, 32.16))
-    .lineToSplineHeading(new Pose2d(-60.67, 61.58, Math.toRadians(180.00)))
-    .lineTo(new Vector2d(35.63, 62.13))
-    .lineTo(new Vector2d(30, 36)) // View Location New Point for April Tag.
+    .lineToSplineHeading(new Pose2d(-60.67, 59, Math.toRadians(180.00))) // tweak 17Nov23 truss
+    .lineTo(new Vector2d(35.63, 59)) // tweak 17nov23
+    .lineTo(new Vector2d(32, 36)) // View Location New Point for April Tag. (tweak 17nov23 was x:30 encroach)
     .build();
     drive.setPoseEstimate(BZ1_PixelSide.start());
     drive.followTrajectorySequence(BZ1_PixelSide);
@@ -278,8 +282,10 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
+
+
     //.lineToLinearHeading(new Pose2d(-36.38, 31.80, Math.toRadians(360.00)))
-    .lineToConstantHeading(new Vector2d(-36.00, 36.55))
+    .lineToConstantHeading(new Vector2d(-36.00, 36)) // tweak 17n 530p was y:38
     .addDisplacementMarker(() -> {
       // Deploy Purple on strike 1
       bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
@@ -293,7 +299,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .lineToConstantHeading(new Vector2d(-56, 38)) // tweaked // -54 32
     .lineToSplineHeading(new Pose2d(-60.67, 61.58, Math.toRadians(180.00)))
     .lineTo(new Vector2d(33.25, 59))
-    .lineTo(new Vector2d(30, 36)) // View Location New Point for April Tag.
+    .lineTo(new Vector2d(30, 31)) // View Location New Point for April Tag. // tweak 17n 5:22p was y:33 y:36
     .build();
     drive.setPoseEstimate(BZ2_PixelSide.start());
     drive.followTrajectorySequence(BZ2_PixelSide);
@@ -542,7 +548,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
 
-    .lineToConstantHeading(new Vector2d(12.61, 36.55))
+    .lineToConstantHeading(new Vector2d(12.61, 35)) // tweak 17n 6:20 was 36.55
     .addDisplacementMarker(() -> {
 
       // Deploy Purple on strike 1
@@ -631,7 +637,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
 
     //.lineToConstantHeading(new Vector2d(12.61, 36.55))
-    .lineToLinearHeading(new Pose2d(12.97, 32, Math.toRadians(180.00))) // 34
+    //.lineToLinearHeading(new Pose2d(12.97, 32, Math.toRadians(180.00))) // 34
+    .splineToLinearHeading(new Pose2d(10.5, 32, Math.toRadians(180.00)), Math.toRadians(180.00))
     .addDisplacementMarker(() -> {
       // Deploy Purple on strike 1
       // TODO: REPLACE SLEEP with something else
@@ -896,10 +903,10 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
       // Deploy Purple on strike 1
       bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-      sleep(750);
+      sleep(250);
       armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
       armmotor.setPower(1);
-      sleep(500);
+      sleep(250);
       bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
@@ -1068,7 +1075,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
 
-    .lineToConstantHeading(new Vector2d(12.61, -36.55))
+    .lineToConstantHeading(new Vector2d(12.61, -34.55)) // tweak was -36.55
     .addDisplacementMarker(() -> {
 
       // Deploy Purple on strike 1
@@ -1505,7 +1512,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     // These are the field locations of the tags
     Vector2d[][] fallbackLoc = {
     {new Vector2d(61.22,41.66), new Vector2d(61.22,35.63),new Vector2d(61.22,29.24)},  // BLUE tags
-    {new Vector2d(61.22,-30.15),new Vector2d(61.22,-36.37),new Vector2d(61.22,-42.4)}   // RED  tags
+    {new Vector2d(61.22,-30.15),new Vector2d(61.22,-36.37),new Vector2d(61.22,-42.4)}   // RED tags
     };
 
     int targetId;
@@ -1533,7 +1540,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
         if (detection.metadata != null) {
             // ftcPose camera to tag looks like "+Y" move towards backdrop, "X" move to the right, "z" is ignored
             // Reverse GetY and GetX from Field pose
-            Future = new Vector2d(Current.getX() + detection.ftcPose.y + BotConstants.APRIL_POSE_YOFFSET,
+            Future = new Vector2d(Current.getX() +  Math.cos(BotConstants.CAM_TILT_ANGLE_RAD)*detection.ftcPose.y + BotConstants.APRIL_POSE_YOFFSET,
                                   Current.getY() - (detection.ftcPose.x + (targetId - detection.id)*BotConstants.TAG_TO_TAG_DIST) + BotConstants.APRIL_POSE_XOFFSET);
             found = true;
             tagIdFound = targetId;
