@@ -171,6 +171,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     while (opModeIsActive())
     {
       // do nothing after Automation until end
+      armmotor.setTargetPosition(0);
     }
   }
 

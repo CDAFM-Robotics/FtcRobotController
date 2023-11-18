@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opMode;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
@@ -16,6 +17,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.common.BotConstants;
 
+@Disabled
 @TeleOp (group = "Competition", name = "Field Centric 1P")
 
 // Next line will prevent code from building and showing up on Control Hub
