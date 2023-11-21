@@ -8,8 +8,6 @@ import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.Gyroscope;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -67,7 +65,7 @@ public class FieldCentric1P extends LinearOpMode {
     double wristPanPos = 0;
     double botHeading = 0;
 
-    double slow_mode = BotConstants.SLOW_MODE;
+    double slow_mode = BotConstants.DRIVE_SLOW_MODE;
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();
 

@@ -17,9 +17,9 @@ import org.firstinspires.ftc.teamcode.common.BotConstants;
 
 @TeleOp (group = "Competition", name = "Toggle Centric 2Player")
 
-// Next line will prevent code from building and showing up on Control Hub
+// Comment next line to prevent code from building and showing up on Control Hub
 // @Disabled
-// comment
+
 
 public class ToggleCentric2P extends LinearOpMode {
   private Blinker control_Hub;
@@ -83,7 +83,7 @@ public class ToggleCentric2P extends LinearOpMode {
     Gamepad previousGamepad1 = new Gamepad();
     Gamepad previousGamepad2 = new Gamepad();
 
-    double slow_mode = BotConstants.SLOW_MODE;
+    double driveSpeed = BotConstants.DRIVE_SLOW_MODE;
 
     PwmControl hookServoPWM = (PwmControl) hookServo;
 
@@ -169,10 +169,21 @@ public class ToggleCentric2P extends LinearOpMode {
       if (!robotHanging) {
         //Driving control from Gamepad 1
         //mecanum drive train
-        // TODO: ADD SLOW_MODE Toggle between 1.0 and BotConstants.SLOW_MODE
-        lStickX = slow_mode * (gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x));
-        lStickY = slow_mode * (-gamepad1.left_stick_y * Math.abs(gamepad1.left_stick_y));
-        rStickX = slow_mode * (gamepad1.right_stick_x * Math.abs(gamepad1.right_stick_x));
+        // TODO: ADD DRIVE_SLOW_MODE Toggle between 1.0 and BotConstants.DRIVE_SLOW_MODE
+
+        if (currentGamepad1.left_stick_button && !previousGamepad1.left_stick_button) {
+          if (driveSpeed == BotConstants.DRIVE_NORMAL_MODE) {
+            driveSpeed = BotConstants.DRIVE_SLOW_MODE;
+          }
+          else {
+            driveSpeed = BotConstants.DRIVE_NORMAL_MODE;
+          }
+        }
+
+
+        lStickX = driveSpeed * (gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x));
+        lStickY = driveSpeed * (-gamepad1.left_stick_y * Math.abs(gamepad1.left_stick_y));
+        rStickX = driveSpeed * (gamepad1.right_stick_x * Math.abs(gamepad1.right_stick_x));
 
         //If the field centric drive lost direction, push Back button to reset heading to Bot Front
         if (currentGamepad1.back && !previousGamepad1.back) {

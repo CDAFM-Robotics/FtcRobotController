@@ -82,7 +82,7 @@ public class FieldCentric2P extends LinearOpMode {
     Gamepad previousGamepad1 = new Gamepad();
     Gamepad previousGamepad2 = new Gamepad();
 
-    double slow_mode = BotConstants.SLOW_MODE;
+    double slow_mode = BotConstants.DRIVE_SLOW_MODE;
 
     PwmControl hookServoPWM = (PwmControl) hookServo;
 
@@ -168,7 +168,7 @@ public class FieldCentric2P extends LinearOpMode {
       if (!robotHanging) {
         //Driving control from Gamepad 1
         //mecanum drive train
-        // TODO: ADD SLOW_MODE Toggle between 1.0 and BotConstants.SLOW_MODE
+        // TODO: ADD DRIVE_SLOW_MODE Toggle between 1.0 and BotConstants.DRIVE_SLOW_MODE
         lStickX = slow_mode * (gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x));
         lStickY = slow_mode * (-gamepad1.left_stick_y * Math.abs(gamepad1.left_stick_y));
         rStickX = slow_mode * (gamepad1.right_stick_x * Math.abs(gamepad1.right_stick_x));
