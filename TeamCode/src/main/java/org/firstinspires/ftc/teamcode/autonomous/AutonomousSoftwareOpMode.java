@@ -42,11 +42,11 @@ import org.opencv.imgproc.Moments;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(group = "Competition", name = "zAutonomous")
+@Autonomous(group = "Competition", name = "Autonomous")
 
 public class AutonomousSoftwareOpMode extends LinearOpMode {
 
-  public int team     = BotConstants.RED_TEAM;
+  public int team     = BotConstants.BLUE_TEAM;
   public int startLoc = BotConstants.START_SIDE_PIXEL;
 
   private Blinker control_Hub;
@@ -108,6 +108,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       zone = detectZone();
     }
     //waitForStart();
+
+
 
     if (team == BotConstants.BLUE_TEAM) {
       if (startLoc == BotConstants.START_SIDE_PIXEL) {
@@ -189,7 +191,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // BZ1_PIXEL
     TrajectorySequence BZ1_PixelSide =
-    drive.trajectorySequenceBuilder(new Pose2d(-35.63, 62.50, Math.toRadians(-90.00)))
+    drive.trajectorySequenceBuilder(new Pose2d(-35.63, 63.50, Math.toRadians(-90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
@@ -209,9 +211,17 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
+    /*
     .lineToConstantHeading(new Vector2d(-52.08, 32.16))
     .lineToSplineHeading(new Pose2d(-60.67, 59, Math.toRadians(180.00))) // tweak 17Nov23 truss
     .lineTo(new Vector2d(35.63, 59)) // tweak 17nov23
+
+     */
+
+    // TODO: test again commenting OUT the SLEEP above to see if that is introducing an error
+    .lineTo(new Vector2d(-36.00, 66.00))
+    .lineTo(new Vector2d(12.00, 66.00))
+    .lineToLinearHeading(new Pose2d(36.00, 60.00, Math.toRadians(180.00))) //TODO: adapt to other trajectories
     .lineTo(new Vector2d(32, 36)) // View Location New Point for April Tag. (tweak 17nov23 was x:30 encroach)
     .build();
     drive.setPoseEstimate(BZ1_PixelSide.start());
@@ -279,7 +289,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // BZ2_PIXEL
     TrajectorySequence BZ2_PixelSide =
-    drive.trajectorySequenceBuilder(new Pose2d(-35.63, 62.50, Math.toRadians(-90.00)))
+    drive.trajectorySequenceBuilder(new Pose2d(-35.63, 63.50, Math.toRadians(-90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
@@ -365,7 +375,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // BZ3_PIXEL
     TrajectorySequence BZ3_PixelSide =
-    drive.trajectorySequenceBuilder(new Pose2d(-35.63, 62.50, Math.toRadians(-90.00)))
+    drive.trajectorySequenceBuilder(new Pose2d(-35.63, 63.50, Math.toRadians(-90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
@@ -455,7 +465,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // BZ1_BackdropSide (14Nov)
     TrajectorySequence BZ1_BackdropSide =
-    drive.trajectorySequenceBuilder(new Pose2d(12, 62.50, Math.toRadians(-90.00)))
+    drive.trajectorySequenceBuilder(new Pose2d(12, 63.50, Math.toRadians(-90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
@@ -543,7 +553,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ2_BACKDROP
-    TrajectorySequence BZ2_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, 62.50, Math.toRadians(-90.00)))
+    TrajectorySequence BZ2_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, 63.50, Math.toRadians(-90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
                     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
@@ -631,7 +641,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ3_BACKDROP
-    TrajectorySequence BZ3_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, 62.50, Math.toRadians(-90.00)))
+    TrajectorySequence BZ3_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, 63.50, Math.toRadians(-90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
@@ -722,7 +732,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // RZ3_PIXEL
     TrajectorySequence RZ3_PixelSide =
-    drive.trajectorySequenceBuilder(new Pose2d(-35.63, -62.50, Math.toRadians(90.00)))
+    drive.trajectorySequenceBuilder(new Pose2d(-35.63, -63.50, Math.toRadians(90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
@@ -809,7 +819,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // RZ2_PIXEL
     TrajectorySequence RZ2_PixelSide =
-    drive.trajectorySequenceBuilder(new Pose2d(-35.63, -62.50, Math.toRadians(90.00)))
+    drive.trajectorySequenceBuilder(new Pose2d(-35.63, -63.50, Math.toRadians(90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
@@ -893,7 +903,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // RZ1_PIXEL
     TrajectorySequence RZ1_PixelSide =
-    drive.trajectorySequenceBuilder(new Pose2d(-35.63, -62.50, Math.toRadians(90.00)))
+    drive.trajectorySequenceBuilder(new Pose2d(-35.63, -63.50, Math.toRadians(90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
@@ -980,7 +990,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // RZ3_BackdropSide (14Nov)
     TrajectorySequence RZ3_BackdropSide =
-    drive.trajectorySequenceBuilder(new Pose2d(12, -62.50, Math.toRadians(90.00)))
+    drive.trajectorySequenceBuilder(new Pose2d(12, -63.50, Math.toRadians(90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
@@ -1070,7 +1080,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ2_BACKDROP
-    TrajectorySequence RZ2_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, -62.50, Math.toRadians(90.00)))
+    TrajectorySequence RZ2_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, -63.50, Math.toRadians(90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
@@ -1159,7 +1169,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // RZ1_BACKDROP
-    TrajectorySequence RZ1_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, -62.50, Math.toRadians(90.00)))
+    TrajectorySequence RZ1_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, -63.50, Math.toRadians(90.00)))
     .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
