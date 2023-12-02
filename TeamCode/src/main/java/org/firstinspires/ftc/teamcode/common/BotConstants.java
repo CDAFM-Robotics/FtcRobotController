@@ -47,13 +47,16 @@ public class BotConstants {
     public static double DRIVE_SLOW_MODE = 0.5;
     public static double DRIVE_NORMAL_MODE = 1.0;
     public static int    RED_TEAM_ID_OFFSET = 3;
-    public static int    BLUE_TEAM_ID_OFFSET= 0; // TODO: FIX Temp test
+    public static int    BLUE_TEAM_ID_OFFSET= 0;
     public static int    BLUE_TEAM = 0;
     public static int    RED_TEAM = 1;
     public static int    START_SIDE_PIXEL = 0;
     public static int    START_SIDE_BACKDROP = 1;
     public static double APRIL_POSE_XOFFSET = 7.5;  // Camera to Arm X dist was 6.5 (most blue and rz1p) 7.5 works for RZP
     public static double APRIL_POSE_YOFFSET = -9; // Camera to Grip Y Dist nov17 6: was 9.5
+    public static double LEFT_EDGE_OFFSET = 0.75; // try to drop pixel against left edge
+    public static double RIGHT_EDGE_OFFSET = -0.75; // try to drop pixel against right edge
+    public static double CENTER_TAG_OFFSET = 0;
     public static double CAM_TILT_ANGLE_RAD = 0.4188; // was 0.279
     public static double DRONE_POS_ARMED = 0;
     public static double DRONE_POS_LAUNCH = 0.25;
@@ -90,7 +93,7 @@ public class BotConstants {
     public static int Z2_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
 
     // Zone 3 Rect
-    public static int Z3_RECT_TLX = 480;
+    public static int Z3_RECT_TLX = 470; // 480
     public static int Z3_RECT_TLY = ROI_RECT_TOP_LEFT_Y;
     public static int Z3_RECT_BRX = ROI_RECT_BOTTOM_RIGHT_X;
     public static int Z3_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
