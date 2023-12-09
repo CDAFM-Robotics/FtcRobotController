@@ -43,7 +43,7 @@ public class BotConstants {
 
     // DRONE, HOOK and MISC
     public static double DRONE_POSITION_ARMED=0;
-    public static double DRONE_POSITION_LAUNCH=0.25;
+    public static double DRONE_POSITION_LAUNCH=0.375;
     public static double DRIVE_SLOW_MODE = 0.5;
     public static double DRIVE_NORMAL_MODE = 1.0;
     public static int    RED_TEAM_ID_OFFSET = 3;

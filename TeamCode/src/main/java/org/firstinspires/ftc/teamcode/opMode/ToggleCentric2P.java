@@ -179,6 +179,14 @@ public class ToggleCentric2P extends LinearOpMode {
             driveSpeed = BotConstants.DRIVE_NORMAL_MODE;
           }
         }
+        if (currentGamepad1.right_bumper != previousGamepad1.right_bumper) {
+          if (driveSpeed == BotConstants.DRIVE_NORMAL_MODE) {
+            driveSpeed = BotConstants.DRIVE_SLOW_MODE;
+          }
+          else {
+            driveSpeed = BotConstants.DRIVE_NORMAL_MODE;
+          }
+        }
 
 
         lStickX = driveSpeed * (gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x));
