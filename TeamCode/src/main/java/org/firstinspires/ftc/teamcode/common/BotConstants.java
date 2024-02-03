@@ -24,6 +24,8 @@ public class BotConstants {
 
     // Arm Constants
     public static int ARM_POS_FLOOR = 175; // was 150 (used FieldCentric2p val
+    public static int ARM_POS_2_outof_5 = 416;
+    public static int ARM_POS_2_outof_3 = 282;
     public static int ARM_POS_FLOOR_TELEOP = 178; // was 150 (used FieldCentric2p val
     public static int ARM_POS_DRIVE = 600;
     public static int ARM_POS_AUTO_DEPLOY = 7718;

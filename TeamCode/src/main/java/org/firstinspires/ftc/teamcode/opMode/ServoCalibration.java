@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 * set each finger servo to 0.15, then align fingers to first notch before fully closed
 */
 
-// @Disabled
+@Disabled
 @TeleOp (group = "Testing", name = "ServoCalibrate")
 
 // Next line will prevent code from building and showing up on Control Hub

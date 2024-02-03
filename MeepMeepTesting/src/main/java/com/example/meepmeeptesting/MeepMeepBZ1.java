@@ -31,15 +31,30 @@ public class MeepMeepBZ1 {
 */
     RoadRunnerBotEntity BotBZ1_BACK = new DefaultBotBuilder(meepMeep)
     .setColorScheme(new ColorSchemeBlueDark())
-    .setConstraints(52,52,Math.toRadians(180), Math.toRadians(180), 17.66)
-    .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(12.97, 62.31, Math.toRadians(-90.00)))
-    .splineToConstantHeading(new Vector2d(23.76, 41.12), Math.toRadians(266.67))
+    .setConstraints(45,45,Math.toRadians(120), Math.toRadians(120), 17.66)
+    .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(12, 63.5, Math.toRadians(-90.00)))
+    .splineToConstantHeading(new Vector2d(26, 40), Math.toRadians(-90))
+
+          // TODO: ADD SOME WAIT OF ~500MS + for YELLOW PIXEL
+
+    .lineToLinearHeading(new Pose2d(36, 60, Math.toRadians(178.80)))
+            .lineToLinearHeading(new Pose2d(36, 35, Math.toRadians(180.00))) // view location
+
+            // TODO: Estimate time to Set Camera and sleep 2000
+            // TODO: Calculate Reference Location for Observed April Tag
 
 
-    .lineToLinearHeading(new Pose2d(34.72, 43.68, Math.toRadians(180.00)))
-    .lineTo(new Vector2d(45.14, 42.58))
+            .lineTo(new Vector2d(45.14, 42.58)) // TODO: APRIL TAG LOC
+
+           // TODO: While ArmMotor isBusy wait
+           // TODO: Add Time to setArmServo Bottom and Open
+            // TODO: Add 400ms wait
+            // TODO: Add time to SetArmforParkiing
+            // TODO: Add 100ms wait
+            // TODO: Add time to Set Wrist folded
+
     .lineTo(new Vector2d(51.53, 61.58))
-    .lineToLinearHeading(new Pose2d(60.67, 61.40, Math.toRadians(180.00)))
+    .lineToLinearHeading(new Pose2d(62.50, 62.50, Math.toRadians(180.00)))
     .build());
 
 
@@ -134,7 +149,7 @@ public class MeepMeepBZ1 {
     meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
     .setDarkMode(true)
     .setBackgroundAlpha(0.95f)
-    .addEntity(BotBZ1_PIXEL)
+    //.addEntity(BotBZ1_PIXEL)
     .addEntity(BotBZ1_BACK)
     .start();
   }

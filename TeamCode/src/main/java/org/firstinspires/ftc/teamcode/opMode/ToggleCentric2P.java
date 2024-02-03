@@ -241,6 +241,8 @@ public class ToggleCentric2P extends LinearOpMode {
           // the driver can use gamepad2 left stick to fine tune the position
           // dpad left set the arm at driving height
           // dpad down set the arm at pick up position
+          // dpad down set the arm at pick up top two pixels from a five-pixel stack
+          // button B set the arm at pick up top two pixels from a three-pixel stack
           if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up) {
             wristPanPos = BotConstants.WRIST_PAN_SERVO_L2_DEPLOY;
             wristPanServo.setPosition(wristPanPos);
@@ -260,6 +262,34 @@ public class ToggleCentric2P extends LinearOpMode {
             else {
               wristPanServo.setPosition(wristPanPos);
               armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR_TELEOP);
+              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
+            }
+            dPadPressed = true;
+          }
+          else if (currentGamepad2.dpad_right && !previousGamepad2.dpad_right) {
+            wristPanPos = BotConstants.WRIST_PICK_UP;
+            if (armmotor.getCurrentPosition() >= 6000) {
+              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
+              armmotor.setTargetPosition(BotConstants.ARM_POS_2_outof_5);
+              wristPanServo.setPosition(wristPanPos);
+            }
+            else {
+              wristPanServo.setPosition(wristPanPos);
+              armmotor.setTargetPosition(BotConstants.ARM_POS_2_outof_5);
+              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
+            }
+            dPadPressed = true;
+          }
+          else if (currentGamepad2.b && !previousGamepad2.b) {
+            wristPanPos = BotConstants.WRIST_PICK_UP;
+            if (armmotor.getCurrentPosition() >= 6000) {
+              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
+              armmotor.setTargetPosition(BotConstants.ARM_POS_2_outof_3);
+              wristPanServo.setPosition(wristPanPos);
+            }
+            else {
+              wristPanServo.setPosition(wristPanPos);
+              armmotor.setTargetPosition(BotConstants.ARM_POS_2_outof_3);
               //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
             }
             dPadPressed = true;
