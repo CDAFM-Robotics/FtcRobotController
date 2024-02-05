@@ -109,7 +109,7 @@ public class RedPixel_Autonomous extends LinearOpMode {
     }
     //waitForStart();
 
-
+    sleep(5500);
 
     if (team == BotConstants.BLUE_TEAM) {
       if (startLoc == BotConstants.START_SIDE_PIXEL) {

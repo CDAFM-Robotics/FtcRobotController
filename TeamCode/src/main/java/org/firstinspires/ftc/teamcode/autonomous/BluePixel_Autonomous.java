@@ -109,6 +109,8 @@ public class BluePixel_Autonomous extends LinearOpMode {
     }
     //waitForStart();
 
+    sleep(5500);
+
 
 
     if (team == BotConstants.BLUE_TEAM) {
@@ -1712,7 +1714,7 @@ public class BluePixel_Autonomous extends LinearOpMode {
     Scalar rLower2 = new Scalar(170, 70, 50);
     Scalar rUpper2 = new Scalar(180, 255, 255);
     Scalar bLower = new Scalar(BotConstants.BLUE_HUE_LOW, BotConstants.BLUE_SAT_LOW, BotConstants.BLUE_VAL_LOW);
-    Scalar bUpper = new Scalar(BotConstants.BLUE_HUE_HIGH, BotConstants.BLUE_SAT_HIGH, BotConstants.BLUE_VAL_HIGH);
+    Scalar bUpper = new Scalar(BotConstants.BLUE_HUE_HIGH, 255, BotConstants.BLUE_VAL_HIGH);
     MatOfPoint big_contour = null;
     int big_contourIdx = 0;
     int cX, cY = 0;

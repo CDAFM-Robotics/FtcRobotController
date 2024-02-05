@@ -43,10 +43,10 @@ public class G2MotorServoTest extends LinearOpMode {
     control_Hub = hardwareMap.get(Blinker.class, "Control Hub");
     servo1 = hardwareMap.get(Servo.class, "Servo1");
     servo2 = hardwareMap.get(Servo.class, "Servo2");
-    motor1 = hardwareMap.get(DcMotor.class, "Motor1");
-    motor2 = hardwareMap.get(DcMotor.class, "Motor2");
-    motor3 = hardwareMap.get(DcMotor.class, "Motor3");
-    motor4 = hardwareMap.get(DcMotor.class, "Motor4");
+    motor1 = hardwareMap.get(DcMotor.class, "SlideMotor1");
+    motor2 = hardwareMap.get(DcMotor.class, "SlideMotor2");
+    motor3 = hardwareMap.get(DcMotor.class, "SlideRotation");
+    motor4 = hardwareMap.get(DcMotor.class, "IntakeMotor");
 
     //define initial values for variables
     double lStickY2; //Gamepad 2 left stick servo1 control
@@ -165,5 +165,6 @@ public class G2MotorServoTest extends LinearOpMode {
     }
 
   }
+
 
 }
