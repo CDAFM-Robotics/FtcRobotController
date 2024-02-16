@@ -109,7 +109,7 @@ public class RedPixel_Autonomous extends LinearOpMode {
     }
     //waitForStart();
 
-    sleep(5500);
+    sleep(3500);
 
     if (team == BotConstants.BLUE_TEAM) {
       if (startLoc == BotConstants.START_SIDE_PIXEL) {
@@ -779,9 +779,7 @@ public class RedPixel_Autonomous extends LinearOpMode {
      */
 
     // Back to Start (slow down no Slip)
-    .lineTo(new Vector2d(-36.00, -66.00),
-    SampleMecanumDrive.getVelocityConstraint(15,30,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .lineTo(new Vector2d(-36.00, -66.00))
 
     // Through the Truss normal speed
     .lineTo(new Vector2d(12.00, -66.00))

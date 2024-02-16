@@ -109,7 +109,7 @@ public class BluePixel_Autonomous extends LinearOpMode {
     }
     //waitForStart();
 
-    sleep(5500);
+    sleep(3500);
 
 
 
@@ -230,9 +230,10 @@ public class BluePixel_Autonomous extends LinearOpMode {
     .lineTo(new Vector2d(12.00, 66.00))
 
     // Slowed down
-    .lineToLinearHeading(new Pose2d(36.00, 60.00, Math.toRadians(180.00)),
+    .lineToLinearHeading(new Pose2d(36.00, 60.00, Math.toRadians(180.00))/*,
     SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30)
+    */
     )
     .lineTo(new Vector2d(36, 36),
     SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
