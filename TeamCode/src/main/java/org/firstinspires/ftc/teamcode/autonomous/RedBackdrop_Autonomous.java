@@ -1105,7 +1105,7 @@ public class RedBackdrop_Autonomous extends LinearOpMode {
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineTo(new Vector2d(51.53, -61.58))
-    .lineToLinearHeading(new Pose2d(62.50, -62.50, Math.toRadians(-180.00)))
+    .lineToLinearHeading(new Pose2d(63.50, -66.50, Math.toRadians(-180.00)))
     .build();
     drive.followTrajectorySequence(RZ3_BackdropSideC);
   }

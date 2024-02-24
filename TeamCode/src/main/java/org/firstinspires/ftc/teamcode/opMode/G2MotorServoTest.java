@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opMode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
@@ -10,7 +9,6 @@ import com.qualcomm.robotcore.hardware.Gyroscope;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.common.BotConstants;
 
 
@@ -18,7 +16,7 @@ import org.firstinspires.ftc.teamcode.common.BotConstants;
 * This program provide the hardware design team a simple way to test four motors and two
 * servos.
 */
-@Disabled
+//@Disabled
 @TeleOp (group = "G2 Robot", name = "G2 Motor Servo Test")
 
 // Next line will prevent code from building and showing up on Control Hub
@@ -32,8 +30,8 @@ public class G2MotorServoTest extends LinearOpMode {
   private DcMotor motor3 = null; //
   private DcMotor motor4 = null; //
 
-  private Servo servo1;
-  private Servo servo2;
+  private Servo pixelHolderServo;
+  private Servo wristServo;
 
   private ElapsedTime runtime = new ElapsedTime();
 
@@ -41,11 +39,11 @@ public class G2MotorServoTest extends LinearOpMode {
   public void runOpMode() {
     //read hardware configurations
     control_Hub = hardwareMap.get(Blinker.class, "Control Hub");
-    servo1 = hardwareMap.get(Servo.class, "Servo1");
-    servo2 = hardwareMap.get(Servo.class, "Servo2");
+    pixelHolderServo = hardwareMap.get(Servo.class, "Servo1");
+    wristServo = hardwareMap.get(Servo.class, "Servo2");
     motor1 = hardwareMap.get(DcMotor.class, "SlideMotor1");
     motor2 = hardwareMap.get(DcMotor.class, "SlideMotor2");
-    motor3 = hardwareMap.get(DcMotor.class, "SlideRotation");
+//    motor3 = hardwareMap.get(DcMotor.class, "SlideRotation");
     motor4 = hardwareMap.get(DcMotor.class, "IntakeMotor");
 
     //define initial values for variables
@@ -63,9 +61,9 @@ public class G2MotorServoTest extends LinearOpMode {
     motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-    motor3.setPower(0);
-    motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    motor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//    motor3.setPower(0);
+//    motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//    motor3.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     motor4.setPower(0);
     motor4.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -80,13 +78,13 @@ public class G2MotorServoTest extends LinearOpMode {
 
     Gamepad previousGamepad1 = new Gamepad();
     Gamepad previousGamepad2 = new Gamepad();
-
-    servo1.setPosition(0);
-    servo1Position = servo1.getPosition();
+    // 0.12 not holding and pixel, 0.00 hold both, 0.2 hold one
+    pixelHolderServo.setPosition(0.12);
+    servo1Position = pixelHolderServo.getPosition();
     telemetry.addData("Servo 1 Position initialized:", "%.3f", servo1Position);
 
-    servo2.setPosition(0);
-    servo2Position = servo2.getPosition();
+    wristServo.setPosition(0.76);
+    servo2Position = wristServo.getPosition();
     telemetry.addData("Servo 2 Position initialized:", "%.3f", servo2Position);
     telemetry.addData("Push play to start"," ");
     telemetry.update();
@@ -116,17 +114,17 @@ public class G2MotorServoTest extends LinearOpMode {
       telemetry.addData("Left stick gamepad2","controls servo 1");
       telemetry.addData("Right stick gamepad2","controls servo 2");
 
-      motor1.setPower(gamepad1.left_stick_y);
-      motor2.setPower(gamepad1.left_stick_y);
-      motor3.setPower(gamepad1.right_stick_y);
-      motor4.setPower(gamepad1.right_trigger-gamepad1.left_trigger);
+      motor1.setPower(gamepad2.left_stick_y);
+      motor2.setPower(-gamepad2.left_stick_y);
+//      motor3.setPower(gamepad1.right_stick_y);
+      motor4.setPower(gamepad2.right_stick_y);
       telemetry.addData(" ", " ");
       telemetry.addData("Motor1&2 power", "%.3f", motor1.getPower());
-      telemetry.addData("Motor3 power", "%.3f", motor3.getPower());
+//      telemetry.addData("Motor3 power", "%.3f", motor3.getPower());
       telemetry.addData("Motor4 power", "%.3f", motor4.getPower());
 
       lStickY2 = -gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y);
-      if (lStickY2 > 0) {
+      /*if (lStickY2 > 0) {
         servo1Position += BotConstants.WRIST_PAN_SERVO_SPEED;
         if ( servo1Position > 1 )
           servo1Position = 1;
@@ -138,11 +136,18 @@ public class G2MotorServoTest extends LinearOpMode {
       }
       else {
         //do nothing when the stick is at 0 position
+      }*/
+      if (currentGamepad2.b && !previousGamepad2.b && servo2Position < 0.76) {
+        servo2Position = wristServo.getPosition() + BotConstants.WRIST_PAN_SERVO_SPEED;
       }
-      servo1.setPosition(servo1Position);
-      telemetry.addData("Servo1", "Position %.3f", servo1.getPosition());
+      else if(currentGamepad2.a && !previousGamepad2.a && servo2Position > 0) {
+        servo2Position = wristServo.getPosition() - BotConstants.WRIST_PAN_SERVO_SPEED;
+      }
 
-      rStickY2 = -gamepad2.right_stick_y * Math.abs(gamepad2.right_stick_y);
+      wristServo.setPosition(servo2Position);
+      telemetry.addData("Servo1", "Position %.3f", pixelHolderServo.getPosition());
+
+/*      rStickY2 = -gamepad2.right_stick_y * Math.abs(gamepad2.right_stick_y);
       if (rStickY2 > 0) {
         servo2Position += BotConstants.WRIST_PAN_SERVO_SPEED;
         if ( servo2Position > 1 )
@@ -156,9 +161,30 @@ public class G2MotorServoTest extends LinearOpMode {
       }
       else {
         //do nothing when the stick is at 0 position
+      }*/
+
+      if (currentGamepad2.y && !previousGamepad2.y && servo1Position < 0.2) {
+        servo1Position = pixelHolderServo.getPosition() + BotConstants.WRIST_PAN_SERVO_SPEED;
       }
-      servo2.setPosition(servo2Position);
-      telemetry.addData("Servo2", "Position %.3f", servo2.getPosition());
+      else if(currentGamepad2.x && !previousGamepad2.x && servo1Position > 0) {
+        servo1Position = pixelHolderServo.getPosition() - BotConstants.WRIST_PAN_SERVO_SPEED;
+      }
+
+      if (gamepad2.right_bumper) {
+        // release one
+        servo1Position = 0.2;
+      }
+      else if (gamepad2.left_bumper) {
+        // release both
+        servo1Position = 0.10;
+      }
+      else if (currentGamepad2.right_trigger != 0 && previousGamepad2.right_trigger == 0) {
+        // hold both
+        servo1Position = 0;
+      }
+      pixelHolderServo.setPosition(servo1Position);
+
+      telemetry.addData("Servo2", "Position %.3f", wristServo.getPosition());
       telemetry.update();
 
 

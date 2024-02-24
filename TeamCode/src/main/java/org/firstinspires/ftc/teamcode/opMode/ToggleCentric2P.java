@@ -258,10 +258,12 @@ public class ToggleCentric2P extends LinearOpMode {
               //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
               armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR_TELEOP);
               wristPanServo.setPosition(wristPanPos);
+              armmotor.setPower(BotConstants.ARM_POWER);
             }
             else {
               wristPanServo.setPosition(wristPanPos);
               armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR_TELEOP);
+              armmotor.setPower(BotConstants.ARM_POWER);
               //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
             }
             dPadPressed = true;
@@ -272,10 +274,12 @@ public class ToggleCentric2P extends LinearOpMode {
               //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
               armmotor.setTargetPosition(BotConstants.ARM_POS_2_outof_5);
               wristPanServo.setPosition(wristPanPos);
+              armmotor.setPower(BotConstants.ARM_POWER);
             }
             else {
               wristPanServo.setPosition(wristPanPos);
               armmotor.setTargetPosition(BotConstants.ARM_POS_2_outof_5);
+              armmotor.setPower(BotConstants.ARM_POWER);
               //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
             }
             dPadPressed = true;
@@ -283,14 +287,28 @@ public class ToggleCentric2P extends LinearOpMode {
           else if (currentGamepad2.b && !previousGamepad2.b) {
             wristPanPos = BotConstants.WRIST_PICK_UP;
             if (armmotor.getCurrentPosition() >= 6000) {
-              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
               armmotor.setTargetPosition(BotConstants.ARM_POS_2_outof_3);
               wristPanServo.setPosition(wristPanPos);
+              armmotor.setPower(BotConstants.ARM_POWER);
             }
             else {
               wristPanServo.setPosition(wristPanPos);
               armmotor.setTargetPosition(BotConstants.ARM_POS_2_outof_3);
-              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
+              armmotor.setPower(BotConstants.ARM_POWER);
+            }
+            dPadPressed = true;
+          }
+          else if (currentGamepad2.x && !previousGamepad2.x) {
+            wristPanPos = BotConstants.WRIST_PAN_SERVO_MOSAIC;
+            if (armmotor.getCurrentPosition() >= 6000) {
+              armmotor.setTargetPosition(BotConstants.ARM_POS_L2_MOSAIC);
+              wristPanServo.setPosition(wristPanPos);
+              armmotor.setPower(BotConstants.ARM_POWER);
+            }
+            else {
+              wristPanServo.setPosition(wristPanPos);
+              armmotor.setTargetPosition(BotConstants.ARM_POS_L2_MOSAIC);
+              armmotor.setPower(BotConstants.ARM_POWER);
             }
             dPadPressed = true;
           }
@@ -300,17 +318,20 @@ public class ToggleCentric2P extends LinearOpMode {
             wristPanServo.setPosition(wristPanPos);
             //setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
             armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+            armmotor.setPower(BotConstants.ARM_POWER);
             dPadPressed = true;
           }
           else if (dPadPressed) {
             if (Math.abs((armmotor.getCurrentPosition() - armmotor.getTargetPosition())) <= 2) {
               //reached dpad destination
               armmotor.setTargetPosition(armmotor.getCurrentPosition());
+              armmotor.setPower(BotConstants.ARM_POWER);
               dPadPressed = false;
             }
           }
           else {
             armmotor.setTargetPosition(armmotor.getCurrentPosition());
+            armmotor.setPower(BotConstants.ARM_POWER);
           }
         }
 

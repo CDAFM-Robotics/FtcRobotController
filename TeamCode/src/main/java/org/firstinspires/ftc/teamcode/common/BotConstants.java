@@ -19,18 +19,20 @@ public class BotConstants {
     public static double WRIST_PICK_UP = 0.030; // FOR teleOpwas 0 -> FieldCentric2P
     public static double WRIST_PAN_SERVO_AUTO_DEPLOY = 0.320;
     public static double WRIST_PAN_SERVO_L2_DEPLOY = 0.440;
+    public static double WRIST_PAN_SERVO_MOSAIC = 0.360;
     public static double WRIST_PAN_SERVO_SPEED = 0.008;
     public static int WRIST_DEPLOY_SLEEP = 1500;
 
     // Arm Constants
     public static int ARM_POS_FLOOR = 175; // was 150 (used FieldCentric2p val
-    public static int ARM_POS_2_outof_5 = 416;
-    public static int ARM_POS_2_outof_3 = 282;
+    public static int ARM_POS_2_outof_5 = 440;
+    public static int ARM_POS_2_outof_3 = 300;
     public static int ARM_POS_FLOOR_TELEOP = 178; // was 150 (used FieldCentric2p val
     public static int ARM_POS_DRIVE = 600;
     public static int ARM_POS_AUTO_DEPLOY = 7718;
-    public static int ARM_POS_MAX = ARM_POS_AUTO_DEPLOY;
+    public static int ARM_POS_MAX = 7770;
     public static int ARM_POS_L2_DROP = 6944;
+    public static int ARM_POS_L2_MOSAIC = 7585;
     public static int ARM_POS_HANG = 5046;
     public static double ARM_POWER = 1.0;
     public static int ARM_DEPLOY_SLEEP = 6000;
