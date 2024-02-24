@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.common.BotConstants;
 * servos.
 */
 //@Disabled
-@TeleOp (group = "G2 Robot", name = "G2 drive train")
+@TeleOp (group = "8Bit Robot", name = "8Bit drive train")
 
 // Next line will prevent code from building and showing up on Control Hub
 
