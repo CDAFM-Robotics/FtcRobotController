@@ -55,10 +55,10 @@ public class G2BotDriveTrain extends LinearOpMode {
 //    motor2 = hardwareMap.get(DcMotor.class, "SlideMotor2");
 //    motor3 = hardwareMap.get(DcMotor.class, "SlideRotation");
 //    motor4 = hardwareMap.get(DcMotor.class, "IntakeMotor");
-    frontLeftMotor = hardwareMap.get(DcMotor.class, "Motor1");
-    frontRightMotor = hardwareMap.get(DcMotor.class, "Motor2");
-    backLeftMotor = hardwareMap.get(DcMotor.class, "Motor3");
-    backRightMotor = hardwareMap.get(DcMotor.class, "Motor4");
+    frontLeftMotor = hardwareMap.get(DcMotor.class, "motor1");
+    frontRightMotor = hardwareMap.get(DcMotor.class, "motor2");
+    backLeftMotor = hardwareMap.get(DcMotor.class, "motor3");
+    backRightMotor = hardwareMap.get(DcMotor.class, "motor4");
     imu = hardwareMap.get(IMU.class, "imu");
 
     //define initial values for variables
@@ -237,6 +237,21 @@ public class G2BotDriveTrain extends LinearOpMode {
   }
 
   public void setMotorPowers(double x, double y, double rx, double heading) {
+
+    if (x > 0) {
+      if ( y < 0.15 * x && y > -0.15 * x )
+        y = 0;
+      if ( y > 15 * x || y < -15 * x )
+        x = 0;
+    }
+
+    if ( x < 0 ) {
+      if ( y > 0.15 * x && y < -0.15 * x )
+        y = 0;
+      if ( y < 15 * x || y > -15 * x )
+        x = 0;
+    }
+
     double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
     double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
 
