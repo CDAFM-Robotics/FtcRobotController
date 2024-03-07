@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opMode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
@@ -16,7 +17,7 @@ import org.firstinspires.ftc.teamcode.common.BotConstants;
 * This program provide the hardware design team a simple way to test four motors and two
 * servos.
 */
-//@Disabled
+@Disabled
 @TeleOp (group = "8Bit Robot", name = "8Bit Motor Servo Test")
 
 // Next line will prevent code from building and showing up on Control Hub
@@ -51,6 +52,7 @@ public class G2MotorServoTest extends LinearOpMode {
     double rStickY2; //Gamepad 2 right stick servo2 control
     double servo1Position;
     double servo2Position;
+    boolean pixelPickup = false;
 
     //Initialize motor
     motor1.setPower(0);
@@ -163,11 +165,14 @@ public class G2MotorServoTest extends LinearOpMode {
         //do nothing when the stick is at 0 position
       }*/
 
-      if (currentGamepad2.y && !previousGamepad2.y && servo1Position < 0.2) {
-        servo1Position = pixelHolderServo.getPosition() + BotConstants.WRIST_PAN_SERVO_SPEED;
+      if (currentGamepad2.x && !previousGamepad2.x) {
+        pixelPickup = !pixelPickup;
       }
-      else if(currentGamepad2.x && !previousGamepad2.x && servo1Position > 0) {
-        servo1Position = pixelHolderServo.getPosition() - BotConstants.WRIST_PAN_SERVO_SPEED;
+      if (pixelPickup) {
+        motor4.setPower(-100);
+      }
+      else {
+        motor4.setPower(0);
       }
 
       if (gamepad2.right_bumper) {

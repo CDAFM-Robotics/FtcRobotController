@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.common.BotConstants;
 * This program provide the hardware design team a simple way to test four motors and two
 * servos.
 */
-//@Disabled
+@Disabled
 @TeleOp (group = "8Bit Robot", name = "8Bit drive train")
 
 // Next line will prevent code from building and showing up on Control Hub
