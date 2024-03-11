@@ -69,6 +69,9 @@ public class Bot8BitTeleOp extends LinearOpMode {
   private double botHeading = 0;
   private boolean pixelPickup = false;
   private boolean pixelBackout = false;
+  private double backdroppos = 0;
+  private int slidePosition = 0;
+
 
   @Override
   public void runOpMode() {
@@ -91,17 +94,23 @@ public class Bot8BitTeleOp extends LinearOpMode {
 
 
     //Initialize motor
-    slideMotor1.setPower(0);
     slideMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    slideMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    slideMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    slideMotor1.setTargetPosition(0);
+    slideMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    slideMotor1.setPower(0);
 
-    slideMotor2.setPower(0);
     slideMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    slideMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    slideMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    slideMotor2.setTargetPosition(0);
+    slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    slideMotor2.setPower(0);
 
-    armRotationMotor.setPower(0);
     armRotationMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    armRotationMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    armRotationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    armRotationMotor.setTargetPosition(0);
+    armRotationMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    armRotationMotor.setPower(0);
 
     intakeMotor.setPower(0);
     intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -125,13 +134,13 @@ public class Bot8BitTeleOp extends LinearOpMode {
     backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     backRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-    telemetry.addData("Motors","initialized");
+    telemetry.addData("Motors", "initialized");
 
     //init imu
     //commented out to use the Yaw from Automation
     IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-      RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-      RevHubOrientationOnRobot.UsbFacingDirection.UP
+            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+            RevHubOrientationOnRobot.UsbFacingDirection.UP
     ));
     imu.initialize(parameters);
     imu.resetYaw();
@@ -145,9 +154,9 @@ public class Bot8BitTeleOp extends LinearOpMode {
     wristServo.setPosition(WRIST_CLOSED);
     wristServoPosition = wristServo.getPosition();
     telemetry.addData("wristServo Position initialized:", "%.3f", wristServoPosition);
-    telemetry.addData("Servos","initialized");
+    telemetry.addData("Servos", "initialized");
 
-    telemetry.addData("Push play to start"," ");
+    telemetry.addData("Push play to start", " ");
 
     // other initialization code goes here
     // By setting these values to new Gamepad(), they will default to all
@@ -179,8 +188,7 @@ public class Bot8BitTeleOp extends LinearOpMode {
       if (currentGamepad1.left_stick_button && !previousGamepad1.left_stick_button) {
         if (driveSpeed == DRIVE_SPEED_FAST) {
           driveSpeed = DRIVE_SPEED_SLOW;
-        }
-        else {
+        } else {
           driveSpeed = DRIVE_SPEED_FAST;
         }
       }
@@ -189,8 +197,7 @@ public class Bot8BitTeleOp extends LinearOpMode {
       if (currentGamepad1.right_bumper != previousGamepad1.right_bumper) {
         if (driveSpeed == DRIVE_SPEED_FAST) {
           driveSpeed = DRIVE_SPEED_SLOW;
-        }
-        else {
+        } else {
           driveSpeed = DRIVE_SPEED_FAST;
         }
       }
@@ -208,8 +215,7 @@ public class Bot8BitTeleOp extends LinearOpMode {
       if (fieldCentric) {
         botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         telemetry.addLine("field centric");
-      }
-      else {
+      } else {
         botHeading = 0;
         telemetry.addLine("bot centric");
       }
@@ -224,14 +230,13 @@ public class Bot8BitTeleOp extends LinearOpMode {
 
       // ignor the first 15% of the left stick push.
       //so driving straight or strafing will be easier
-      if ( rStickX < 0.05 ) {
+      if (rStickX < 0.05) {
         if (lStickX > 0) {
-          if ( lStickY < (0.15 * lStickX) && lStickY > -0.15 * lStickX )
+          if (lStickY < (0.15 * lStickX) && lStickY > -0.15 * lStickX)
             lStickY = 0;
-          if ( lStickY > 15 * lStickX || lStickY < -15 * lStickX )
+          if (lStickY > 15 * lStickX || lStickY < -15 * lStickX)
             lStickX = 0;
-        }
-        else if ( lStickX <0 ) {
+        } else if (lStickX < 0) {
           if (lStickY > (0.15 * lStickX) && lStickY < -0.15 * lStickX)
             lStickY = 0;
           if (lStickY < 15 * lStickX || lStickY > -15 * lStickX)
@@ -241,12 +246,12 @@ public class Bot8BitTeleOp extends LinearOpMode {
 
       setMotorPowers(lStickX, lStickY, rStickX, botHeading);
 
-      /******************************************
+      /* *****************************************
        * Arm and pixel intake/out take control
        ******************************************/
 
-      // use gamepad2 left stick to control slide extension
-      lStickY2 = Math.pow(gamepad2.left_stick_y, 3);
+      /* // use gamepad2 left stick to control slide extension
+
       telemetry.addData("Slide Power", ":lStickY2: %.2f", lStickY2);
       slideMotor1.setPower(lStickY2);
       slideMotor2.setPower(-lStickY2);
@@ -259,7 +264,29 @@ public class Bot8BitTeleOp extends LinearOpMode {
       rStickY2 = Math.pow(gamepad2.right_stick_y, 3);
       armRotationMotor.setPower(rStickY2);
       telemetry.addData("Arm rotation Position", " encoder: %d", armRotationMotor.getCurrentPosition());
-      telemetry.addData("Arm Motor ", "run mode: %s", armRotationMotor.getMode().toString());
+      telemetry.addData("Arm Motor ", "run mode: %s", armRotationMotor.getMode().toString());*/
+
+      lStickY2 = -gamepad2.left_stick_y * 6;
+      backdroppos += lStickY2;
+      if (backdroppos < 0) {
+        backdroppos = 0;
+      }
+      else if (backdroppos > 1100) {
+        backdroppos = 1100;
+      }
+      slidePosition = (int) Math.round(calculateExtensionLength(backdroppos) * BotConstants.SLIDE_COUNTS_PER_MILLIMETER);
+      slideMotor1.setTargetPosition(-slidePosition);
+      slideMotor2.setTargetPosition(slidePosition);
+      slideMotor1.setPower(1);
+      slideMotor2.setPower(1);
+
+      armRotationMotor.setTargetPosition(-(int) Math.round(calculateRotationAngle(backdroppos) * BotConstants.ROTATION_COUNTS_PER_DEGREE));
+      armRotationMotor.setPower(1);
+
+      telemetry.addData("backdrop position", "%.2f", backdroppos);
+      telemetry.addData("slideMMs", "%.2f", calculateExtensionLength(backdroppos));
+      telemetry.addData("rotation degrees", "%.2f", calculateRotationAngle(backdroppos));
+      telemetry.addData("rotation position", "%d", armRotationMotor.getTargetPosition());
 
 
       if (currentGamepad2.x && !previousGamepad2.x) {
@@ -267,15 +294,13 @@ public class Bot8BitTeleOp extends LinearOpMode {
       }
       if (pixelPickup) {
         intakeMotor.setPower(-1);
-      }
-      else {
+      } else {
         intakeMotor.setPower(0);
       }
 
       if (currentGamepad2.b && !previousGamepad2.b && wristServoPosition < WRIST_CLOSED) {
         wristServoPosition = wristServo.getPosition() + WRIST_SERVO_SPEED;
-      }
-      else if(currentGamepad2.a && !previousGamepad2.a && holdServoPosition > WRIST_MAX_OPEN) {
+      } else if (currentGamepad2.a && !previousGamepad2.a && holdServoPosition > WRIST_MAX_OPEN) {
         wristServoPosition = wristServo.getPosition() - WRIST_SERVO_SPEED;
       }
 
@@ -286,12 +311,10 @@ public class Bot8BitTeleOp extends LinearOpMode {
       if (gamepad2.right_bumper) {
         // release one
         holdServoPosition = HOLD_SERVO_HOLD_0NE;
-      }
-      else if (gamepad2.left_bumper) {
+      } else if (gamepad2.left_bumper) {
         // release both
         holdServoPosition = HOLD_SERVO_NO_HOLD;
-      }
-      else if (currentGamepad2.right_trigger != 0 && previousGamepad2.right_trigger == 0) {
+      } else if (currentGamepad2.right_trigger != 0 && previousGamepad2.right_trigger == 0) {
         // hold both
         holdServoPosition = HOLD_SERVO_HOLD_TWO;
       }
@@ -303,7 +326,6 @@ public class Bot8BitTeleOp extends LinearOpMode {
 
     }
   }
-
   public void setMotorPowers(double x, double y, double rx, double heading) {
     double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
     double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
@@ -323,5 +345,16 @@ public class Bot8BitTeleOp extends LinearOpMode {
     backLeftMotor.setPower(backLeftPower);
     frontRightMotor.setPower(frontRightPower);
     backRightMotor.setPower(backRightPower);
+  }
+
+  public static double calculateRotationAngle(double b) {
+    return Math.toDegrees(Math.atan((Math.sqrt(3) * b) / (b + 2 * BotConstants.DIST_R)));
+  }
+  public static double calculateExtensionLength(double b) {
+    double r = Math.sqrt(Math.pow(BotConstants.DIST_R, 2) + (BotConstants.DIST_R * b) + Math.pow(b, 2));
+    double x = 110 / Math.tan(Math.toRadians(60 - calculateRotationAngle(b)));
+    r -= x;
+    r -= 288;
+    return r;
   }
 }

@@ -101,4 +101,10 @@ public class BotConstants {
     public static int Z3_RECT_TLY = ROI_RECT_TOP_LEFT_Y;
     public static int Z3_RECT_BRX = ROI_RECT_BOTTOM_RIGHT_X;
     public static int Z3_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
+
+    // 8bit constants for arm equation
+    public static double DIST_R = 393;
+    public static double SLIDE_COUNTS_PER_MILLIMETER = 4.48;
+    public static double ROTATION_COUNTS_PER_DEGREE = 14.67;
+
 }
