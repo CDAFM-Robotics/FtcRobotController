@@ -74,7 +74,7 @@ public class BotConstants {
     public static int BLUE_HUE_LOW=98; // 112
     public static int BLUE_HUE_HIGH=130; // 125
     public static int BLUE_SAT_LOW=50;  // 89
-    public static int BLUE_SAT_HIGH=225; // 219
+    public static int BLUE_SAT_HIGH=255; // (sunlight detect err) 225 // 219
     public static int BLUE_VAL_LOW=30;  // 51
     public static int BLUE_VAL_HIGH=255;  // 255
 

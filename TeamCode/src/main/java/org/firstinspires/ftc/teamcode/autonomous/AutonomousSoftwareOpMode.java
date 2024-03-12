@@ -113,6 +113,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     if (team == BotConstants.BLUE_TEAM) {
       if (startLoc == BotConstants.START_SIDE_PIXEL) {
+        sleep (3500); // wait 3.5 sec (Far side)
         switch (zone) {
           case 1:
             RR_BZ1_Pixel();
@@ -142,6 +143,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     } // End Blue
     else { // RED TEAM
       if (startLoc == BotConstants.START_SIDE_PIXEL) {
+        sleep (3500); // wait 3.5 sec (Far side)
         switch (zone) {
           case 1:
             RR_RZ1_Pixel();
@@ -228,9 +230,10 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .lineTo(new Vector2d(12.00, 66.00))
 
     // Slowed down
-    .lineToLinearHeading(new Pose2d(36.00, 60.00, Math.toRadians(180.00)),
+    .lineToLinearHeading(new Pose2d(36.00, 60.00, Math.toRadians(180.00))/*,
     SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30)
+    */ // was too slow with 3.5 sec pre-run delay on pixel side - jonathan gameday
     )
     .lineTo(new Vector2d(36, 36),
     SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
@@ -779,10 +782,10 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
      */
 
     // Back to Start (slow down no Slip)
-    .lineTo(new Vector2d(-36.00, -66.00),
+    .lineTo(new Vector2d(-36.00, -66.00),/*
     SampleMecanumDrive.getVelocityConstraint(15,30,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
-
+*/  // was too slow if 3.5s delay - jonathan gameday
     // Through the Truss normal speed
     .lineTo(new Vector2d(12.00, -66.00))
 
@@ -1105,7 +1108,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineTo(new Vector2d(51.53, -61.58))
-    .lineToLinearHeading(new Pose2d(62.50, -62.50, Math.toRadians(-180.00)))
+    .lineToLinearHeading(new Pose2d(63.50, -66.50, Math.toRadians(-180.00)))
     .build();
     drive.followTrajectorySequence(RZ3_BackdropSideC);
   }
