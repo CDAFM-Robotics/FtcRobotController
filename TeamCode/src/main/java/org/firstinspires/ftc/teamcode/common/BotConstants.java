@@ -103,8 +103,13 @@ public class BotConstants {
     public static int Z3_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
 
     // 8bit constants for arm equation
-    public static double DIST_R = 393;
+    public static double DIST_R = 404;
+    public static int IN_OUT_THICKNESS = 93; //the intake and outtake thickness
+    public static int FIRST_SLIDE_LENGTH = 238;
     public static double SLIDE_COUNTS_PER_MILLIMETER = 4.48;
     public static double ROTATION_COUNTS_PER_DEGREE = 14.67;
+    public static int BACKDROP_ANGLE = 60;
+    public static int ARM_SPEED = 6;    // Adjust this value to make the arm go faster or lower
+                                        // The range should be 1 to 12
 
 }
