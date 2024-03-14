@@ -79,25 +79,25 @@ public class BotConstants {
     public static int BLUE_VAL_HIGH=255;  // 255
 
     // Region of Interest (Team Prop)
-    public static int ROI_RECT_TOP_LEFT_X = 20;
+    public static int ROI_RECT_TOP_LEFT_X = 0; // 20
     public static int ROI_RECT_TOP_LEFT_Y = 120;
-    public static int ROI_RECT_BOTTOM_RIGHT_X = 620;
-    public static int ROI_RECT_BOTTOM_RIGHT_Y = 350;
+    public static int ROI_RECT_BOTTOM_RIGHT_X = 640;  // 620
+    public static int ROI_RECT_BOTTOM_RIGHT_Y = 360;  // 350
 
     // Zone 1 Rect
     public static int Z1_RECT_TLX = ROI_RECT_TOP_LEFT_X;
     public static int Z1_RECT_TLY = ROI_RECT_TOP_LEFT_Y;
-    public static int Z1_RECT_BRX = 190;
+    public static int Z1_RECT_BRX = 160; // 190
     public static int Z1_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
 
     // Zone 2 Rect
-    public static int Z2_RECT_TLX = 250;
+    public static int Z2_RECT_TLX = 161; // 250
     public static int Z2_RECT_TLY = ROI_RECT_TOP_LEFT_Y;
-    public static int Z2_RECT_BRX = 420;
+    public static int Z2_RECT_BRX = 449; // 420
     public static int Z2_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
 
     // Zone 3 Rect
-    public static int Z3_RECT_TLX = 470; // 480
+    public static int Z3_RECT_TLX = 450; // 480
     public static int Z3_RECT_TLY = ROI_RECT_TOP_LEFT_Y;
     public static int Z3_RECT_BRX = ROI_RECT_BOTTOM_RIGHT_X;
     public static int Z3_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
