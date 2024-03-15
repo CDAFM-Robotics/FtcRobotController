@@ -297,19 +297,19 @@ public class Bot8BitTeleOp extends LinearOpMode {
 
       if (currentGamepad2.x && !previousGamepad2.x) {
         pixelPickup = !pixelPickup;
+        pixelSpit = false;
+      }
+      if (currentGamepad2.y && !previousGamepad2.y) {
+        pixelSpit = !pixelSpit;
+        pixelPickup = false;
       }
       if (pixelPickup) {
         intakeMotor.setPower(-1);
-      } else {
-        intakeMotor.setPower(0);
       }
-
-      if (currentGamepad2.y && !previousGamepad2.y) {
-        pixelSpit = !pixelSpit;
-      }
-      if (pixelSpit) {
+      else if (pixelSpit) {
         intakeMotor.setPower(1);
-      } else {
+      }
+      else {
         intakeMotor.setPower(0);
       }
 
