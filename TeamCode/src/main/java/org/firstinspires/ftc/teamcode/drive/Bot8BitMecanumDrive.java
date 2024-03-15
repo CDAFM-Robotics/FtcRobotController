@@ -1,16 +1,16 @@
 package org.firstinspires.ftc.teamcode.drive;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.kV;
 
 import androidx.annotation.NonNull;
 
@@ -95,10 +95,10 @@ public class Bot8BitMecanumDrive extends MecanumDrive {
         }
 
         // TODO: adjust the names of the following hardware devices to match your configuration
-        imu = hardwareMap.get(IMU.class, "imu");
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                DriveConstants.LOGO_FACING_DIR, DriveConstants.USB_FACING_DIR));
-        imu.initialize(parameters);
+//        imu = hardwareMap.get(IMU.class, "imu");
+//        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+//                Bot8BitDriveConstants.LOGO_FACING_DIR, Bot8BitDriveConstants.USB_FACING_DIR));
+//        imu.initialize(parameters);
 
         //jw new motor names for 8bit
         leftFront = hardwareMap.get(DcMotorEx.class, "FLmotor");
@@ -133,7 +133,10 @@ public class Bot8BitMecanumDrive extends MecanumDrive {
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        // setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
+
+        // jw Added for Dead Wheels
+        //setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
                 follower, HEADING_PID, batteryVoltageSensor,
@@ -295,12 +298,16 @@ public class Bot8BitMecanumDrive extends MecanumDrive {
 
     @Override
     public double getRawExternalHeading() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        //return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        // jw removed for  safety
+        return 0;
     }
 
     @Override
     public Double getExternalHeadingVelocity() {
-        return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).xRotationRate;
+        //return (double) imu.getRobotAngularVelocity(AngleUnit.RADIANS).xRotationRate;
+        // jw removed for safety
+        return 0.0;
     }
 
     public static TrajectoryVelocityConstraint getVelocityConstraint(double maxVel, double maxAngularVel, double trackWidth) {
