@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.kV;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -24,8 +24,8 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants;
+import org.firstinspires.ftc.teamcode.drive.Bot8BitMecanumDrive;
 
 import java.util.Objects;
 
@@ -45,14 +45,14 @@ import java.util.Objects;
  * Pressing B/O (Xbox/PS4) will cede control back to the tuning process.
  */
 @Config
-@Disabled
+//@Disabled
 @Autonomous(group = "drive")
 public class ManualFeedforwardTuner extends LinearOpMode {
     public static double DISTANCE = 72; // in
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
-    private SampleMecanumDrive drive;
+    private Bot8BitMecanumDrive drive;
 
     enum Mode {
         DRIVER_MODE,
@@ -76,7 +76,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, dashboard.getTelemetry());
 
-        drive = new SampleMecanumDrive(hardwareMap);
+        drive = new Bot8BitMecanumDrive(hardwareMap);
 
         final VoltageSensor voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
@@ -144,7 +144,7 @@ public class ManualFeedforwardTuner extends LinearOpMode {
                             new Pose2d(
                                     -gamepad1.left_stick_y,
                                     -gamepad1.left_stick_x,
-                                    -gamepad1.right_stick_x
+                                    gamepad1.right_stick_x // jw tweak
                             )
                     );
                     break;
