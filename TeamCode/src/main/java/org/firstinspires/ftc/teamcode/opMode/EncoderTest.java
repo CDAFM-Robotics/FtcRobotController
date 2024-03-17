@@ -1,15 +1,18 @@
 package org.firstinspires.ftc.teamcode.opMode;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.util.Encoder;
 
-@TeleOp (group = "testing", name = "colorSensorTest")
 
-public class ColorSensorTest extends LinearOpMode {
+@TeleOp (group = "testing", name = "DW_encoderTest")
+
+public class EncoderTest extends LinearOpMode {
   private Blinker control_Hub;
   private ColorSensor colorSensor1;
   private ColorSensor colorSensor2;
@@ -20,12 +23,39 @@ public class ColorSensorTest extends LinearOpMode {
   public int previousARGB2;
   public double previousRefresh2 = -1;
   public double average2 = -1;
+  private Encoder leftEncoder, rightEncoder, centerEncoder;
+  private DcMotor frontRightMotor, frontLeftMotor, backLeftMotor, backRightMotor;
+  int leftPos;
+  int rightPos;
+  int centerPos;
+
   @Override
   public void runOpMode() {
     colorSensor1 = hardwareMap.get(ColorSensor.class, "colorSensor1");
     colorSensor2 = hardwareMap.get(ColorSensor.class, "colorSensor2");
     telemetry.addData("telemetry Refresh rate", "%d", telemetry.getMsTransmissionInterval());
     telemetry.update();
+
+    frontLeftMotor = hardwareMap.get(DcMotor.class, "FLmotor");
+    frontRightMotor = hardwareMap.get(DcMotor.class, "FRmotor");
+    backLeftMotor = hardwareMap.get(DcMotor.class, "BLmotor");
+//    backRightMotor = hardwareMap.get(DcMotor.class, "BRmotor");
+
+
+    leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "FRmotor"));
+    rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "BLmotor"));
+    centerEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, "FLmotor"));
+
+    leftEncoder.setDirection((Encoder.Direction.REVERSE));
+    rightEncoder.setDirection((Encoder.Direction.REVERSE));
+    centerEncoder.setDirection((Encoder.Direction.REVERSE));
+
+    frontRightMotor.setMode(DcMotor.RunMode.RESET_ENCODERS);
+    backLeftMotor.setMode(DcMotor.RunMode.RESET_ENCODERS);
+    frontLeftMotor.setMode(DcMotor.RunMode.RESET_ENCODERS);
+
+
+
 
     waitForStart();
     if (isStopRequested()) {
@@ -70,6 +100,13 @@ public class ColorSensorTest extends LinearOpMode {
       if (colorSensor2.alpha() > 790 || colorSensor2.red() > 750 || colorSensor2.green() > 790 || colorSensor2.blue() > 790) {
         telemetry.addLine("pixel detected in 2");
       }
+
+      // Print Encoders
+      leftPos = leftEncoder.getCurrentPosition();
+      rightPos = rightEncoder.getCurrentPosition();
+      centerPos = centerEncoder.getCurrentPosition();
+      telemetry.addData("Encoder L R C", "%d, %d, %d", leftPos,rightPos,centerPos);
+
 
       telemetry.update();
     }

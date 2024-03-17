@@ -23,6 +23,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.common.BotConstants;
+import org.firstinspires.ftc.teamcode.drive.Bot8BitMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
@@ -39,30 +40,37 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(group = "Competition", name = "zAutonomous")
+@Autonomous(group = "Competition", name = "z8BitAuto")
 
-public class AutonomousSoftwareOpMode extends LinearOpMode {
+public class Bot8BitAutoOp extends LinearOpMode {
 
   public int team     = BotConstants.RED_TEAM;
   public int startLoc = BotConstants.START_SIDE_PIXEL;
 
   private Blinker control_Hub;
-  private Servo bottomArmServo;
+  // private Servo bottomArmServo;
   private IMU imu;
-  private Servo topArmServo;
-  private Servo wristPanServo;
-  private Servo camServo;
+  // private Servo topArmServo;
+  private Servo wristServo;
+  private Servo pixelHolderServo;
+  // private Servo camServo;
   private Servo droneServo = null;
-  private Servo hookServo = null;
+  // private Servo hookServo = null;
   private final ElapsedTime runtime = new ElapsedTime();
   private DcMotor motor1 = null; //front left
   private DcMotor motor2 = null; //front right
   private DcMotor motor3 = null; //back left
   private DcMotor motor4 = null; //back right
-  private DcMotor armmotor = null;
+  // private DcMotor armmotor = null;
+
+  private DcMotor slideMotor1= null;
+  private DcMotor slideMotor2= null;
+  private DcMotor armRotation= null;
+  private DcMotor intakeMotor = null;
   int zone;
   int tagIdFound =0;
   boolean tagFound =false;
@@ -175,7 +183,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     while (opModeIsActive())
     {
       // do nothing after Automation until end
-      armmotor.setTargetPosition(0);
+//      armmotor.setTargetPosition(0);
     }
   }
 
@@ -186,8 +194,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+    // wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
@@ -206,12 +214,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .addDisplacementMarker(() -> {
 
       // Deploy Purple on strike 1
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      // bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(750);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(500);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+      // bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
     /*
@@ -245,7 +253,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // TODO: Possibly move cam swivel earlier
     // TODO: try different focus modes for better picture?
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -269,18 +277,21 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
-    while (armmotor.isBusy()) {
+
+    // TODO FIX!
+    /*while (armmotor.isBusy()) {
       sleep(10);
-    }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    }*/
+
+    //bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+    //topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+    //bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+    //topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
@@ -298,16 +309,16 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+    //wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ2_PIXEL
     TrajectorySequence BZ2_PixelSide =
     drive.trajectorySequenceBuilder(new Pose2d(-35.63, 63.50, Math.toRadians(-90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
 
@@ -315,12 +326,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .lineToConstantHeading(new Vector2d(-36.00, 36)) // tweak 17n 530p was y:38
     .addDisplacementMarker(() -> {
       // Deploy Purple on strike 1
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      //bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(250);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(250);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+      //bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
     .lineToConstantHeading(new Vector2d(-56, 38)) // tweaked // -54 32
@@ -331,7 +342,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.setPoseEstimate(BZ2_PixelSide.start());
     drive.followTrajectorySequence(BZ2_PixelSide);
 
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -343,8 +354,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     TrajectorySequence BZ2_PixelSideB =
     drive.trajectorySequenceBuilder(BZ2_PixelSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
     .lineTo(driveToTag) // Go to April Tag
     .build();
@@ -355,18 +366,21 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Wait for arm and wrist both move at same time.
-    while (armmotor.isBusy()) {
+
+    //TODO: FIX
+    /*while (armmotor.isBusy()) {
       sleep(10);
-    }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    }*/
+
+    //bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+    //topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+    //bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+    //topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
@@ -384,16 +398,16 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+    //wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ3_PIXEL
     TrajectorySequence BZ3_PixelSide =
     drive.trajectorySequenceBuilder(new Pose2d(-35.63, 63.50, Math.toRadians(-90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     // .lineToConstantHeading(new Pose2d(-36.38, 31.80, Math.toRadians(-180)))
@@ -401,12 +415,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .addDisplacementMarker(() -> {
 
       // Deploy Purple on strike 1
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+      //bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(750);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(500);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+      //bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
     //.lineToConstantHeading(new Vector2d(-52.08, 32.16))
@@ -418,7 +432,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.setPoseEstimate(BZ3_PixelSide.start());
     drive.followTrajectorySequence(BZ3_PixelSide);
 
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -430,8 +444,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     TrajectorySequence BZ3_PixelSideB =
     drive.trajectorySequenceBuilder(BZ3_PixelSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
     .lineToConstantHeading(driveToTag) // Go to April Tag
     .build();
@@ -442,18 +456,21 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
-    while (armmotor.isBusy()) {
+
+    //TODO: FIX
+    /*while (armmotor.isBusy()) {
       sleep(10);
-    }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    }*/
+
+    //bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+    //topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
@@ -474,16 +491,16 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ1_BackdropSide (14Nov)
     TrajectorySequence BZ1_BackdropSide =
     drive.trajectorySequenceBuilder(new Pose2d(12, 63.50, Math.toRadians(-90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .splineToConstantHeading(new Vector2d(26, 40), Math.toRadians(-90)) // Drop Pixel P
@@ -491,12 +508,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
       // Deploy Purple on strike 1
       // contoursExtraction: REPLACE SLEEP with something else
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(250);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(250);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
 
@@ -506,7 +523,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.setPoseEstimate(BZ1_BackdropSide.start());
     drive.followTrajectorySequence(BZ1_BackdropSide);
 
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -518,8 +535,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     TrajectorySequence BZ1_BackdropSideB =
     drive.trajectorySequenceBuilder(BZ1_BackdropSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineTo(driveToTag) // Go to April Tag location
@@ -530,25 +547,27 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
-    while (armmotor.isBusy()) {
+
+    // TODO FIX
+    /*while (armmotor.isBusy()) {
       sleep(10);
-    }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    }*/
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
     TrajectorySequence BZ1_BackdropSideC =
     drive.trajectorySequenceBuilder(BZ1_BackdropSideB.start())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineTo(new Vector2d(51.53, 61.58))
@@ -563,15 +582,15 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ2_BACKDROP
     TrajectorySequence BZ2_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, 63.50, Math.toRadians(-90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-                    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+                    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
 
@@ -580,12 +599,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
       // Deploy Purple on strike 1
       // TODO: REPLACE SLEEP with something else
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(250);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(250);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
     .lineToLinearHeading(new Pose2d(40, 35, Math.toRadians(180.00))) // view location  // Tweak was 36
@@ -594,7 +613,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.setPoseEstimate(BZ2_BackdropSide.start());
     drive.followTrajectorySequence(BZ2_BackdropSide);
 
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -606,8 +625,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     TrajectorySequence BZ2_BackdropSideB =
     drive.trajectorySequenceBuilder(BZ2_BackdropSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineToConstantHeading(driveToTag) // Go to April Tag location
@@ -618,25 +637,27 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
-    while (armmotor.isBusy()) {
+
+    //TODO FIX
+    /*while (armmotor.isBusy()) {
       sleep(10);
-    }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    }*/
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
     TrajectorySequence BZ2_BackdropSideC =
     drive.trajectorySequenceBuilder(BZ2_BackdropSideB.start())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineToConstantHeading(new Vector2d(51, 65)) // y:63
@@ -651,15 +672,15 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // BZ3_BACKDROP
     TrajectorySequence BZ3_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, 63.50, Math.toRadians(-90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
 
@@ -669,12 +690,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .addDisplacementMarker(() -> {
       // Deploy Purple on strike 1
       // TODO: REPLACE SLEEP with something else
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(250);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(250);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
     .lineToConstantHeading(new Vector2d(40, 35)) // view location  // Tweak was 36
@@ -683,7 +704,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.setPoseEstimate(BZ3_BackdropSide.start());
     drive.followTrajectorySequence(BZ3_BackdropSide);
 
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -695,8 +716,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     TrajectorySequence BZ3_BackdropSideB =
     drive.trajectorySequenceBuilder(BZ3_BackdropSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineToConstantHeading(driveToTag) // Go to April Tag location
@@ -707,25 +728,29 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+
+    // TODO FIX
+    /*
     while (armmotor.isBusy()) {
       sleep(10);
-    }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+    }*/
+
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
     TrajectorySequence BZ3_BackdropSideC =
     drive.trajectorySequenceBuilder(BZ3_BackdropSideB.start())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineToConstantHeading(new Vector2d(51, 66)) // y:65
@@ -741,16 +766,16 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // RZ3_PIXEL
     TrajectorySequence RZ3_PixelSide =
     drive.trajectorySequenceBuilder(new Pose2d(-35.63, -63.50, Math.toRadians(90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
 
@@ -765,12 +790,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .addDisplacementMarker(() -> {
 
       // Deploy Purple on strike 1
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(750);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(500);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
     /*
@@ -783,20 +808,20 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // Back to Start (slow down no Slip)
     .lineTo(new Vector2d(-36.00, -66.00))/*
-    SampleMecanumDrive.getVelocityConstraint(15,30,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    Bot8BitMecanumDrive.getVelocityConstraint(15,30,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
 */  // was too slow if 3.5s delay - jonathan gameday
     // Through the Truss normal speed
     .lineTo(new Vector2d(12.00, -66.00))
 
     // slow down for rotate
     .lineToLinearHeading(new Pose2d(36.00, -60.00, Math.toRadians(-180.00)),
-    SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30)
+    Bot8BitMecanumDrive.getVelocityConstraint(20,90,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30)
     )
     .lineTo(new Vector2d(36, -36),
-    SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(20)
+    Bot8BitMecanumDrive.getVelocityConstraint(20,90,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(20)
     ) // View Location New Point for April Tag. x:32
     .build();
 
@@ -805,7 +830,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     // TODO: Possibly move cam swivel earlier
     // TODO: try different focus modes for better picture?
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -817,8 +842,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     TrajectorySequence RZ3_PixelSideB =
     drive.trajectorySequenceBuilder(RZ3_PixelSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
     .lineTo(driveToTag) // Go to April Tag
     .build();
@@ -829,18 +854,22 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+
+    // TODO FIX
+    /*
     while (armmotor.isBusy()) {
       sleep(10);
     }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+     */
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
@@ -859,26 +888,26 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // RZ2_PIXEL
     TrajectorySequence RZ2_PixelSide =
     drive.trajectorySequenceBuilder(new Pose2d(-35.63, -63.50, Math.toRadians(90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
     .lineToConstantHeading(new Vector2d(-36.00, -36.55))
     .addDisplacementMarker(() -> {
       // Deploy Purple on strike 1
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(250);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(250);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
     .lineToConstantHeading(new Vector2d(-56, -38)) // tweaked // -54 32
@@ -889,7 +918,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.setPoseEstimate(RZ2_PixelSide.start());
     drive.followTrajectorySequence(RZ2_PixelSide);
 
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -901,8 +930,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     TrajectorySequence RZ2_PixelSideB =
     drive.trajectorySequenceBuilder(RZ2_PixelSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
     .lineTo(driveToTag) // Go to April Tag
     .build();
@@ -913,18 +942,23 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+
+    // TODO FIX
+    /*
     while (armmotor.isBusy()) {
       sleep(10);
     }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+
+     */
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
@@ -943,16 +977,16 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // RZ1_PIXEL
     TrajectorySequence RZ1_PixelSide =
     drive.trajectorySequenceBuilder(new Pose2d(-35.63, -63.50, Math.toRadians(90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     // .lineToConstantHeading(new Pose2d(-36.38, 31.80, Math.toRadians(-180)))
@@ -960,12 +994,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .addDisplacementMarker(() -> {
 
       // Deploy Purple on strike 1
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(250);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(250);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
     //.lineToConstantHeading(new Vector2d(-52.08, 32.16))
@@ -977,7 +1011,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.setPoseEstimate(RZ1_PixelSide.start());
     drive.followTrajectorySequence(RZ1_PixelSide);
 
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -989,8 +1023,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     TrajectorySequence RZ1_PixelSideB =
     drive.trajectorySequenceBuilder(RZ1_PixelSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
     .lineToConstantHeading(driveToTag) // Go to April Tag
     .build();
@@ -1001,18 +1035,22 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+    // TODO FIX
+    /*
     while (armmotor.isBusy()) {
       sleep(10);
     }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+
+     */
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
@@ -1030,16 +1068,16 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // RZ3_BackdropSide (14Nov)
     TrajectorySequence RZ3_BackdropSide =
     drive.trajectorySequenceBuilder(new Pose2d(12, -63.50, Math.toRadians(90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .splineToConstantHeading(new Vector2d(26, -40), Math.toRadians(90)) // Drop Pixel P
@@ -1047,12 +1085,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
       // Deploy Purple on strike 1
       // contoursExtraction: REPLACE SLEEP with something else
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(250);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(250);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
 
@@ -1062,7 +1100,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.setPoseEstimate(RZ3_BackdropSide.start());
     drive.followTrajectorySequence(RZ3_BackdropSide);
 
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -1074,8 +1112,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     TrajectorySequence RZ3_BackdropSideB =
     drive.trajectorySequenceBuilder(RZ3_BackdropSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineTo(driveToTag) // Go to April Tag location
@@ -1086,25 +1124,29 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+    // TODO FIX
+    /*
     while (armmotor.isBusy()) {
       sleep(10);
     }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+
+     */
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
     TrajectorySequence RZ3_BackdropSideC =
     drive.trajectorySequenceBuilder(RZ3_BackdropSideB.start())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineTo(new Vector2d(51.53, -61.58))
@@ -1120,15 +1162,15 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // RZ2_BACKDROP
     TrajectorySequence RZ2_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, -63.50, Math.toRadians(90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
 
@@ -1137,26 +1179,26 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
       // Deploy Purple on strike 1
       // TODO: REPLACE SLEEP with something else
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(250);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(250);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
 
     // Added slow down
     .lineToLinearHeading(new Pose2d(40, -35, Math.toRadians(-180.00)),
-    SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30)
+    Bot8BitMecanumDrive.getVelocityConstraint(20,90,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30)
     ) // view location
     .build();
 
     drive.setPoseEstimate(RZ2_BackdropSide.start());
     drive.followTrajectorySequence(RZ2_BackdropSide);
 
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -1168,14 +1210,14 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     TrajectorySequence RZ2_BackdropSideB =
     drive.trajectorySequenceBuilder(RZ2_BackdropSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     // Slow down more
     .lineToConstantHeading(driveToTag,
-    SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30)
+    Bot8BitMecanumDrive.getVelocityConstraint(20,90,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30)
     ) // Go to April Tag location
     .build();
     drive.followTrajectorySequence(RZ2_BackdropSideB);
@@ -1184,25 +1226,29 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+    // TODO FIX
+    /*
     while (armmotor.isBusy()) {
       sleep(10);
     }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+
+     */
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
     TrajectorySequence RZ2_BackdropSideC =
     drive.trajectorySequenceBuilder(RZ2_BackdropSideB.start())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineToConstantHeading(new Vector2d(51, -65))
@@ -1218,15 +1264,15 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     double[] xyArray = new double[2];
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     visionPortal.setProcessorEnabled(contoursExtraction,false);
 
     // RZ1_BACKDROP
     TrajectorySequence RZ1_BackdropSide = drive.trajectorySequenceBuilder(new Pose2d(12, -63.50, Math.toRadians(90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
 
@@ -1235,12 +1281,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .addDisplacementMarker(() -> {
       // Deploy Purple on strike 1
       // TODO: REPLACE SLEEP with something else
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
       sleep(250);
-      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-      armmotor.setPower(1);
+//      armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//      armmotor.setPower(1);
       sleep(250);
-      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//      bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
       setWristFoldPosition();
     })
     .lineToConstantHeading(new Vector2d(40, -35)) // view location  // Tweak was 36
@@ -1249,7 +1295,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.setPoseEstimate(RZ1_BackdropSide.start());
     drive.followTrajectorySequence(RZ1_BackdropSide);
 
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     sleep(2000);
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
@@ -1261,8 +1307,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     TrajectorySequence RZ1_BackdropSideB =
     drive.trajectorySequenceBuilder(RZ1_BackdropSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineToConstantHeading(driveToTag) // Go to April Tag location
@@ -1273,25 +1319,30 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
+
+    //TODO FIX
+    /*
     while (armmotor.isBusy()) {
       sleep(10);
     }
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+     */
+
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(400);
 
     // Close up for parking
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
     sleep(100);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
     // PARK
     TrajectorySequence RZ1_BackdropSideC =
     drive.trajectorySequenceBuilder(RZ1_BackdropSideB.start())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineToConstantHeading(new Vector2d(51, -66))
@@ -1303,10 +1354,10 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
   // TODO: ********************************** END OF TRAJECTORIES ******************************
   public void RRRunAutomation() {
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
     // Lower Wrist
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
 
     // Build Trajectory
     Trajectory toPurplePixel = null;
@@ -1329,12 +1380,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectory(toPurplePixel);
 
     // Open Bottom Finger to deposit Purple Pixel on Strike mark
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
     sleep(1000);
-    armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-    armmotor.setPower(1);
+//    armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//    armmotor.setPower(1);
     sleep(750);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     setWristFoldPosition();
 
 
@@ -1356,7 +1407,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
 
     // Acquire April Tag by zone (Red: 4,5,6  blue: 1,2,3)
-    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
+//    camServo.setPosition(BotConstants.CAM_SERVO_REAR);
     Vector2d driveToTag;
     double[] xyArray = new double[2];
     xyArray[0] = drive.getPoseEstimate().getX();
@@ -1366,8 +1417,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
       Trajectory toAprilTag = drive.trajectoryBuilder(ThroughTruss.end())
       .splineTo(driveToTag, drive.getExternalHeading(), // -9.5 distance from camera Y to AprilTag Y
-      SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-      SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+      Bot8BitMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+      Bot8BitMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
       )
       .build();
 
@@ -1378,20 +1429,21 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     setWristDeployPosition();
 
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
-    while (armmotor.isBusy()) {
+    // TODO FIX
+    /*while (armmotor.isBusy()) {
       // block
-    }
+    }*/
     // sleep(BotConstants.WRIST_DEPLOY_SLEEP);
 
     // Open the fingers and drop the pixel(s)
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_OPEN);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_OPEN);
     sleep(750);
 
 
     // Raise Arm and close fingers, fold wrist
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
     setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
 
@@ -1444,46 +1496,56 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
     //map hardware
     control_Hub = hardwareMap.get(Blinker.class, "Control Hub");
-    bottomArmServo = hardwareMap.get(Servo.class, "bottomArmServo");
-    topArmServo = hardwareMap.get(Servo.class, "topArmServo");
-    wristPanServo = hardwareMap.get(Servo.class, "wristPanServo");
-    camServo = hardwareMap.get(Servo.class, "camServo");
-    droneServo = hardwareMap.get(Servo.class, "droneServo");
-    hookServo = hardwareMap.get(Servo.class, "hookServo");
+    //bottomArmServo = hardwareMap.get(Servo.class, "bottomArmServo");
+    //topArmServo = hardwareMap.get(Servo.class, "topArmServo");
 
-    motor1 = hardwareMap.get(DcMotor.class, "motor1");
-    motor2 = hardwareMap.get(DcMotor.class, "motor2");
-    motor3 = hardwareMap.get(DcMotor.class, "motor3");
-    motor4 = hardwareMap.get(DcMotor.class, "motor4");
-    armmotor = hardwareMap.get(DcMotor.class, "armcontrol");
+    pixelHolderServo = hardwareMap.get(Servo.class, "HoldPixel");
+    wristServo = hardwareMap.get(Servo.class, "RotateWrist");
+    slideMotor1= hardwareMap.get(DcMotor.class, "SlideMotor1");
+    slideMotor2= hardwareMap.get(DcMotor.class, "SlideMotor2");
+    armRotation= hardwareMap.get(DcMotor.class, "SlideRotation");
+    intakeMotor = hardwareMap.get(DcMotor.class, "IntakeMotor");
+
+
+
+    // TODO: ADD DRONE SERVO
+    //droneServo = hardwareMap.get(Servo.class, "droneServo");
+
+
+
+    motor1 = hardwareMap.get(DcMotor.class, "FLmotor");
+    motor2 = hardwareMap.get(DcMotor.class, "FRmotor");
+    motor3 = hardwareMap.get(DcMotor.class, "BLmotor");
+    motor4 = hardwareMap.get(DcMotor.class, "BRmotor");
+//    armmotor = hardwareMap.get(DcMotor.class, "armcontrol");
 
     //set motor behavior
     motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     motor4.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    armmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//    armmotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-    armmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    armmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//    armmotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//    armmotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
     //Set initial positions for automation
 
     // init Wrist (FOLDED)
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FOLDED);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FOLDED);
 
     // init Hook (RETRACT)
-    hookServo.setPosition(BotConstants.HOOK_POS_RETRACT);
+//    hookServo.setPosition(BotConstants.HOOK_POS_RETRACT);
 
     // init drone Servo (ARMED)
-    droneServo.setPosition(BotConstants.DRONE_POSITION_ARMED);
+//    droneServo.setPosition(BotConstants.DRONE_POSITION_ARMED);
 
 
     // Close Both fingers around purple and yellow pixels
-    topArmServo.setDirection(Servo.Direction.REVERSE);
-    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
-    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
+//    topArmServo.setDirection(Servo.Direction.REVERSE);
+//    bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
+//    topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
 
     // init imu
     imu = hardwareMap.get(IMU.class, "imu");
@@ -1497,12 +1559,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     imu.resetYaw();
 
     // Raise arm off ground (flat-hand level)
-    armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR);
-    armmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    armmotor.setPower(1);
+//    armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR);
+//    armmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//    armmotor.setPower(1);
 
     // Set Camera Servo facing FRONT
-    camServo.setPosition(BotConstants.CAM_SERVO_SPIKE);
+//    camServo.setPosition(BotConstants.CAM_SERVO_SPIKE);
 
 
     // initialize camera
@@ -1516,7 +1578,9 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     }
 
     // Choose a camera resolution. Not all cameras support all resolutions.
-    //builder.setCameraResolution(new Size(640, 480));
+    // this one detects April better, but needs camera calibration first.
+//    builder.setCameraResolution(new android.util.Size(1024, 576));
+    builder.setCameraResolution(new android.util.Size(640,360));
 
     // JW April Tag
     aprilTag = new AprilTagProcessor.Builder()
@@ -1679,20 +1743,20 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   }   // end method telemetryAprilTag()
 
   public void setArmDrivePosition() {
-    armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-    armmotor.setPower(BotConstants.ARM_POWER);
+//    armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
+//    armmotor.setPower(BotConstants.ARM_POWER);
   }
 
   public void setArmPosition(int position, double speed) {
-    armmotor.setTargetPosition(position);
-    armmotor.setPower(speed);
+//    armmotor.setTargetPosition(position);
+//    armmotor.setPower(speed);
   }
 
   public void setWristFoldPosition() {
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FOLDED);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FOLDED);
   }
   public void setWristDeployPosition() {
-    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_AUTO_DEPLOY);
+//    wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_AUTO_DEPLOY);
   }
 
 

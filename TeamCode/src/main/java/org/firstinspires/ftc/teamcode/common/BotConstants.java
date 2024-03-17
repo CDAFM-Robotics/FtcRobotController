@@ -74,37 +74,42 @@ public class BotConstants {
     public static int BLUE_HUE_LOW=98; // 112
     public static int BLUE_HUE_HIGH=130; // 125
     public static int BLUE_SAT_LOW=50;  // 89
-    public static int BLUE_SAT_HIGH=225; // 219
+    public static int BLUE_SAT_HIGH=255; // (sunlight detect err) 225 // 219
     public static int BLUE_VAL_LOW=30;  // 51
     public static int BLUE_VAL_HIGH=255;  // 255
 
     // Region of Interest (Team Prop)
-    public static int ROI_RECT_TOP_LEFT_X = 20;
+    public static int ROI_RECT_TOP_LEFT_X = 0; // 20
     public static int ROI_RECT_TOP_LEFT_Y = 120;
-    public static int ROI_RECT_BOTTOM_RIGHT_X = 620;
-    public static int ROI_RECT_BOTTOM_RIGHT_Y = 350;
+    public static int ROI_RECT_BOTTOM_RIGHT_X = 640;  // 620
+    public static int ROI_RECT_BOTTOM_RIGHT_Y = 360;  // 350
 
     // Zone 1 Rect
     public static int Z1_RECT_TLX = ROI_RECT_TOP_LEFT_X;
     public static int Z1_RECT_TLY = ROI_RECT_TOP_LEFT_Y;
-    public static int Z1_RECT_BRX = 190;
+    public static int Z1_RECT_BRX = 160; // 190
     public static int Z1_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
 
     // Zone 2 Rect
-    public static int Z2_RECT_TLX = 250;
+    public static int Z2_RECT_TLX = 161; // 250
     public static int Z2_RECT_TLY = ROI_RECT_TOP_LEFT_Y;
-    public static int Z2_RECT_BRX = 420;
+    public static int Z2_RECT_BRX = 449; // 420
     public static int Z2_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
 
     // Zone 3 Rect
-    public static int Z3_RECT_TLX = 470; // 480
+    public static int Z3_RECT_TLX = 450; // 480
     public static int Z3_RECT_TLY = ROI_RECT_TOP_LEFT_Y;
     public static int Z3_RECT_BRX = ROI_RECT_BOTTOM_RIGHT_X;
     public static int Z3_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
 
     // 8bit constants for arm equation
-    public static double DIST_R = 393;
+    public static double DIST_R = 404;
+    public static int IN_OUT_THICKNESS = 93; //the intake and outtake thickness
+    public static int FIRST_SLIDE_LENGTH = 238;
     public static double SLIDE_COUNTS_PER_MILLIMETER = 4.48;
     public static double ROTATION_COUNTS_PER_DEGREE = 14.67;
+    public static int BACKDROP_ANGLE = 60;
+    public static int ARM_SPEED = 6;    // Adjust this value to make the arm go faster or lower
+                                        // The range should be 1 to 12
 
 }
