@@ -55,10 +55,10 @@ import java.util.List;
  */
 @Config
 public class Bot8BitMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(5, 0.1, 0.25);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(2, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1;
+    public static double LATERAL_MULTIPLIER = 1.75; // Strafe Test Tuning Step 17Mar24 (FF v1)
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -101,10 +101,10 @@ public class Bot8BitMecanumDrive extends MecanumDrive {
 //        imu.initialize(parameters);
 
         //jw new motor names for 8bit
-        leftFront = hardwareMap.get(DcMotorEx.class, "FLmotor");
-        rightFront = hardwareMap.get(DcMotorEx.class, "FRmotor");
-        leftRear = hardwareMap.get(DcMotorEx.class, "BLmotor");
-        rightRear = hardwareMap.get(DcMotorEx.class, "BRmotor");
+        leftFront = hardwareMap.get(DcMotorEx.class, "BRmotor");
+        rightFront = hardwareMap.get(DcMotorEx.class, "BLmotor");
+        leftRear = hardwareMap.get(DcMotorEx.class, "FRmotor");
+        rightRear = hardwareMap.get(DcMotorEx.class, "FLmotor");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -126,8 +126,8 @@ public class Bot8BitMecanumDrive extends MecanumDrive {
 
         // TODO: reverse any motors using DcMotor.setDirection()
 
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
 
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();

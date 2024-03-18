@@ -99,7 +99,7 @@ public class TrackingWheelLateralDistanceTuner extends LinearOpMode {
 
         while (!isStopRequested() && !tuningFinished) {
             // jw -gamepad1.right_stick_x -> +gamepad1... for reversed rotate mapping correction
-            Pose2d vel = new Pose2d(0, 0, gamepad1.right_stick_x);
+            Pose2d vel = new Pose2d(0, 0, -gamepad1.right_stick_x);
             drive.setDrivePower(vel);
 
             drive.update();

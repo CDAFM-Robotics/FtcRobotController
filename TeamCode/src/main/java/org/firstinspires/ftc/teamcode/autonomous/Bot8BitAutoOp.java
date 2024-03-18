@@ -24,8 +24,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.common.BotConstants;
 import org.firstinspires.ftc.teamcode.drive.Bot8BitMecanumDrive;
-import org.firstinspires.ftc.teamcode.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
@@ -117,7 +116,8 @@ public class Bot8BitAutoOp extends LinearOpMode {
     }
     //waitForStart();
 
-
+    RR_Test();
+/*
 
     if (team == BotConstants.BLUE_TEAM) {
       if (startLoc == BotConstants.START_SIDE_PIXEL) {
@@ -178,7 +178,7 @@ public class Bot8BitAutoOp extends LinearOpMode {
         } // end switch
       } // End Backdrop
     } // End Red
-
+*/
 
     while (opModeIsActive())
     {
@@ -187,6 +187,31 @@ public class Bot8BitAutoOp extends LinearOpMode {
     }
   }
 
+  public void RR_Test()
+  {
+    double[] xyArray = new double[2];
+
+    // Lower Wrist
+    // wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
+    Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
+
+    // visionPortal.setProcessorEnabled(contoursExtraction,false);
+
+    // BZ1_PIXEL
+    TrajectorySequence Test =
+    drive.trajectorySequenceBuilder(new Pose2d(-36.13, 58.55, Math.toRadians(90.00)))
+    .lineToConstantHeading(new Vector2d(-36.13, 11.40))
+    .lineToSplineHeading(new Pose2d(-26.01, 9.22, Math.toRadians(180.00)))
+    .lineToConstantHeading(new Vector2d(35.23, 11.02))
+    .lineToConstantHeading(new Vector2d(34.98, 34.59))
+    .lineToConstantHeading(new Vector2d(48.81, 34.85))
+    .build();
+
+    drive.setPoseEstimate(Test.start());
+    drive.followTrajectorySequence(Test);
+
+
+  }
 
   @SuppressLint("DefaultLocale")
   public void RR_BZ1_Pixel()
@@ -202,8 +227,8 @@ public class Bot8BitAutoOp extends LinearOpMode {
     // BZ1_PIXEL
     TrajectorySequence BZ1_PixelSide =
     drive.trajectorySequenceBuilder(new Pose2d(-35.63, 63.50, Math.toRadians(-90.00)))
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
 
@@ -231,21 +256,21 @@ public class Bot8BitAutoOp extends LinearOpMode {
 
     // Back to Start (slow down no Slip)
     .lineTo(new Vector2d(-36.00, 66.00),
-    SampleMecanumDrive.getVelocityConstraint(15,30,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    Bot8BitMecanumDrive.getVelocityConstraint(15,30,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
 
     // Through the Truss normal speed
     .lineTo(new Vector2d(12.00, 66.00))
 
     // Slowed down
     .lineToLinearHeading(new Pose2d(36.00, 60.00, Math.toRadians(180.00))/*,
-    SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30)
+    Bot8BitMecanumDrive.getVelocityConstraint(20,90,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30)
     */ // was too slow with 3.5 sec pre-run delay on pixel side - jonathan gameday
     )
     .lineTo(new Vector2d(36, 36),
-    SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(20)
+    Bot8BitMecanumDrive.getVelocityConstraint(20,90,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(20)
     ) // View Location New Point for April Tag. x:32
     .build();
     drive.setPoseEstimate(BZ1_PixelSide.start());
@@ -265,8 +290,8 @@ public class Bot8BitAutoOp extends LinearOpMode {
 
     TrajectorySequence BZ1_PixelSideB =
     drive.trajectorySequenceBuilder(BZ1_PixelSide.end())
-    .setConstraints(SampleMecanumDrive.getVelocityConstraint(45,45,17.66),
-    SampleMecanumDrive.getAccelerationConstraint(30))
+    .setConstraints(Bot8BitMecanumDrive.getVelocityConstraint(45,45,17.66),
+    Bot8BitMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
     .lineTo(driveToTag) // Go to April Tag
     .build();
@@ -1417,8 +1442,8 @@ public class Bot8BitAutoOp extends LinearOpMode {
 
       Trajectory toAprilTag = drive.trajectoryBuilder(ThroughTruss.end())
       .splineTo(driveToTag, drive.getExternalHeading(), // -9.5 distance from camera Y to AprilTag Y
-      Bot8BitMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-      Bot8BitMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+      Bot8BitMecanumDrive.getVelocityConstraint(15, Bot8BitDriveConstants.MAX_ANG_VEL, Bot8BitDriveConstants.TRACK_WIDTH),
+      Bot8BitMecanumDrive.getAccelerationConstraint(Bot8BitDriveConstants.MAX_ACCEL)
       )
       .build();
 

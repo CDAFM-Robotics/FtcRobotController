@@ -46,7 +46,7 @@ public class Bot8BitDriveConstants {
      */
     public static double WHEEL_RADIUS = 1.8898; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 14.1732; //14.1732283465 actual // in
+    public static double TRACK_WIDTH = 14.155; //14.155 tuned //14.1732283465 actual // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -67,8 +67,8 @@ public class Bot8BitDriveConstants {
      */
     public static double MAX_VEL = 55.0; // 60.4571;
     public static double MAX_ACCEL = 55.0; // 60.4571;
-    public static double MAX_ANG_VEL = Math.toRadians(180);
-    public static double MAX_ANG_ACCEL = Math.toRadians(180);
+    public static double MAX_ANG_VEL = Math.toRadians(120); // was 180 before tuning
+    public static double MAX_ANG_ACCEL = Math.toRadians(120); // was 180
 
     /*
      * Adjust the orientations here to match your robot. See the FTC SDK documentation for details.

@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.drive.opmode;
 
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.drive.Bot8BitDriveConstants.kV;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -21,7 +21,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.Bot8BitMecanumDrive;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ import java.util.List;
  * connected, start the program, and your robot will begin moving forward and backward according to
  * a motion profile. Your job is to graph the velocity errors over time and adjust the PID
  * coefficients (note: the tuning variable will not appear until the op mode finishes initializing).
- * Once you've found a satisfactory set of gains, add them to the DriveConstants.java file under the
+ * Once you've found a satisfactory set of gains, add them to the Bot8BitDriveConstants.java file under the
  * MOTOR_VELO_PID field.
  *
  * Recommended tuning process:
@@ -75,7 +75,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Bot8BitMecanumDrive drive = new Bot8BitMecanumDrive(hardwareMap);
 
         Mode mode = Mode.TUNING_MODE;
 
