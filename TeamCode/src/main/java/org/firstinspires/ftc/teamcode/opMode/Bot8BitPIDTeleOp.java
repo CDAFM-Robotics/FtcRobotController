@@ -21,12 +21,12 @@ import org.firstinspires.ftc.teamcode.common.BotConstants;
 
 // Next line will prevent code from building and showing up on Control Hub
 //@Disabled
-@TeleOp (group = "8Bit Robot", name = "8Bit Driver Control")
+@TeleOp (group = "8Bit Robot", name = "8Bit Driver PID Control")
 
-public class Bot8BitTeleOp extends LinearOpMode {
+public class Bot8BitPIDTeleOp extends LinearOpMode {
 
   // Define constants that can be adjusted
-  private static final double DRIVE_SPEED_FAST = 0.5;    // full speed driving
+  private static final double DRIVE_SPEED_FAST = 1.0;    // full speed driving
   private static final double DRIVE_SPEED_SLOW = 0.5;    // half speed driving
   private static final double STRAFE_SPEED_FAST = 0.5;    // Speed when strafe to the correct location to drop pixel
   // 0.12 not holding and pixel, 0.00 hold both, 0.2 hold one
@@ -91,10 +91,11 @@ public class Bot8BitTeleOp extends LinearOpMode {
   private int slidePosition = 0;
   private boolean readyHanging = false;
   private boolean isHanging = false;
-
-
   @Override
   public void runOpMode() {
+    //local variables
+    boolean lStickY2Pressed = false;
+    double holdTime = 0;
 
     //read hardware configurations
     control_Hub = hardwareMap.get(Blinker.class, "Control Hub");
@@ -126,14 +127,17 @@ public class Bot8BitTeleOp extends LinearOpMode {
     slideMotor2.setTargetPosition(0);
     slideMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     slideMotor2.setPower(0);
+//    slideMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//    slideMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//    slideMotor2.setPower(0);
 
     armRotationMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//    armRotationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    armRotationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     armRotationMotor.setTargetPosition(0);
     armRotationMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    armRotationMotor.setTargetPosition(-31);
+    armRotationMotor.setTargetPosition(-35);
     armRotationMotor.setPower(1);
-    sleep(250);
+    sleep(500);
     armRotationMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     armRotationMotor.setTargetPosition(0);
     armRotationMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -279,11 +283,22 @@ public class Bot8BitTeleOp extends LinearOpMode {
       // Left stick on gamepade2 controls the drop off
       if (Math.abs(gamepad2.left_stick_y) > 0.05
           && Math.abs(gamepad2.right_stick_y) < 0.05) {
-        lStickY2 = -gamepad2.left_stick_y * BotConstants.ARM_SPEED;
-        telemetry.addData("GP2 Left StickY2", "%.5f", lStickY2);
-        backdroppos += lStickY2;
-        telemetry.addData("backdrop position 1", "%.2f", backdroppos);
+          if ( !lStickY2Pressed ) {
+            lStickY2Pressed = true;
+          }
+          holdTime += runtime.milliseconds();
+          lStickY2 = -gamepad2.left_stick_y;
 
+          if (lStickY2 >= 0 ) {
+            backdroppos = 940;
+           }  else if (lStickY2 < 0 ){
+            backdroppos = 500;
+          }
+//        lStickY2 = -gamepad2.left_stick_y * BotConstants.ARM_SPEED;
+//        telemetry.addData("GP2 Left StickY2", "%.5f", lStickY2);
+//        backdroppos += lStickY2;
+//        telemetry.addData("backdrop position 1", "%.2f", backdroppos);
+//
         if (backdroppos < 0) {
           backdroppos = 0;
         } else if (backdroppos > 940) {
@@ -308,24 +323,28 @@ public class Bot8BitTeleOp extends LinearOpMode {
         else {
           slideMotor1.setTargetPosition(-slidePosition);
           slideMotor2.setTargetPosition(slidePosition);
-          slideMotor1.setPower(1);
-          slideMotor2.setPower(1);
+          slideMotor1.setPower(0.5);
+          slideMotor2.setPower(0.5);
         }
         armRotationMotor.setTargetPosition(-(int) Math.round((calculateRotationAngle(backdroppos) - 7) * (BotConstants.ROTATION_COUNTS_PER_DEGREE + 4.5)));
         armRotationMotor.setPower(1);
 
-        if (backdroppos > 380) {
-          wristServoPosition = WRIST_CLOSED - (BotConstants.BACKDROP_ANGLE - calculateRotationAngle(backdroppos)) / 270 + 10 / 270;
-          wristServo.setPosition(wristServoPosition);
-          telemetry.addData("wristServo", "Position %.3f", wristServo.getPosition());
-        } else {
-          wristServoPosition = WRIST_CLOSED;
-          wristServo.setPosition(wristServoPosition);
-          telemetry.addData("wristServo", "Position %.3f", wristServo.getPosition());
-        }
+//        if (backdroppos > 380) {
+//          wristServoPosition = WRIST_CLOSED - (BotConstants.BACKDROP_ANGLE - calculateRotationAngle(backdroppos)) / 270 + 18 / 270;
+//          wristServo.setPosition(wristServoPosition);
+//          telemetry.addData("wristServo", "Position %.3f", wristServo.getPosition());
+//        } else {
+//          wristServoPosition = WRIST_CLOSED;
+//          wristServo.setPosition(wristServoPosition);
+//          telemetry.addData("wristServo", "Position %.3f", wristServo.getPosition());
+//        }
+      } else if (Math.abs(gamepad2.left_stick_y) < 0.05
+              && Math.abs(gamepad2.right_stick_y) < 0.05) {
+        runtime.reset();
+        lStickY2Pressed = false;
       }
 
-      // right stick on gamepad 2 controls pick up
+        // right stick on gamepad 2 controls pick up
       // rotate the arm to pick up pixels with left stick on gamepad 2
       if (Math.abs(gamepad2.left_stick_y) < 0.05
               && Math.abs(gamepad2.right_stick_y) > 0.05) {
@@ -362,7 +381,7 @@ public class Bot8BitTeleOp extends LinearOpMode {
       telemetry.addData("slidemotor 1 power", "%.3f", slideMotor1.getPower());
       telemetry.addData("slidemotor 2 power", "%.3f", slideMotor2.getPower());
       telemetry.addData("rotation degrees", "%.2f", calculateRotationAngle(backdroppos));
-      telemetry.addData("rotation target position", "%d", armRotationMotor.getTargetPosition());
+      telemetry.addData("rotation position", "%d", armRotationMotor.getTargetPosition());
       telemetry.addData("rotation current position", "%d", armRotationMotor.getCurrentPosition());
 
       // intake and pixel holder control
@@ -504,16 +523,15 @@ public class Bot8BitTeleOp extends LinearOpMode {
           slideMotor2.setTargetPosition(slidePosition);
           slideMotor1.setPower(1);
           slideMotor2.setPower(1);
-          armRotationMotor.setTargetPosition(-(int) (83 * (BotConstants.ROTATION_COUNTS_PER_DEGREE)));
-          armRotationMotor.setPower(1);        }
+          armRotationMotor.setTargetPosition(-(int) (83 * (BotConstants.ROTATION_COUNTS_PER_DEGREE + 4.5)));
+        }
         else {
-          armRotationMotor.setTargetPosition(0);
-          armRotationMotor.setPower(1);
-//          slidePosition = BotConstants.SLIDE_READY_POS;
-//          slideMotor1.setTargetPosition(-slidePosition);
-//          slideMotor2.setTargetPosition(slidePosition);
-//          slideMotor1.setPower(1);
-//          slideMotor2.setPower(1);
+          slidePosition = BotConstants.SLIDE_READY_POS;
+          slideMotor1.setTargetPosition(-slidePosition);
+          slideMotor2.setTargetPosition(slidePosition);
+          slideMotor1.setPower(1);
+          slideMotor2.setPower(1);
+          armRotationMotor.setTargetPosition(-(int) (83 * (BotConstants.ROTATION_COUNTS_PER_DEGREE + 4.5)));
         }
       }
 

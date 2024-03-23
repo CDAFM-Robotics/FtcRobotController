@@ -106,10 +106,13 @@ public class BotConstants {
     public static double DIST_R = 404;
     public static int IN_OUT_THICKNESS = 93; //the intake and outtake thickness
     public static int FIRST_SLIDE_LENGTH = 238;
+    public static int SLIDE_READY_POS = 300;
     public static double SLIDE_COUNTS_PER_MILLIMETER = 4.48;
     public static double ROTATION_COUNTS_PER_DEGREE = 14.67;
     public static int BACKDROP_ANGLE = 60;
-    public static int ARM_SPEED = 6;    // Adjust this value to make the arm go faster or lower
+    public static int ARM_SPEED = 15;    // Adjust this value to make the arm go faster or lower
                                         // The range should be 1 to 12
+    public static int HANG_POS_8BIT = 600;
+    public static int ARM_PIXEL_ROTATE_FLOOR = -160; //194 test value
 
 }
