@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.testing;
+package org.firstinspires.ftc.teamcode.util;
 
 import android.graphics.Color;
 import androidx.annotation.ColorInt;
@@ -145,6 +145,9 @@ public class QwiicLEDStick extends I2cDeviceSynchDevice<I2cDeviceSynchSimple> {
      */
     public void turnAllOff() {
         setColor(0);
+//        byte[] data = new byte[1];
+//        data[0] =(byte) 0;
+//        writeI2C(Commands.WRITE_ALL_LED_OFF, data );
     }
 
     /**
