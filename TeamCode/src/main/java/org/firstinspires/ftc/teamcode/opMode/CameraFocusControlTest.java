@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opMode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -14,6 +15,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 public class CameraFocusControlTest extends LinearOpMode {
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
+
+    public ElapsedTime elapsedTime = new ElapsedTime();
     @Override
     public void runOpMode() {
         VisionPortal.Builder builder = new VisionPortal.Builder();
@@ -50,11 +53,19 @@ public class CameraFocusControlTest extends LinearOpMode {
 
         // Next Lines get a FOCUSControl and set a FIXED Focus Mode at the distance roughly equal
         // to on Square from April Tag setFocusLength(40.0),  0 is infinity and 250 is closest
+        // Focus-Time is now ~ 4ms
+        elapsedTime.reset();
+        double start_time = elapsedTime.milliseconds();
+        double end_time;
+
         FocusControl focusControl = visionPortal.getCameraControl(FocusControl.class);
+        focusControl.setMode(FocusControl.Mode.Fixed);
+        focusControl.setFocusLength(40.0);
+        end_time = elapsedTime.milliseconds();
+
         while (opModeIsActive()) {
-            focusControl.setMode(FocusControl.Mode.Fixed);
-            focusControl.setFocusLength(40.0);
             telemetry.addData("Focus Length", "%.2f", focusControl.getFocusLength());
+            telemetry.addData("start/end", "%.2f/%.2f", start_time, end_time);
             telemetry.update();
         }
     }

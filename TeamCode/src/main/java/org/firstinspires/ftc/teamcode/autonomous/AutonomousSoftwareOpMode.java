@@ -39,6 +39,7 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
+import org.openftc.easyopencv.OpenCvInternalCamera;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ import java.util.List;
 
 public class AutonomousSoftwareOpMode extends LinearOpMode {
 
-  public int team     = BotConstants.RED_TEAM;
+  public int team     = BotConstants.BLUE_TEAM;
   public int startLoc = BotConstants.START_SIDE_PIXEL;
 
   private Blinker control_Hub;
@@ -75,6 +76,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
   // Vision portal Replaces EasyOpenCV method
   private VisionPortal visionPortal;
+  private FocusControl focusControl;
   Contours_Extraction contoursExtraction = new Contours_Extraction();
 
   // JW AprilTag
@@ -247,7 +249,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     // TODO: Possibly move cam swivel earlier
     // TODO: try different focus modes for better picture?
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -298,6 +304,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
   {
     double[] xyArray = new double[2];
 
+
+
     // Lower Wrist
     wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -333,7 +341,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ2_PixelSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -420,7 +432,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ3_PixelSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -508,7 +524,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ1_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -596,7 +616,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ2_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -685,7 +710,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ3_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -807,7 +837,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     // TODO: Possibly move cam swivel earlier
     // TODO: try different focus modes for better picture?
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -891,7 +926,12 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(RZ2_PixelSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -979,7 +1019,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(RZ1_PixelSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -1064,7 +1108,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(RZ3_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -1158,7 +1206,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(RZ2_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -1251,7 +1303,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(RZ1_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -1559,6 +1615,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       // wait until Camera is live
     }
 
+    // Add FocusControl to set a Fixed Focus length on April Tag detection for faster detect.
+    focusControl = visionPortal.getCameraControl(FocusControl.class);
     // ExposureControl exposure = visionPortal.getCameraControl(ExposureControl.class);
     // exposure.isExposureSupported();
     
