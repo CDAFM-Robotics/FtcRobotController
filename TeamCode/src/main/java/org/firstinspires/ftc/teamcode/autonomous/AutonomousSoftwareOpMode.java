@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.common.BotConstants;
@@ -1302,6 +1303,30 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
 
   // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
   public void RRRunAutomation() {
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
@@ -1542,7 +1567,6 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
   @SuppressLint("DefaultLocale")
   public int detectZone() {
-
     int[] result = contoursExtraction.getResult();
 
 

@@ -22,7 +22,7 @@ public class LEDStickTest extends LinearOpMode {
   // Define the LEDStrip
   public QwiicLEDStick ledstrip;
 
-  public static int LED_STICK_BRIGHTNESS=5; // Brightness (1-31)
+  public static int LED_STICK_BRIGHTNESS=6; // Brightness (1-31)
   public static int LED_STICK_TOTAL_LEDS=10; // How many Total LED there are to control
 
   // ColorTable is an enum that define the possible color sensor states.

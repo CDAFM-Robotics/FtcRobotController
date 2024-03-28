@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 */
 
 @Disabled
-@TeleOp (group = "Testing", name = "ServoSetupTest_Hook")
+@TeleOp (group = "testing", name = "ServoSetupTest_Hook")
 
 // Next line will prevent code from building and showing up on Control Hub
 
