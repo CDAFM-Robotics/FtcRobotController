@@ -217,6 +217,22 @@ public class ToggleCentric2P extends LinearOpMode {
           telemetry.addLine("bot centric");
         }
 
+        // ignore the first 15% of the left stick push.
+        // So driving straight or strafing will be easier
+        if (rStickX < 0.05) {
+          if (lStickX > 0) {
+            if (lStickY < (0.15 * lStickX) && lStickY > -0.15 * lStickX)
+              lStickY = 0;
+            if (lStickY > 15 * lStickX || lStickY < -15 * lStickX)
+              lStickX = 0;
+          } else if (lStickX < 0) {
+            if (lStickY > (0.15 * lStickX) && lStickY < -0.15 * lStickX)
+              lStickY = 0;
+            if (lStickY < 15 * lStickX || lStickY > -15 * lStickX)
+              lStickX = 0;
+          }
+        }
+
         telemetry.addData("Stick Powers", ":lStickX: %.2f, lStickY: %.2f, RStickX:%.2f", lStickX, lStickY, rStickX);
         telemetry.addData("imu", "yaw: %.2f", botHeading);
 
