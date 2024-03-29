@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.common.BotConstants;
 
-@TeleOp (group = "Competition", name = "Toggle Centric 2Player")
+@TeleOp (group = "Competition", name = "Toggle Centric w/ PID")
 
 // Comment next line to prevent code from building and showing up on Control Hub
 // @Disabled
