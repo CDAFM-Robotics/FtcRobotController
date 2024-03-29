@@ -6,6 +6,9 @@ import com.acmerobotics.dashboard.config.Config;
 public class BotConstants {
 
 
+    // Dreive Constants
+    public static double DRIVE_SLEW_RATE = 0.1;
+
     // Finger Constants
     public static double BOTTOM_ARM_SERVO_CLOSE = 0.10;
     public static double BOTTOM_ARM_SERVO_OPEN = 0.30;
@@ -14,30 +17,43 @@ public class BotConstants {
     public static double FINGER_SERVO_SETUP_POSITION = 0.15; // Initial SETUP position 0.15 (on 0-1 scale) install first notch where jaws don't touch
 
     // Wrist Constants
-    public static double WRIST_PAN_SERVO_FOLDED = 0.58;
-    public static double WRIST_PAN_SERVO_FLOOR = 0.024; // was 0 -> FieldCentric2P
-    public static double WRIST_PICK_UP = 0.030; // FOR teleOpwas 0 -> FieldCentric2P
+    public static double WRIST_PAN_SERVO_FOLDED = 0.62; // was 0.58 (new servo)
+    public static double WRIST_PAN_SERVO_FLOOR = 0.048; // was 0.024 was 0 -> FieldCentric2P
+    public static double WRIST_PICK_UP = 0.048; // was 0.03 FOR teleOpwas 0 -> FieldCentric2P
     public static double WRIST_PAN_SERVO_AUTO_DEPLOY = 0.320;
     public static double WRIST_PAN_SERVO_L2_DEPLOY = 0.440;
     public static double WRIST_PAN_SERVO_MOSAIC = 0.360;
     public static double WRIST_PAN_SERVO_SPEED = 0.008;
     public static int WRIST_DEPLOY_SLEEP = 1500;
 
-    // Arm Constants
-    public static int ARM_POS_FLOOR = 175; // was 150 (used FieldCentric2p val
-    public static int ARM_POS_2_outof_5 = 440;
-    public static int ARM_POS_2_outof_3 = 300;
-    public static int ARM_POS_FLOOR_TELEOP = 178; // was 150 (used FieldCentric2p val
-    public static int ARM_POS_DRIVE = 600;
-    public static int ARM_POS_AUTO_DEPLOY = 7718;
-    public static int ARM_POS_MAX = 7770;
-    public static int ARM_POS_L2_DROP = 6944;
-    public static int ARM_POS_L2_MOSAIC = 7585;
-    public static int ARM_POS_HANG = 5046;
-    public static double ARM_POWER = 1.0;
-    public static int ARM_DEPLOY_SLEEP = 6000;
+    // New Arm Constants 5 times faster
+    public static int ARM_POS_FLOOR = 35; // was 150 (used FieldCentric2p val
+    public static int ARM_POS_2_outof_5 = 88;
+    public static int ARM_POS_2_outof_3 = 60;
+    public static int ARM_POS_FLOOR_TELEOP = 35; // was 150 (used FieldCentric2p val
+    public static int ARM_POS_DRIVE = 120;
+    public static int ARM_POS_AUTO_DEPLOY = 1544;
+    public static int ARM_POS_MAX = 1554;
+    public static int ARM_POS_L2_DROP = 1389;
+    public static int ARM_POS_L2_MOSAIC = 1517;
+    public static int ARM_POS_HANG = 1009;
+    public static double ARM_POWER = 0.25;
+    public static double ARM_SLEW_RATE = 0.001;
+    public static int ARM_DEPLOY_SLEEP = 1200;
 
-
+//    // Old Arm Constants
+//    public static int ARM_POS_FLOOR = 175; // was 150 (used FieldCentric2p val
+//    public static int ARM_POS_2_outof_5 = 440;
+//    public static int ARM_POS_2_outof_3 = 300;
+//    public static int ARM_POS_FLOOR_TELEOP = 178; // was 150 (used FieldCentric2p val
+//    public static int ARM_POS_DRIVE = 600;
+//    public static int ARM_POS_AUTO_DEPLOY = 7718;
+//    public static int ARM_POS_MAX = 7770;
+//    public static int ARM_POS_L2_DROP = 6944;
+//    public static int ARM_POS_L2_MOSAIC = 7585;
+//    public static int ARM_POS_HANG = 5046;
+//    public static double ARM_POWER = 1.0;
+//    public static int ARM_DEPLOY_SLEEP = 6000;
 
     // Camera Servo Constants
     public static double CAM_SERVO_FRONT = 0.3; // old 0;
@@ -112,7 +128,8 @@ public class BotConstants {
     public static int BACKDROP_ANGLE = 60;
     public static int ARM_SPEED = 15;    // Adjust this value to make the arm go faster or lower
                                         // The range should be 1 to 12
-    public static int HANG_POS_8BIT = 600;
+    public static int HANG_POS_8BIT = 600+720;
     public static int ARM_PIXEL_ROTATE_FLOOR = -160; //194 test value
+    public static int ONE_LAYER_UP = 66; //one pixel layer up
 
 }

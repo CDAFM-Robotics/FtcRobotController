@@ -118,7 +118,7 @@ public class ToggleCentric2P extends LinearOpMode {
     //Initialize arm motor
     armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR);
     armmotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-    armmotor.setPower(1);
+    armmotor.setPower(BotConstants.ARM_SPEED);
 
     telemetry.addData("Arm Motor init", "Arm Motor decoder: %d", armmotor.getCurrentPosition());
     telemetry.addData("Arm Motor init", "run mode: %s", armmotor.getMode().toString());
