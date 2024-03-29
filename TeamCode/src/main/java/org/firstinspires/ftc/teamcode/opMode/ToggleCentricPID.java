@@ -15,15 +15,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.common.BotConstants;
 
-import java.util.Set;
-
 @TeleOp (group = "Competition", name = "Toggle Centric 2Player")
 
 // Comment next line to prevent code from building and showing up on Control Hub
 // @Disabled
 
 
-public class ToggleCentric2P extends LinearOpMode {
+public class ToggleCentricPID extends LinearOpMode {
   private Blinker control_Hub;
   private Servo bottomArmServo;
   private IMU imu;
