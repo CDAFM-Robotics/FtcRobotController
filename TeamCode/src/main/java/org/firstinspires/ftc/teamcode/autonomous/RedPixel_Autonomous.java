@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.FocusControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.common.BotConstants;
@@ -74,6 +75,7 @@ public class RedPixel_Autonomous extends LinearOpMode {
 
   // Vision portal Replaces EasyOpenCV method
   private VisionPortal visionPortal;
+  private FocusControl focusControl;
   Contours_Extraction contoursExtraction = new Contours_Extraction();
 
   // JW AprilTag
@@ -109,10 +111,11 @@ public class RedPixel_Autonomous extends LinearOpMode {
     }
     //waitForStart();
 
-    sleep(3500);
+
 
     if (team == BotConstants.BLUE_TEAM) {
       if (startLoc == BotConstants.START_SIDE_PIXEL) {
+        sleep (3500); // wait 3.5 sec (Far side)
         switch (zone) {
           case 1:
             RR_BZ1_Pixel();
@@ -142,6 +145,7 @@ public class RedPixel_Autonomous extends LinearOpMode {
     } // End Blue
     else { // RED TEAM
       if (startLoc == BotConstants.START_SIDE_PIXEL) {
+        sleep (3500); // wait 3.5 sec (Far side)
         switch (zone) {
           case 1:
             RR_RZ1_Pixel();
@@ -228,9 +232,10 @@ public class RedPixel_Autonomous extends LinearOpMode {
     .lineTo(new Vector2d(12.00, 66.00))
 
     // Slowed down
-    .lineToLinearHeading(new Pose2d(36.00, 60.00, Math.toRadians(180.00)),
+    .lineToLinearHeading(new Pose2d(36.00, 60.00, Math.toRadians(180.00))/*,
     SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30)
+    */ // was too slow with 3.5 sec pre-run delay on pixel side - jonathan gameday
     )
     .lineTo(new Vector2d(36, 36),
     SampleMecanumDrive.getVelocityConstraint(20,90,17.66),
@@ -243,7 +248,11 @@ public class RedPixel_Autonomous extends LinearOpMode {
     // TODO: Possibly move cam swivel earlier
     // TODO: try different focus modes for better picture?
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -294,6 +303,8 @@ public class RedPixel_Autonomous extends LinearOpMode {
   {
     double[] xyArray = new double[2];
 
+
+
     // Lower Wrist
     wristPanServo.setPosition(BotConstants.WRIST_PAN_SERVO_FLOOR);
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -329,7 +340,11 @@ public class RedPixel_Autonomous extends LinearOpMode {
     drive.followTrajectorySequence(BZ2_PixelSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -416,7 +431,11 @@ public class RedPixel_Autonomous extends LinearOpMode {
     drive.followTrajectorySequence(BZ3_PixelSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -504,7 +523,11 @@ public class RedPixel_Autonomous extends LinearOpMode {
     drive.followTrajectorySequence(BZ1_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -592,7 +615,12 @@ public class RedPixel_Autonomous extends LinearOpMode {
     drive.followTrajectorySequence(BZ2_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -681,7 +709,12 @@ public class RedPixel_Autonomous extends LinearOpMode {
     drive.followTrajectorySequence(BZ3_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -779,8 +812,10 @@ public class RedPixel_Autonomous extends LinearOpMode {
      */
 
     // Back to Start (slow down no Slip)
-    .lineTo(new Vector2d(-36.00, -66.00))
-
+    .lineTo(new Vector2d(-36.00, -66.00))/*
+    SampleMecanumDrive.getVelocityConstraint(15,30,17.66),
+    SampleMecanumDrive.getAccelerationConstraint(30))
+*/  // was too slow if 3.5s delay - jonathan gameday
     // Through the Truss normal speed
     .lineTo(new Vector2d(12.00, -66.00))
 
@@ -801,7 +836,12 @@ public class RedPixel_Autonomous extends LinearOpMode {
     // TODO: Possibly move cam swivel earlier
     // TODO: try different focus modes for better picture?
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -885,7 +925,12 @@ public class RedPixel_Autonomous extends LinearOpMode {
     drive.followTrajectorySequence(RZ2_PixelSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -973,7 +1018,11 @@ public class RedPixel_Autonomous extends LinearOpMode {
     drive.followTrajectorySequence(RZ1_PixelSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -1058,7 +1107,11 @@ public class RedPixel_Autonomous extends LinearOpMode {
     drive.followTrajectorySequence(RZ3_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -1103,7 +1156,7 @@ public class RedPixel_Autonomous extends LinearOpMode {
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
     .lineTo(new Vector2d(51.53, -61.58))
-    .lineToLinearHeading(new Pose2d(62.50, -62.50, Math.toRadians(-180.00)))
+    .lineToLinearHeading(new Pose2d(63.50, -66.50, Math.toRadians(-180.00)))
     .build();
     drive.followTrajectorySequence(RZ3_BackdropSideC);
   }
@@ -1152,7 +1205,11 @@ public class RedPixel_Autonomous extends LinearOpMode {
     drive.followTrajectorySequence(RZ2_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -1245,7 +1302,11 @@ public class RedPixel_Autonomous extends LinearOpMode {
     drive.followTrajectorySequence(RZ1_BackdropSide);
 
     camServo.setPosition(BotConstants.CAM_SERVO_REAR);
-    sleep(2000);
+    // TODO TESTING new Cam No-Wait
+    // sleep(2000);
+    focusControl.setMode(FocusControl.Mode.Fixed);
+    focusControl.setFocusLength(40.0);
+
     xyArray[0] = drive.getPoseEstimate().getX();
     xyArray[1] = drive.getPoseEstimate().getY();
 
@@ -1296,6 +1357,30 @@ public class RedPixel_Autonomous extends LinearOpMode {
   }
 
 
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
+  // TODO: ********************************** END OF TRAJECTORIES ******************************
   // TODO: ********************************** END OF TRAJECTORIES ******************************
   public void RRRunAutomation() {
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -1529,6 +1614,8 @@ public class RedPixel_Autonomous extends LinearOpMode {
       // wait until Camera is live
     }
 
+    // Add FocusControl to set a Fixed Focus length on April Tag detection for faster detect.
+    focusControl = visionPortal.getCameraControl(FocusControl.class);
     // ExposureControl exposure = visionPortal.getCameraControl(ExposureControl.class);
     // exposure.isExposureSupported();
     
@@ -1537,7 +1624,6 @@ public class RedPixel_Autonomous extends LinearOpMode {
 
   @SuppressLint("DefaultLocale")
   public int detectZone() {
-
     int[] result = contoursExtraction.getResult();
 
 
