@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.common.BotConstants;
 public class Bot8BitTeleOp extends LinearOpMode {
 
   // Define constants that can be adjusted
-  private static final double DRIVE_SPEED_FAST = 0.5;    // full speed driving
+  private static final double DRIVE_SPEED_FAST = 1.0;    // full speed driving
   private static final double DRIVE_SPEED_SLOW = 0.5;    // half speed driving
   private static final double STRAFE_SPEED_FAST = 0.5;    // Speed when strafe to the correct location to drop pixel
   // 0.12 not holding and pixel, 0.00 hold both, 0.2 hold one
@@ -66,7 +66,7 @@ public class Bot8BitTeleOp extends LinearOpMode {
   private double holdServoPosition;
   private double wristServoPosition;
   private boolean fieldCentric = false;
-  private double driveSpeed = DRIVE_SPEED_FAST;
+  private double driveSpeed = DRIVE_SPEED_SLOW;
   private double botHeading = 0;
   private ColorSensor colorSensor1;
   private ColorSensor colorSensor2;
@@ -301,7 +301,7 @@ public class Bot8BitTeleOp extends LinearOpMode {
           slidePosition = 0;
         }
 
-        if (slidePosition == 0 && Math.abs(slideMotor1.getCurrentPosition()) < 10) {
+        if (slidePosition == 0 && Math.abs(slideMotor1.getCurrentPosition()) < 30) {
           slideMotor1.setPower(0);
           slideMotor2.setPower(0);
         }

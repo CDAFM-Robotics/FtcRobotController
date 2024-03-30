@@ -273,8 +273,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ1_PixelSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -284,7 +284,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -335,7 +335,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .lineToConstantHeading(new Vector2d(-56, 38)) // tweaked // -54 32
     .lineToSplineHeading(new Pose2d(-60.67, 61.58, Math.toRadians(180.00)))
     .lineTo(new Vector2d(33.25, 59))
-    .lineTo(new Vector2d(30, 31)) // View Location New Point for April Tag. // tweak 17n 5:22p was y:33 y:36
+    .lineTo(new Vector2d(30, 29)) // was 31 (miss placed pixel) // View Location New Point for April Tag. // tweak 17n 5:22p was y:33 y:36
     .build();
     drive.setPoseEstimate(BZ2_PixelSide.start());
     drive.followTrajectorySequence(BZ2_PixelSide);
@@ -365,8 +365,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ2_PixelSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
     // Wait for arm and wrist both move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -376,7 +376,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -426,7 +426,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     .lineToConstantHeading(new Vector2d(-59, 40))
     .lineToSplineHeading(new Pose2d(-60.67, 60, Math.toRadians(180.00)))
     .lineToConstantHeading(new Vector2d(35.63, 58))
-    .lineToConstantHeading(new Vector2d(30, 28)) // View Location New Point for April Tag.
+    .lineToConstantHeading(new Vector2d(30, 26)) // was 28 missed slot  // View Location New Point for April Tag.
     .build();
     drive.setPoseEstimate(BZ3_PixelSide.start());
     drive.followTrajectorySequence(BZ3_PixelSide);
@@ -456,8 +456,9 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ3_PixelSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
+//    setWristDeployPosition();
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -467,7 +468,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -548,8 +549,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ1_BackdropSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -559,7 +560,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -641,8 +642,11 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ2_BackdropSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
+    // JW HACK TEST
+
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
+
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -652,7 +656,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -735,8 +739,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(BZ3_BackdropSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -746,7 +750,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO );
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -813,10 +817,10 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
      */
 
     // Back to Start (slow down no Slip)
-    .lineTo(new Vector2d(-36.00, -66.00))/*
+    .lineTo(new Vector2d(-36.00, -66.00),
     SampleMecanumDrive.getVelocityConstraint(15,30,17.66),
     SampleMecanumDrive.getAccelerationConstraint(30))
-*/  // was too slow if 3.5s delay - jonathan gameday
+    // was too slow if 3.5s delay - jonathan gameday
     // Through the Truss normal speed
     .lineTo(new Vector2d(12.00, -66.00))
 
@@ -862,8 +866,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(RZ3_PixelSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -873,7 +877,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -918,7 +922,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       setWristFoldPosition();
     })
     .lineToConstantHeading(new Vector2d(-56, -38)) // tweaked // -54 32
-    .lineToSplineHeading(new Pose2d(-60.67, -59, Math.toRadians(-180.00))) // pretweak  17Nov23 3:50p
+    .lineToSplineHeading(new Pose2d(-60.67, -60, Math.toRadians(-180.00))) // Y was -59 (hit edge) // pretweak  17Nov23 3:50p
     .lineTo(new Vector2d(33.25, -59))
     .lineTo(new Vector2d(30, -36)) // View Location New Point for April Tag.
     .build();
@@ -951,8 +955,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(RZ2_PixelSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -962,7 +966,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -1043,8 +1047,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(RZ1_PixelSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -1054,7 +1058,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -1132,8 +1136,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(RZ3_BackdropSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -1143,7 +1147,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -1156,8 +1160,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
-    .lineTo(new Vector2d(51.53, -61.58))
-    .lineToLinearHeading(new Pose2d(63.50, -66.50, Math.toRadians(-180.00)))
+    .lineTo(new Vector2d(51.53, -67)) // -61.58
+    .lineToLinearHeading(new Pose2d(63.50, -67, Math.toRadians(-180.00))) // was -66.50
     .build();
     drive.followTrajectorySequence(RZ3_BackdropSideC);
   }
@@ -1234,8 +1238,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(RZ2_BackdropSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -1245,7 +1249,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -1327,8 +1331,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     drive.followTrajectorySequence(RZ1_BackdropSideB);
 
     // Drop Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
       sleep(10);
@@ -1338,7 +1342,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     sleep(400);
 
     // Close up for parking
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
     sleep(100);
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
@@ -1351,8 +1355,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     SampleMecanumDrive.getAccelerationConstraint(30))
     .setTurnConstraint(Math.toRadians(120),Math.toRadians(120))
 
-    .lineToConstantHeading(new Vector2d(51, -66))
-    .lineToLinearHeading(new Pose2d(62, -66, Math.toRadians(-180.00)))
+    .lineToConstantHeading(new Vector2d(51, -68)) // was -66
+    .lineToLinearHeading(new Pose2d(62, -68, Math.toRadians(-180.00))) // weas -66
     .build();
     drive.followTrajectorySequence(RZ1_BackdropSideC);
   }
@@ -1455,8 +1459,8 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
       drive.followTrajectory(toAprilTag);
 
     // Deploy Yellow Pixel
-    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER);
     setWristDeployPosition();
+    setArmPosition(BotConstants.ARM_POS_AUTO_DEPLOY, BotConstants.ARM_POWER_AUTO);
 
     // Put a blocking call after Arm and Wrist, will allow both to move at same time.
     while (armmotor.isBusy()) {
@@ -1474,7 +1478,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
     bottomArmServo.setPosition(BotConstants.BOTTOM_ARM_SERVO_CLOSE);
     topArmServo.setPosition(BotConstants.TOP_ARM_SERVO_CLOSE);
     setWristFoldPosition();
-    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
+    setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER_AUTO);
 
   }
 
@@ -1762,7 +1766,7 @@ public class AutonomousSoftwareOpMode extends LinearOpMode {
 
   public void setArmDrivePosition() {
     armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-    armmotor.setPower(BotConstants.ARM_POWER);
+    armmotor.setPower(BotConstants.ARM_POWER_AUTO);
   }
 
   public void setArmPosition(int position, double speed) {

@@ -18,11 +18,12 @@ public class BotConstants {
 
     // Wrist Constants
     public static double WRIST_PAN_SERVO_FOLDED = 0.62; // was 0.58 (new servo)
-    public static double WRIST_PAN_SERVO_FLOOR = 0.048; // was 0.024 was 0 -> FieldCentric2P
-    public static double WRIST_PICK_UP = 0.048; // was 0.03 FOR teleOpwas 0 -> FieldCentric2P
-    public static double WRIST_PAN_SERVO_AUTO_DEPLOY = 0.320;
-    public static double WRIST_PAN_SERVO_L2_DEPLOY = 0.440;
-    public static double WRIST_PAN_SERVO_MOSAIC = 0.360;
+    public static double WRIST_PAN_SERVO_FLOOR = 0.096; // was 0.024 was 0 -> FieldCentric2P
+    public static double WRIST_PICK_UP = 0.096; // was 0.03 FOR teleOpwas 0 -> FieldCentric2P
+    public static double WRIST_PICK_UP_5 = 0.072;
+    public static double WRIST_PAN_SERVO_AUTO_DEPLOY = 0.420; // 0.320 before I broke the servo
+    public static double WRIST_PAN_SERVO_L2_DEPLOY = 0.488;
+    public static double WRIST_PAN_SERVO_MOSAIC = 0.440;
     public static double WRIST_PAN_SERVO_SPEED = 0.008;
     public static int WRIST_DEPLOY_SLEEP = 1500;
 
@@ -37,7 +38,8 @@ public class BotConstants {
     public static int ARM_POS_L2_DROP = 1389;
     public static int ARM_POS_L2_MOSAIC = 1517;
     public static int ARM_POS_HANG = 1009;
-    public static double ARM_POWER = 0.25;
+    public static double ARM_POWER = 0.4;
+    public static double ARM_POWER_AUTO = 0.2;
     public static double ARM_SLEW_RATE = 0.001;
     public static int ARM_DEPLOY_SLEEP = 1200;
 
@@ -64,7 +66,7 @@ public class BotConstants {
     // DRONE, HOOK and MISC
     public static double DRONE_POSITION_ARMED=0;
     public static double DRONE_POSITION_LAUNCH=0.375;
-    public static double DRIVE_SLOW_MODE = 0.5;
+    public static double DRIVE_SLOW_MODE = 0.4;
     public static double DRIVE_NORMAL_MODE = 1.0;
     public static int    RED_TEAM_ID_OFFSET = 3;
     public static int    BLUE_TEAM_ID_OFFSET= 0;
@@ -103,17 +105,17 @@ public class BotConstants {
     // Zone 1 Rect
     public static int Z1_RECT_TLX = ROI_RECT_TOP_LEFT_X;
     public static int Z1_RECT_TLY = ROI_RECT_TOP_LEFT_Y;
-    public static int Z1_RECT_BRX = 160; // 190
+    public static int Z1_RECT_BRX = 190; // 190 // 160=8bit
     public static int Z1_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
 
     // Zone 2 Rect
-    public static int Z2_RECT_TLX = 161; // 250
+    public static int Z2_RECT_TLX = 250; // 250 // 161 8bit
     public static int Z2_RECT_TLY = ROI_RECT_TOP_LEFT_Y;
-    public static int Z2_RECT_BRX = 449; // 420
+    public static int Z2_RECT_BRX = 420; // 420 // 449 8bit
     public static int Z2_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;
 
     // Zone 3 Rect
-    public static int Z3_RECT_TLX = 450; // 480
+    public static int Z3_RECT_TLX = 480; // 480 // 450 8bit
     public static int Z3_RECT_TLY = ROI_RECT_TOP_LEFT_Y;
     public static int Z3_RECT_BRX = ROI_RECT_BOTTOM_RIGHT_X;
     public static int Z3_RECT_BRY = ROI_RECT_BOTTOM_RIGHT_Y;

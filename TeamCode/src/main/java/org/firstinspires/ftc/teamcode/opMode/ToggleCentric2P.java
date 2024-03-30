@@ -72,6 +72,7 @@ public class ToggleCentric2P extends LinearOpMode {
     boolean bottomFingerServoOpen = false;
     boolean topFingerServoOpen = false;
     boolean robotHanging = false;
+    int lastArmPos = 0;
     //Wrist initial position is folded
     double wristPanPos = BotConstants.WRIST_PAN_SERVO_FOLDED;
     // By setting these values to new Gamepad(), they will default to all
@@ -236,6 +237,7 @@ public class ToggleCentric2P extends LinearOpMode {
           }
         }
 
+        telemetry.addData("drive speed", ":%.2f", driveSpeed);
         telemetry.addData("Stick Powers", ":lStickX: %.2f, lStickY: %.2f, RStickX:%.2f", lStickX, lStickY, rStickX);
         telemetry.addData("imu", "yaw: %.2f", botHeading);
 
@@ -253,12 +255,16 @@ public class ToggleCentric2P extends LinearOpMode {
           armmotor.setPower(BotConstants.ARM_POWER);
           //setPowerSlew(armmotor, Math.abs(lStickY2)*BotConstants.ARM_POWER, BotConstants.ARM_SLEW_RATE);
           dPadPressed = false;
-        } else if (lStickY2 > 0) {
+          lastArmPos = armmotor.getCurrentPosition();
+        }
+        else if (lStickY2 > 0) {
           armmotor.setTargetPosition(BotConstants.ARM_POS_MAX);
           armmotor.setPower(BotConstants.ARM_POWER);
           //setPowerSlew(armmotor, Math.abs(lStickY2)*BotConstants.ARM_POWER, BotConstants.ARM_SLEW_RATE);
           dPadPressed = false;
-        } else {
+          lastArmPos = armmotor.getCurrentPosition();
+        }
+        else {
 
           // dpad up set the wrist and arm to a default deploy position.
           // the driver can use gamepad2 left stick to fine tune the position
@@ -292,7 +298,7 @@ public class ToggleCentric2P extends LinearOpMode {
             dPadPressed = true;
           }
           else if (currentGamepad2.dpad_right && !previousGamepad2.dpad_right) {
-            wristPanPos = BotConstants.WRIST_PICK_UP;
+            wristPanPos = BotConstants.WRIST_PICK_UP_5;
             if (armmotor.getCurrentPosition() >= 6000) {
               //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
               armmotor.setTargetPosition(BotConstants.ARM_POS_2_outof_5);
@@ -345,64 +351,29 @@ public class ToggleCentric2P extends LinearOpMode {
             dPadPressed = true;
           }
           else if (dPadPressed) {
-            if (Math.abs((armmotor.getCurrentPosition() - armmotor.getTargetPosition())) <= 2) {
+            if (Math.abs((armmotor.getCurrentPosition() - armmotor.getTargetPosition())) <= 5) {
               //reached dpad destination
-              armmotor.setTargetPosition(armmotor.getCurrentPosition());
+              telemetry.addData("dPadPressed", "Arm Motor encoder Current: %d", armmotor.getCurrentPosition());
+              lastArmPos = armmotor.getCurrentPosition();
+              armmotor.setTargetPosition(lastArmPos);
               armmotor.setPower(BotConstants.ARM_POWER);
               dPadPressed = false;
             }
           }
           else {
-            armmotor.setTargetPosition(armmotor.getCurrentPosition());
+            telemetry.addData("no dPadPressed", "Arm Motor encoder Current: %d", armmotor.getCurrentPosition());
+            //armmotor.setTargetPosition(BotConstants.ARM_POS_L2_DROP);
+            armmotor.setTargetPosition(lastArmPos);
             armmotor.setPower(BotConstants.ARM_POWER);
           }
         }
 
 
-        telemetry.addData("Arm Motor Position", "Arm Motor encoder: %d", armmotor.getCurrentPosition());
+        telemetry.addData("Arm Motor Position", "Arm Motor encoder Current: %d", armmotor.getCurrentPosition());
+        telemetry.addData("Arm Motor Position", "Arm Motor encoder Target: %d", armmotor.getTargetPosition());
         telemetry.addData("Arm Motor Position", "run mode: %s", armmotor.getMode().toString());
 
-/*
-          // dpad up set the wrist and arm to a default deploy position.
-          // the driver can use gamepad2 left stick to change the position
-          // dpad left set the arm at driving height
-          // dpad down set the arm at pick up position
-          if (currentGamepad2.dpad_up && !previousGamepad2.dpad_up) {
-            wristPanPos = BotConstants.WRIST_PAN_SERVO_L2_DEPLOY;
-            wristPanServo.setPosition(wristPanPos);
-            //setArmPosition(BotConstants.ARM_POS_L2_DROP, BotConstants.ARM_POWER);
-            armmotor.setTargetPosition(BotConstants.ARM_POS_L2_DROP);
-          }
-          // dpad down set the arm at pick up position dpad left set the arm at driving height
-          if (currentGamepad2.dpad_down && !previousGamepad2.dpad_down) {
-            wristPanPos = BotConstants.WRIST_PICK_UP;
-            if (armmotor.getCurrentPosition() >= 6000) {
-              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
-              armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR_TELEOP);
-              wristPanServo.setPosition(wristPanPos);
-            }
-            else {
-              wristPanServo.setPosition(wristPanPos);
-              armmotor.setTargetPosition(BotConstants.ARM_POS_FLOOR_TELEOP);
-              //setArmPosition(BotConstants.ARM_POS_FLOOR_TELEOP, BotConstants.ARM_POWER);
-            }
-          }
-          // dpad left set the arm at driving height
-          if (currentGamepad2.dpad_left && !previousGamepad2.dpad_left) {
-            wristPanPos = BotConstants.WRIST_PAN_SERVO_FOLDED;
-            wristPanServo.setPosition(wristPanPos);
-            //setArmPosition(BotConstants.ARM_POS_DRIVE, BotConstants.ARM_POWER);
-            armmotor.setTargetPosition(BotConstants.ARM_POS_DRIVE);
-          }
-          setPowerSlew(armmotor, BotConstants.ARM_POWER, 0.05);
 
-            // dpad right set the arm at hanging height
-          /*if (currentGamepad2.dpad_right && !previousGamepad2.dpad_right){
-            wristPanPos = BotConstants.WRIST_PAN_SERVO_FOLDED;
-            wristPanServo.setPosition(wristPanPos);
-            //setArmPosition(BotConstants.ARM_POS_HANG, BotConstants.ARM_POWER);
-            armmotor.setTargetPosition(BotConstants.ARM_POS_HANG;
-          }*/
 
 
 
@@ -484,6 +455,7 @@ public class ToggleCentric2P extends LinearOpMode {
             wristPanServo.setPosition(wristPanPos);
             setArmPosition(BotConstants.ARM_POS_HANG, BotConstants.ARM_POWER);
             hookServo.setPosition(BotConstants.HOOK_POS_DEPLOY);
+            lastArmPos = BotConstants.ARM_POS_HANG;
           }
           else
             hookServo.setPosition(BotConstants.HOOK_POS_RETRACT);
@@ -554,10 +526,10 @@ public class ToggleCentric2P extends LinearOpMode {
       return power * (1.0/4.0);
     }
     else if (power > 0) {
-      return (power * (4)) - 3;
+      return (power * (4)) - 3 * speed;
     }
     else {
-      return (power * (4)) + 3;
+      return (power * (4)) + 3 * speed;
     }
   }
   public static void setPowerSlew(DcMotor motor, double power, double slewRate) {
