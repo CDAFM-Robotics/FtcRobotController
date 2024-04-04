@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opMode;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Blinker;
@@ -14,16 +15,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.common.BotConstants;
-
-import java.util.Set;
-
-@TeleOp (group = "Competition", name = "Toggle Centric 2Player")
+@Disabled
+@TeleOp (group = "Competition", name = "Toggle CentricSlewRamp")
 
 // Comment next line to prevent code from building and showing up on Control Hub
 // @Disabled
 
 
-public class ToggleCentric2P extends LinearOpMode {
+public class ToggleCentricSlew extends LinearOpMode {
   private Blinker control_Hub;
   private Servo bottomArmServo;
   private IMU imu;
@@ -37,6 +36,8 @@ public class ToggleCentric2P extends LinearOpMode {
   private DcMotor armmotor = null;
   private Servo droneServo = null;
   private Servo hookServo = null;
+  double driveSpeed = BotConstants.DRIVE_SLOW_MODE;
+  boolean square = BotConstants.SQUARE_POWER_RAMP;
 
   //ALL Common CONSTANTS MOVED TO BotConstants Class
 
@@ -80,13 +81,14 @@ public class ToggleCentric2P extends LinearOpMode {
     boolean dPadPressed = false;
     boolean fieldCentric = false;
 
+
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();
 
     Gamepad previousGamepad1 = new Gamepad();
     Gamepad previousGamepad2 = new Gamepad();
 
-    double driveSpeed = BotConstants.DRIVE_SLOW_MODE;
+
 
     PwmControl hookServoPWM = (PwmControl) hookServo;
 
@@ -192,9 +194,9 @@ public class ToggleCentric2P extends LinearOpMode {
         }
 
 
-        lStickX = driveSpeed * (gamepad1.left_stick_x * Math.abs(gamepad1.left_stick_x));
-        lStickY = driveSpeed * (-gamepad1.left_stick_y * Math.abs(gamepad1.left_stick_y));
-        rStickX = driveSpeed * (gamepad1.right_stick_x * Math.abs(gamepad1.right_stick_x));
+        lStickX = driveSpeed * gamepad1.left_stick_x;
+        lStickY = driveSpeed * -gamepad1.left_stick_y;
+        rStickX = driveSpeed * gamepad1.right_stick_x;
 
         //If the field centric drive lost direction, push Back button to reset heading to Bot Front
         if (currentGamepad1.back && !previousGamepad1.back) {
@@ -245,6 +247,8 @@ public class ToggleCentric2P extends LinearOpMode {
         // Gamepad 2 controls everything but driving
 
         // Robot arm is controlled by the left stick y on Gamepad 2
+//        lStickY2 = powerRamping(-gamepad2.left_stick_y, 1);
+
         lStickY2 = -gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y);
         telemetry.addData("StickY2", "%.5f", lStickY2);
         if (lStickY2 < 0) {
@@ -488,6 +492,13 @@ public class ToggleCentric2P extends LinearOpMode {
     }
   }
   public void setMotorPowers(double x, double y, double rx, double heading) {
+    if (square) {
+      x = x * Math.abs(x);
+      y = y * Math.abs(y);
+      rx = rx * Math.abs(rx);
+    }
+
+
     double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
     double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
 
@@ -502,14 +513,15 @@ public class ToggleCentric2P extends LinearOpMode {
     double frontRightPower = (rotY - rotX - rx)/denominator;
     double backRightPower = (rotY + rotX - rx)/denominator;
 
-    frontLeftMotor.setPower(frontLeftPower);
-    backLeftMotor.setPower(backLeftPower);
-    frontRightMotor.setPower(frontRightPower);
-    backRightMotor.setPower(backRightPower);
+    setPowerSlew(frontLeftMotor, powerRamping(frontLeftPower, driveSpeed, square), BotConstants.DRIVE_SLEW_RATE);
+    setPowerSlew(frontRightMotor, powerRamping(frontRightPower, driveSpeed, square), BotConstants.DRIVE_SLEW_RATE);
+    setPowerSlew(backLeftMotor, powerRamping(backLeftPower, driveSpeed, square), BotConstants.DRIVE_SLEW_RATE);
+    setPowerSlew(backRightMotor, powerRamping(backRightPower, driveSpeed, square), BotConstants.DRIVE_SLEW_RATE);
   }
   public void setArmPosition(int position, double speed) {
     armmotor.setTargetPosition(position);
-    armmotor.setPower(speed);
+    //armmotor.setPower(speed);
+    setPowerSlew(armmotor, speed, BotConstants.ARM_SLEW_RATE);
 
     for (int i=0; i<5; i++) {
       while (armmotor.isBusy()) {
@@ -517,5 +529,36 @@ public class ToggleCentric2P extends LinearOpMode {
       }
     }
   }
+  public static double powerRamping(double power, double speed, boolean square) {
+    if (!square) {
+      if (power < (4.0 / 5.0) * speed && power > (-4.0 / 5.0) * speed) {
+        return power * (1.0 / 4.0);
+      } else if (power > 0) {
+        return (power * (4)) - 3 * speed;
+      } else {
+        return (power * (4)) + 3 * speed;
+      }
+    }
+    return power;
+  }
+  public static void setPowerSlew(DcMotor motor, double power, double slewRate) {
+    double mpower = motor.getPower();
+    if (mpower > power) {
+      if (mpower - slewRate > power) {
+        motor.setPower(mpower-slewRate);
+      }
+      else {
+        motor.setPower(power);
+      }
+    }
+    else if (mpower <= power) {
+      if (mpower + slewRate < power) {
+        motor.setPower(mpower + slewRate);
+      }
+      else {
+        motor.setPower(power);
+      }
+    }
 
+  }
 }

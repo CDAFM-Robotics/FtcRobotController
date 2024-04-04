@@ -8,6 +8,7 @@ public class BotConstants {
 
     // Dreive Constants
     public static double DRIVE_SLEW_RATE = 0.1;
+    public static boolean SQUARE_POWER_RAMP = true;
 
     // Finger Constants
     public static double BOTTOM_ARM_SERVO_CLOSE = 0.10;

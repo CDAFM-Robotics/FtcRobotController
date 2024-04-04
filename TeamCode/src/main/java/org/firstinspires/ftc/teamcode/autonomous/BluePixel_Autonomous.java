@@ -185,6 +185,8 @@ public class BluePixel_Autonomous extends LinearOpMode {
   @SuppressLint("DefaultLocale")
   public void RR_BZ1_Pixel()
   {
+
+    sleep(2500);
     double[] xyArray = new double[2];
 
     // Lower Wrist
@@ -301,6 +303,8 @@ public class BluePixel_Autonomous extends LinearOpMode {
   @SuppressLint("DefaultLocale")
   public void RR_BZ2_Pixel()
   {
+
+    sleep(2500);
     double[] xyArray = new double[2];
 
 
@@ -393,6 +397,8 @@ public class BluePixel_Autonomous extends LinearOpMode {
   @SuppressLint("DefaultLocale")
   public void RR_BZ3_Pixel()
   {
+
+    sleep(2500);
     double[] xyArray = new double[2];
 
     // Lower Wrist
